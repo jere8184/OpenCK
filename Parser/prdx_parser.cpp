@@ -5,58 +5,10 @@
 #include <unordered_map>
 #include <stack>
 
-namespace openck
+#include "prdx_parser.h"
+
+namespace openck::parser
 {
-
-enum struct TokenType
-{
-    NOT_SET,
-    QUOTED_STRING,
-    STRING,
-    EQUALS,
-    COMMA,
-    BLOCK_START,
-    BLOCK_END
-};
-
-
-struct Token
-{
-    TokenType type;
-    std::string_view text;
-
-    Token(const TokenType& type, const std::string_view& text)
-    {
-        this->type = type;
-        this->text = text;
-    }
-};
-
-
-
-struct Node
-{
-    enum struct ValueType
-    {
-        NOT_SET,
-        STRING,
-        BLOCK
-    };
-
-    Node* parent = nullptr;
-    std::string name = "";
-    std::string value = "";
-    std::unordered_map<std::string, Node> children_map = {};
-    std::vector<Node*> children_vector = {};
-    ValueType type = ValueType::NOT_SET;
-
-    void AddChild(Node& child_node)
-    {
-        child_node.parent = this;
-        children_vector.push_back(&(children_map[child_node.name] = child_node));
-    }
-};
-
 //Returns number of tokens written.
 void tokenise_text(const std::string& source, std::vector<Token>& tokens)
 { 
@@ -69,7 +21,10 @@ void tokenise_text(const std::string& source, std::vector<Token>& tokens)
         {
             case '\t':
             case ' ':
+                break;
+
             case '\n':
+                tokens.emplace_back(TokenType::NEW_LINE, std::string_view(&source[i], 1));
                 break;
            
             case '#':
@@ -129,6 +84,9 @@ void tokenise_text(const std::string& source, std::vector<Token>& tokens)
 
                 if (length)
                     tokens.emplace_back(TokenType::STRING, std::string_view(&source[i-length], length));
+                
+                if (source[i] == '\n')
+                    tokens.emplace_back(TokenType::NEW_LINE, std::string_view(&source[i], 1));
 
         }
         i++;
@@ -138,10 +96,10 @@ void tokenise_text(const std::string& source, std::vector<Token>& tokens)
 
 bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_nodes)
 {
-    std::stack<Node*> scope_stack;
-    Node* current_node = nullptr;
-
-    bool was_last_token_equals = false;
+    std::stack<std::shared_ptr<Node>> scope_stack;
+    std::shared_ptr<Node> current_node = nullptr;
+    std::shared_ptr<Node> completed_block = nullptr;
+    TokenType previous_token_type = TokenType::NOT_SET;
 
     int node_count = 0; // for debugging
     int token_count = 0;
@@ -151,73 +109,88 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
         switch (token.type)
         {
         case TokenType::STRING:
-            if(was_last_token_equals)
+            if(previous_token_type == TokenType::EQUALS)
             {
                 current_node->value = token.text;
                 current_node->type = Node::ValueType::STRING;
                 if (scope_stack.size())
                 {
                     scope_stack.top()->AddChild(*current_node);
+                    current_node.reset();
                 }
                 current_node = nullptr;
-                was_last_token_equals = false;
             }
             else
             {
                 node_count++;
-                nodes.emplace_back(Node());
-                current_node = &nodes.back();
+                current_node = std::make_shared<Node>();
                 current_node->name = token.text;
             }
+            previous_token_type = TokenType::STRING;
             break;
 
         case TokenType::QUOTED_STRING:
-            if (current_node && was_last_token_equals)
+            if (current_node && previous_token_type == TokenType::EQUALS)
             {
                 current_node->value = token.text;
                 current_node->type = Node::ValueType::STRING;
-
-                if (scope_stack.size())
-                    scope_stack.top()->AddChild(*current_node);
-                
-                current_node = nullptr;
-                was_last_token_equals = false;
-            }
-            else
-            {
-                return false;
-            }
-            break;
-
-        case TokenType::EQUALS:
-            if (current_node)
-                was_last_token_equals = true;
-            else
-                return false;
-            break;
-
-        case TokenType::BLOCK_START:
-            if (current_node && was_last_token_equals)
-            {
-                current_node->type = Node::ValueType::BLOCK;
-
                 if (scope_stack.size())
                 {
                     scope_stack.top()->AddChild(*current_node);
+                    current_node.reset();
                 }
-
-                scope_stack.push(current_node);
                 current_node = nullptr;
-                was_last_token_equals = false;
             }
             else
             {
                 return false;
             }
+            previous_token_type = TokenType::QUOTED_STRING;
+            break;
+
+        case TokenType::EQUALS:
+            if (!current_node)
+                return false;
+            previous_token_type = TokenType::EQUALS;
+            break;
+
+        case TokenType::NEW_LINE:
+            if (current_node && scope_stack.size())
+            {
+                scope_stack.top()->AddChild(*current_node);
+                current_node.reset();
+            }
+
+            previous_token_type = TokenType::NEW_LINE;
+            break;
+
+        case TokenType::BLOCK_START:
+            if (current_node && previous_token_type == TokenType::EQUALS)
+            {
+                current_node->type = Node::ValueType::BLOCK;
+                scope_stack.push(current_node);
+                current_node.reset();
+            }
+            else
+            {
+                return false;
+            }
+            previous_token_type = TokenType::BLOCK_START;
             break;
 
         case TokenType::BLOCK_END:
+            completed_block = scope_stack.top();
             scope_stack.pop();
+            if (scope_stack.size() == 0)
+            {
+                root_nodes.push_back(std::move(*completed_block));
+            }
+            else
+            {
+                scope_stack.top()->AddChild(*completed_block);
+            }
+            completed_block.reset();
+            previous_token_type = TokenType::BLOCK_END;
             break;
 
         default:
@@ -234,7 +207,7 @@ std::string read_file(const std::string& path)
     fopen_s(&File, path.c_str(), "r");
     if (File == nullptr)
     {
-        fprintf(stderr, "Could not open file \"%s\"", path); 
+        std::print(stderr, "Could not open file \"{}\"", path); 
         return "";
     }
 
@@ -261,7 +234,7 @@ bool generate_nodes(const std::string &path, std::vector<Node>& nodes)
     std::vector<Token> tokens;
     tokenise_text(file_contents, tokens);
 
-    nodes.reserve(tokens.size()); //we dont want 'nodes' to be resized during 'create_nodes()' as it leads to pointer invalidation.
+    nodes.reserve(tokens.size());
 
     res = create_nodes(tokens, nodes);
 
