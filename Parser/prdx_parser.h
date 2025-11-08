@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <concepts>
 
 namespace openck::parser 
 {
@@ -33,6 +34,8 @@ struct Token
     }
 };
 
+template<typename T>
+concept Numeric = std::integral<T> || std::floating_point<T>;
 
 struct Node
 {
@@ -49,13 +52,39 @@ struct Node
     std::unordered_map<std::string, Node> children_map = {};
     ValueType type = ValueType::NOT_SET;
 
-        void AddChild(Node& child_node)
+    void AddChild(Node& child_node)
+    {
+        child_node.parent = this;
+        children_map[child_node.name] = child_node;
+    }
+    
+    template<Numeric Val>
+    bool get_value(Val& ret) const
+    {
+        try
         {
-            child_node.parent = this;
-            children_map[child_node.name] = child_node;
+            ret = std::stoi(value);
         }
-    };
+        catch (const std::exception& e)
+        {
+            return false;
+        }
+        return true;
+    }
 
+    bool get_value(bool& ret) const
+    {
+        if (value == "yes")
+            ret = true;
+        else if (value == "no")
+            ret = false;
+        else
+            return false;
+
+        return true;
+    }
+
+};
 
     bool generate_nodes(const std::string &path, std::vector<Node>& nodes);
 };
