@@ -2,7 +2,7 @@
 #include <vector>
 #include <set>
 
-namespace openck
+namespace openck::simulator
 {
 
     struct Actor;

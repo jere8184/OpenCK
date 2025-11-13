@@ -1,13 +1,13 @@
 #pragma once
 
-#include "charecter.hpp"
-#include <vector>
-#include <string>
 #include "date.hpp"
 #include "province.hpp"
-#include "Culture.hpp"
+#include "culture.hpp"
+#include "charecter.hpp"
 
-namespace openck 
+#include <vector>
+#include <string>
+namespace openck::simulator 
 {
 
     struct TitleFlag
@@ -28,7 +28,7 @@ namespace openck
         DEFAULT = 5
     };
 
-    class Title
+    struct Title
     {
         struct Holder
         {
@@ -37,8 +37,7 @@ namespace openck
             Date date_released = {0,0,0};
         };
 
-        struct Conditions {
-            bool adventurer();
+            /*bool adventurer();
             bool can_be_given_away();
             bool claimed_by(const Charecter* charecter);
             bool conquest_culture(const Charecter* charecter);
@@ -74,19 +73,20 @@ namespace openck
             int num_fitting_characters_for_title(Charecter* charecter);
             int num_of_buildings();
             bool temporary();
-            bool would_be_heir_under_law(Charecter* Charecter /*, Law*/);
+            bool would_be_heir_under_law(Charecter* Charecter /*, Law*//*); 
             bool controlled_by(Charecter* charecter);
             bool is_occupied();
-            bool region(/*region*/);
+            bool region(/*region*//*); 
             bool has_siege();
             bool is_allowed_holding_type(Charecter* charecter);
             bool holding_type(HoldingType type);
             bool is_connected_to(Province* target, bool sea_gap = false, bool land_gap = false, Charecter* sub_realm = nullptr, int naval_distance = 0);
             bool has_trade_post();
             int holy_site_distance(Religion* religion);
-            int religion_distance(Religion* religion);
-        };
-
+            int religion_distance(Religion* religion);*/
+        
+        bool controls_religion() const { return false; };
+        simulator::Religion* get_religion() const { return nullptr; };
 
 
         bool adventurer = false;

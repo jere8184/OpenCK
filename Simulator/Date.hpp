@@ -1,6 +1,6 @@
 #pragma once
 
-namespace openck
+namespace openck::simulator
 {
     struct Date
     {
@@ -9,5 +9,5 @@ namespace openck
         int year = 0;
     };
 
-    int daysInMonth[] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    //int daysInMonth[] = {31,28,31,30,31,30,31,31,30,31,30,31};
 } 

@@ -1,17 +1,17 @@
 #pragma once
 
 
-#include <unordered_map>
 #include "title.hpp"
-#include <set>
 #include "date.hpp"
-#include "Attributes.hpp"
-#include "Traits.hpp"
+#include "attributes.hpp"
+#include "traits.hpp"
 #include "holding.hpp"
-#include "Religion.hpp"
+#include "religion.hpp"
 
+#include <set>
+#include <unordered_map>
 
-namespace openck
+namespace openck::simulator
 {
     struct Abilities  
     {
@@ -54,7 +54,7 @@ namespace openck
         FEMALE = 1
     };
 
-    class Charecter 
+    struct Charecter 
     {
         Mana mana = {};
         Stats stats = {};
@@ -78,7 +78,8 @@ namespace openck
 
         bool can_copy_personality_trait_from(Charecter* someone_elese);
         bool can_grant_title(Charecter* someone_else);
-        
+        Religion* get_religion() {return nullptr;};
+        bool controls_religion() const {return false;} 
         
         // house
         // culture
@@ -88,7 +89,7 @@ namespace openck
         // genes
     };
 
-    class Ruler: Charecter
+    class Ruler : Charecter
     {
         
     };

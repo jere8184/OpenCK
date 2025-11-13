@@ -112,7 +112,7 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
             if(previous_token_type == TokenType::EQUALS)
             {
                 current_node->value = token.text;
-                current_node->type = Node::ValueType::STRING;
+                current_node->value_type = Node::ValueType::STRING;
                 if (scope_stack.size())
                 {
                     scope_stack.top()->AddChild(*current_node);
@@ -133,7 +133,7 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
             if (current_node && previous_token_type == TokenType::EQUALS)
             {
                 current_node->value = token.text;
-                current_node->type = Node::ValueType::STRING;
+                current_node->value_type = Node::ValueType::STRING;
                 if (scope_stack.size())
                 {
                     scope_stack.top()->AddChild(*current_node);
@@ -167,7 +167,7 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
         case TokenType::BLOCK_START:
             if (current_node && previous_token_type == TokenType::EQUALS)
             {
-                current_node->type = Node::ValueType::BLOCK;
+                current_node->value_type = Node::ValueType::BLOCK;
                 scope_stack.push(current_node);
                 current_node.reset();
             }

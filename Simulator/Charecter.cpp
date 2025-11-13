@@ -1,7 +1,7 @@
 #include "charecter.hpp"
 
 
-namespace openck
+namespace openck::simulator
 {
     bool Ruler::among_most_powerful_vassals(int number_of_vassals)
     {

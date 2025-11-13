@@ -50,7 +50,7 @@ struct Node
     std::string name = "";
     std::string value = "";
     std::unordered_map<std::string, Node> children_map = {};
-    ValueType type = ValueType::NOT_SET;
+    ValueType value_type = ValueType::NOT_SET;
 
     void AddChild(Node& child_node)
     {

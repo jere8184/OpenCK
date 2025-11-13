@@ -1,6 +1,6 @@
 #pragma once
 
-namespace openck
+namespace openck::simulator
 {
     enum struct AttributesType 
     {
@@ -40,6 +40,7 @@ namespace openck
         GREED,
         ZEAL,
         RATIONALITY,
+        HONOR,
         THREAT_DECAY_SPEED
     };
 
@@ -52,6 +53,7 @@ namespace openck
         int zeal = 0;
         int rationality = 0;
         int threat_decay_speed = 0;
+        int honor = 0;
 
         float health_penalty = 0;
         float fertility_penalty = 0;

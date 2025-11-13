@@ -1,9 +1,11 @@
 #pragma once
-#include "Title.hpp"
+
 #include <string>
 
-namespace openck
+namespace openck::simulator
 {
+    struct Title;
+
     struct HoldingStats
     {
         int levies = 0;
@@ -32,4 +34,4 @@ namespace openck
         std::string name = "default";
         
     };
-} // namespace openck
+} // namespace openck::simulator

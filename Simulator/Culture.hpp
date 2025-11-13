@@ -1,7 +1,9 @@
+
+#pragma once
+
 #include <string>
 
-
-namespace openck 
+namespace openck::simulator 
 {
     class Culture
     {
