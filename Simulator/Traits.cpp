@@ -13,11 +13,12 @@ bool Trait::init(const parser::Node& trait_node)
 {
     this->name = trait_node.name;
 
-    for (const auto& [child_name, child_node] : trait_node.children_map)
+    for (const auto& [child_name, child_name_and_operator] : trait_node.children_map)
     {
+        auto [child_node, op] = child_name_and_operator;
         if (trait_field_setters.contains(child_name))
         {
-            if (trait_field_setters[child_name](this, child_node))
+            if (trait_field_setters.at(child_name)(this, child_node))
             {
                 continue;
             }
@@ -29,6 +30,12 @@ bool Trait::init(const parser::Node& trait_node)
         }
         else
         {
+            int index;
+            if (index = child_name.find("_opinion"); index != std::string::npos)
+            {
+                //get subst, check if religion name, holding type ect.
+            }
+
             std::print(stderr, "Unknown trait field: {}\n", child_name);
             return false;
         }
@@ -38,12 +45,12 @@ bool Trait::init(const parser::Node& trait_node)
 
 bool Trait::set_potential(const Node &node)
 {
-    bool is_success;
-    scripting::ConditionBlock block = scripting::ConditionBlock::generate_condition_block_from_node(node, charecter_scope, is_success);
+    bool is_success = true;
+    scripting::ConditionBlock block = scripting::ConditionBlock(node, is_success);
     
     if (is_success)
     {
-        this->condition_block = block;
+        this->condition_block.emplace(std::move(block));
         return true;
     }
     else
@@ -142,17 +149,29 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"vice", [](Trait* trait, const Node& node){return node.get_value(trait->flags.vice);}},
     {"virtue", [](Trait* trait, const Node& node){return node.get_value(trait->flags.virtue);}},
     {"leader", [](Trait* trait, const Node& node){return node.get_value(trait->flags.leader);}},
-    {"monthly_charecter_piety", [](Trait* trait, const Node& node){return node.get_value(trait->monthly_charecter_piety);}},
-    {"monthly_charecter_prestige", [](Trait* trait, const Node& node){return node.get_value(trait->monthly_charecter_prestige);}},
-    {"global_tax_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->global_tax_modifier);}},
-    {"comand_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->command_modifier);}}
-    
-    //{"potential", &Trait::set_potential},
-    }
-    
+    {"monthly_character_piety", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.monthly_character_piety);}},
+    {"monthly_character_prestige", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.monthly_character_prestige);}},
+    {"global_tax_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.global_tax_modifier);}},
+    {"command_modifier", std::bind(&Trait::set_command_modifier, std::placeholders::_1, std::placeholders::_2)},
+    {"command_modifier.random", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.random); }},
+    {"command_modifier.speed", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.speed); }},
+    {"command_modifier.retreat", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.retreat); }},
+    {"command_modifier.defence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.defence); }},
+    {"command_modifier.damage", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.damage); }},
+    {"command_modifier.center", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.center); }},
+    {"command_modifier.flank", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.flank); }},
+    {"command_modifier.pursue", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.pursue); }},
+    {"command_modifier.siege", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.siege); }},
+    {"command_modifier.morale_offence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_offence); }},
+    {"command_modifier.morale_defence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_defence); }},
+
+
+    {"potential", std::bind(&Trait::set_potential, std::placeholders::_1, std::placeholders::_2)},
+    {"random", [](Trait* trait, const Node& node){return node.get_value(trait->flags.random);}}
 };
 
-Trait::Trait(const parser::Node& trait_node, scripting::Scope& _charecter_scope) : charecter_scope(_charecter_scope)
+
+Trait::Trait(const parser::Node& trait_node, scripting::CharacterScope& charecter_scope) : charecter_scope(charecter_scope)
 {
     this->name = trait_node.name;
     init(trait_node);
@@ -392,6 +411,22 @@ bool Trait::set_opposites(const Node &node)
     return true;
 }
 
+bool Trait::set_command_modifier(const Node &node)
+{
+    bool is_success = true;
+    for (const auto& [child_name, child_node_and_operator] : node.children_map)
+    {
+        auto [child_node, op] = child_node_and_operator;
+
+        std::string setter_key = ("command_modifier.") + child_name;
+        if (trait_field_setters.contains(setter_key))
+            trait_field_setters.at(setter_key)(this, child_node);
+        else
+            is_success = false;
+    }
+    return is_success;
+}
+
 bool Trait::set_education(const Node& node)
 {
     if (node.value == "yes")
@@ -522,13 +557,13 @@ std::vector<Trait> generate_traits_from_nodes(const std::vector<parser::Node>& r
     std::vector<Trait> traits;
 
     //auto a = std::bind(set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-    scripting::Scope charecter_scope;
+    scripting::CharacterScope charecter_scope;
     charecter_scope.type = scripting::Scope::Type::CHARACTER;
 
     for (const parser::Node& trait_node : root_nodes) //
     {
         Trait trait(trait_node, charecter_scope);
-        traits.push_back(trait);
+        traits.push_back(std::move(trait));
     }
 
     return traits;

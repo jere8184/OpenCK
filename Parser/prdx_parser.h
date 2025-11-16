@@ -5,29 +5,32 @@
 #include <vector>
 #include <unordered_map>
 #include <concepts>
+#include <utility>
 
 namespace openck::parser 
 {
 
-enum struct TokenType
-{
-    NOT_SET,
-    QUOTED_STRING,
-    STRING,
-    EQUALS,
-    COMMA,
-    NEW_LINE,
-    BLOCK_START,
-    BLOCK_END
-};
-
 
 struct Token
 {
-    TokenType type;
+    enum struct Type
+    {
+        NOT_SET,
+        QUOTED_STRING,
+        STRING,
+        EQUALS,
+        LESS,
+        COMMA,
+        NEW_LINE,
+        BLOCK_START,
+        BLOCK_END
+    };
+
+
+    Type type;
     std::string_view text;
 
-    Token(const TokenType& type, const std::string_view& text)
+    Token(const Type& type, const std::string_view& text)
     {
         this->type = type;
         this->text = text;
@@ -49,13 +52,13 @@ struct Node
     Node* parent = nullptr;
     std::string name = "";
     std::string value = "";
-    std::unordered_map<std::string, Node> children_map = {};
+    std::unordered_map<std::string, std::pair<Node, Token::Type>> children_map = {};
     ValueType value_type = ValueType::NOT_SET;
 
-    void AddChild(Node& child_node)
+    void AddChild(Node& child_node, Token::Type assignment_operator)
     {
         child_node.parent = this;
-        children_map[child_node.name] = child_node;
+        children_map[child_node.name] = {child_node, assignment_operator};
     }
     
     template<Numeric Val>
@@ -74,16 +77,15 @@ struct Node
 
     bool get_value(bool& ret) const
     {
-        if (value == "yes")
+        if (this->value == "yes")
             ret = true;
-        else if (value == "no")
+        else if (this->value == "no")
             ret = false;
         else
             return false;
 
         return true;
     }
-
 };
 
     bool generate_nodes(const std::string &path, std::vector<Node>& nodes);

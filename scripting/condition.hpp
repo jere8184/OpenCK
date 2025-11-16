@@ -12,6 +12,8 @@
 #include <functional>
 #include <bitset>
 #include <stack>
+#include <cassert>
+#include <memory>
 
 namespace openck::parser
 {
@@ -39,7 +41,6 @@ namespace openck::scripting
 
 struct Scope
 {
-
     enum class Type
     {
         CHARACTER,
@@ -70,22 +71,30 @@ struct Scope
         simulator::Artifact* artifact;
     };
 
-    struct Functions
-    {
-        //simulator::Charecter* (* charecter)();
-        //simulator::Title* (* title)();
-        //simulator::Religion* (* religion)();
-        simulator::ReligionGroup* (* religion_group)(const Scope& scope);
-        bool (* controls_religion)(const Scope& scope);
-    };
-
     using TypeBitSet = std::bitset<(size_t)Type::ENUM_SIZE>;
 
     Type type;
     Data data;
-    Functions functions;
     Scope* parent_scope = nullptr;
+
+    virtual bool adventurer() const { assert(false); return false; };
+    virtual int age() const { assert(false); return 0; };
+    virtual simulator::ReligionGroup* religion_group() const { assert(false); return 0; }
+    virtual bool controls_religion() const { assert(false); return false; }
 };
+
+
+struct CharacterScope : Scope
+{
+    CharacterScope()
+    {
+        this->type = Type::CHARACTER;
+    }
+
+    virtual int age() const override;
+
+    simulator::Charecter* charecter;
+}; 
 
 using ComparisonOperator = bool(std::partial_ordering);
 
@@ -109,7 +118,7 @@ struct Target
         ROOT
     };
 
-    struct Data
+    union Data //if data location not static, this has to be populated at run time
     {
         bool bool_val;
         simulator::Charecter* charecter;
@@ -119,16 +128,13 @@ struct Target
     
     union Function
     {
-        //simulator::Charecter* (* charecter)(const Target& target);
-        //simulator::Religion* (* religion)(const Target& target);
+        simulator::Charecter* (* charecter)(const Target& target);
+        simulator::Religion* (* religion)(const Target& target);
         simulator::ReligionGroup* (* religion_group)(const Target& target);
     };
 
-
-
     using TypeBitSet = std::bitset<(size_t)Type::ENUM_SIZE>;
 
-    TypeBitSet type_bitset = {};
     DataLocation data_location;
     Type type;
     Data data;
@@ -145,46 +151,66 @@ struct ICondition
         BLOCK
     };
 
-    ICondition(std::string name, Scope& enclosing_scope, Type type);
-
-
-    bool operator()();
+    ICondition(const std::string& name, Type type);
     
-    Scope& enclosing_scope;
+    virtual ~ICondition() = default;
+
     std::string name;
     Type type;
+    
+    virtual bool operator()(const Scope& scope) const = 0;
+
 };
 
 
 struct Condition : ICondition
 {
 
-    using Routine = bool (Condition&);
+    using Routine = bool (Condition::*)(const Scope& scope);
     
     using RoutineGetter = Routine* (Condition&);
     
-    Condition(parser::Node node, Scope& enclosing_scope, bool& is_success);
+    Condition(parser::Node node, bool& is_success);
+
+    ~Condition() = default;
     
     static std::unordered_map<std::string, RoutineGetter*> routine_getters;
 
     Target target;
+
     Routine* routine;
     
-    bool set_routines();
+    //looping over list of ICondition* -> calling virtual bool operator()(); -> function pointer call -> virtual function call -> function pointer call = current approch
+                                            //vs.
+    //looping over list of ICondition -> switch statment vs static calling bool operator()(); -> switch-statement + function call -> switch-statement + function call -> switch-statment + function call
+    virtual bool operator()(const Scope& scope) const override {return false;};
 
-    bool operator()();
+    bool religion_group(const Scope& scope);
+    bool controls_religion(const Scope& scope);
 };
 
 
-
 struct ConditionBlock : ICondition
-
 {
-    ConditionBlock(parser::Node condition_block_node, Scope& enclosing_scope, bool& is_success);
+    enum struct Type
+    {
+        NOT_SET,
+        NOT
+    };
 
-    std::vector<ICondition> conditions;
+    Type block_type;
+
+    ConditionBlock(parser::Node condition_block_node, bool& is_success);
+
+    ~ConditionBlock() = default;
+
+    ConditionBlock(ConditionBlock&&) = default;
+
+    std::vector<std::unique_ptr<ICondition>> conditions;
     
-    bool operator()();
+    bool run_not_block(const Scope& scope) const;
+
+    virtual bool operator()(const Scope& scope) const override;
 };
 
 

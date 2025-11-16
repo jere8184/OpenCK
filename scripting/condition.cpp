@@ -12,155 +12,23 @@
 #include <compare>
 #include <cassert>
 #include <stack>
-
-
-//is the scope deucable at interpret time, if so we can eliminate switch statement and return the correct function at interpret time.
+#include <memory>
 
 namespace openck::scripting
 {
 
-Condition::Routine* controls_religion_routine_getter(Condition& condition)
+bool Condition::religion_group(const Scope& scope)
 {
+    simulator::ReligionGroup* scope_religion_group = scope.religion_group();
+    simulator::ReligionGroup* target_religion_group = this->target.data.religion_group;
+    return this->target.comparison_function(scope_religion_group <=> target_religion_group);
+}
 
-    switch (condition.enclosing_scope.type)
-    {
-        case Scope::Type::CHARACTER :
-            condition.enclosing_scope.functions.controls_religion = [](const Scope& scope) -> bool
-            {
-                return scope.data.charecter->controls_religion();
-            };
-            break;
-        
-        case Scope::Type::TITLE :
-            condition.enclosing_scope.functions.controls_religion = [](const Scope& scope) -> bool
-            {
-                return scope.data.title->controls_religion();
-            };
-            break;
-
-        default:
-            return nullptr;
-            break;
-    }
-
-    switch (condition.target.type)
-    {
-        case Target::Type::BOOL :
-            return [](Condition& condition) -> bool
-            {
-                bool is_head = condition.enclosing_scope.functions.controls_religion(condition.enclosing_scope);
-                return condition.target.comparison_function(is_head <=> condition.target.data.bool_val);
-            };
-            break;
-        default:
-            return nullptr;
-            break;
-    }
-};
-
-Condition::Routine* religion_group_routine_getter(Condition& condition)
+bool Condition::controls_religion(const Scope& scope)
 {
-    switch (condition.enclosing_scope.type)
-    {
-        case Scope::Type::CHARACTER :
-            condition.enclosing_scope.functions.religion_group = [](const Scope& scope) -> simulator::ReligionGroup*
-            {
-                return scope.data.charecter->get_religion()->group;
-            };
-            break;
-        
-        case Scope::Type::TITLE :
-            condition.enclosing_scope.functions.religion_group = [](const Scope& scope) -> simulator::ReligionGroup*
-            {
-                return scope.data.title->get_religion()->group;
-            };
-            break;
-        
-        case Scope::Type::PROVINCE :
-            condition.enclosing_scope.functions.religion_group = [](const Scope& scope) -> simulator::ReligionGroup*
-            {
-                //return scope.data.province->get_religion()->group;
-                return nullptr;
-            };
-            break;
-        
-        case Scope::Type::RELIGION :
-            condition.enclosing_scope.functions.religion_group = [](const Scope& scope) -> simulator::ReligionGroup*
-            {
-                return scope.data.religion->group;
-            };
-            break;
-
-        default:
-            return nullptr;
-            break;
-    }
-    
-    switch (condition.target.type)
-    {
-        case Target::Type::RELIGION_GROUP :
-            condition.target.function.religion_group = [](const Target& target) -> simulator::ReligionGroup*
-            {
-                return target.data.religion_group;
-            };
-            break;
-
-        case Target::Type::RELIGION :
-            condition.target.function.religion_group = [](const Target& target) -> simulator::ReligionGroup*
-            {
-                return target.data.religion->group;
-            };
-            break;
-
-        case Target::Type::CHARECTER :
-            condition.target.function.religion_group = [](const Target& target) -> simulator::ReligionGroup*
-            {
-                return target.data.charecter->get_religion()->group;
-            };
-            break;
-        break;
-
-        default:
-            return nullptr;
-            break;
-    }
-
-    return [](Condition& condition) -> bool
-    {
-        simulator::ReligionGroup* scope_religion_group = condition.enclosing_scope.functions.religion_group(condition.enclosing_scope);
-        simulator::ReligionGroup* target_religion_group = condition.target.function.religion_group(condition.target);
-        return condition.target.comparison_function(scope_religion_group->id <=> target_religion_group->id);
-    };
-};
-
-
-std::unordered_map<std::string, Condition::RoutineGetter*> Condition::routine_getters = 
-{
-    {"controls_religion", 
-        controls_religion_routine_getter
-    },
-    {"religion_group",
-        religion_group_routine_getter
-    }
-};
-
-bool Condition::set_routines()
-{
-    if (Condition::routine_getters.contains(this->name))
-    {
-        Condition::RoutineGetter* routine_getter = Condition::routine_getters.at(this->name);
-        
-        Condition::Routine* routine = routine_getter(*this);
-
-        this->routine = routine;
-
-        return this->routine != nullptr;
-    }
-    else
-    {
-        return false;
-    }
-};
+    bool is_head = scope.controls_religion();
+    return this->target.comparison_function(is_head <=> this->target.data.bool_val);
+}
 
 
 std::unordered_map<std::string, Target::DataLocation> dynamic_data_location_map = 
@@ -185,13 +53,29 @@ std::unordered_map<std::string, std::pair<Scope::TypeBitSet, Target::TypeBitSet>
 
 bool read_static_data(Target& target, const openck::parser::Node& node)
 {
-    if (target.type_bitset.test((size_t)Target::Type::BOOL) && node.get_value(target.data.bool_val))
+    if (node.get_value(target.data.bool_val))
     {
         target.type = Target::Type::BOOL;
         return true;
     }
+    else if (simulator::ReligionGroup* religion_group = simulator::ReligionGroup::get_religion_group_by_name(node.value))
+    {
+        target.type = Target::Type::RELIGION_GROUP;
+        target.data.religion_group = religion_group;
+        return true;
+    }
+    else if (simulator::Religion* religion = simulator::Religion::get_religion_by_name(node.value))
+    {
+        target.type = Target::Type::RELIGION;
+        target.data.religion = religion;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
     
-    if (target.type_bitset.test((size_t)Target::Type::RELIGION_GROUP))
+    //if (target.type_bitset.test((size_t)Target::Type::RELIGION_GROUP))
     {
         //Dummy function to get religion group from name
         /*simulator::ReligionGroup* religion_group = simulator::ReligionGroup::get_religion_group_by_name(node.value);
@@ -199,22 +83,12 @@ bool read_static_data(Target& target, const openck::parser::Node& node)
             target.type = Target::Type::RELIGION_GROUP;
             return true;*/
     }
-    else
-        return false;
+    return false;
 }
 
-Condition::Condition(parser::Node node, Scope& enclosing_scope, bool& is_success) :
-    ICondition(node.name, enclosing_scope, Type::CONDITION)
+Condition::Condition(parser::Node node, bool& is_success) :
+    ICondition(node.name, Type::CONDITION)
 {
-    auto bitset_pair = valid_data_types.at(this->name);
-    target.type_bitset = bitset_pair.second;
-
-    if (!bitset_pair.first.test(size_t(this->enclosing_scope.type)))
-    {
-        is_success = false;
-        return;
-    }
-    
     if (dynamic_data_location_map.contains(node.value))
     {
         target.data_location = dynamic_data_location_map.at(node.value);
@@ -222,55 +96,92 @@ Condition::Condition(parser::Node node, Scope& enclosing_scope, bool& is_success
     else
     {
         target.data_location = Target::DataLocation::STATIC;
-        if (!read_static_data(target, node) || !this->set_routines())
+        if (!read_static_data(target, node))
         {
             is_success = false;
             return;
         }
     }
+    //need to set routine to call here
+
 }
 
 
-ConditionBlock::ConditionBlock(parser::Node node, Scope& enclosing_scope, bool& is_success) : 
-    ICondition(node.name, enclosing_scope, Type::BLOCK)
+ConditionBlock::ConditionBlock(parser::Node node, bool& is_success) : 
+    ICondition(node.name, ICondition::Type::BLOCK)
 {
     using namespace openck::parser;
 
-    for (const auto& [child_name, child_node] : node.children_map)
+    for (const auto& [child_name, child_node_and_operator] : node.children_map)
     {
+        const auto& [child_node, assignment_op] = child_node_and_operator;
+        
         switch (child_node.value_type)
         {
-        case Node::ValueType::STRING :
-        {
-            Condition condition(child_node, enclosing_scope, is_success);
-            if (is_success == false)
+            case Node::ValueType::STRING :
+            {
+                std::unique_ptr<ICondition> condition = std::make_unique<Condition>(child_node, is_success);
+                if (is_success == false)
+                    return;
+                
+                this->conditions.emplace_back(std::move(condition));
+                break;
+            }
+            case Node::ValueType::BLOCK :
+            {
+                std::unique_ptr<ICondition> condition_block = std::make_unique<ConditionBlock>(child_node, is_success);
+                if (is_success == false)
+                    return;
+                
+                this->conditions.emplace_back(std::move(condition_block));
+                break;
+            }
+            default:
+                is_success = false;
                 return;
-            this->conditions.push_back(condition);
-            break;
-        }
-        case Node::ValueType::BLOCK :
-            this->conditions.push_back(ConditionBlock(child_node, enclosing_scope, is_success));
-            if (is_success == false)
-                return;
-            break;
-
-        default:
-            is_success = false;
-            return;
-            break;
+                break;
         }
     }
 
     is_success = true;
     return;
-};
+}
 
-ICondition::ICondition(std::string name, Scope & enclosing_scope, Type type) :
+bool ConditionBlock::run_not_block(const Scope& scope) const
+{
+    bool ret_val = true;
+    for (const auto& condition : this->conditions)
+    {
+        if ((*condition)(scope))
+            ret_val = false;
+    }
+
+    return ret_val;
+}
+
+bool ConditionBlock::operator()(const Scope& scope) const
+{ //NOT
+    switch (this->block_type)
+    {
+    case Type::NOT :
+        return run_not_block(scope);
+        break;
+    
+    default:
+        break;
+    }
+}
+
+ICondition::ICondition(const std::string& name, Type type) :
     name(name),
-    type(type),
-    enclosing_scope(enclosing_scope)
+    type(type)
 {
 
+}
+
+int CharacterScope::age() const
+{
+    return charecter->age;
 }
 
 }

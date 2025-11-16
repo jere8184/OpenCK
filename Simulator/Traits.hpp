@@ -142,20 +142,56 @@ struct Trait
         int unreformed_tribal_opinion = 0;
     };
 
+    struct Buffs
+    {
+        int monthly_character_piety = 0;
+        int monthly_character_prestige = 0;
+        float global_tax_modifier = 0.0f;
+   };
+
+
+    struct Phase;
+    struct UnitType;
+    struct Terraine;
+    struct CommandModdifiers
+    {
+        float random = 0;
+        float speed = 0;
+        float retreat = 0;
+        float defence = 0;
+        float damage = 0;
+        float center = 0;
+        float flank = 0;
+        float pursue = 0;
+        float siege = 0;
+        float morale_offence = 0;
+        float morale_defence = 0;
+        float cavalry = 0;
+        float religious_enemy = 0;
+        float narrow_flank = 0;
+        float winter_combat = 0;
+
+        std::unordered_map<std::string, UnitType*> unit_specific_buffs;
+        std::unordered_map<std::string, Terraine*> terraine_specific_buffs;
+        std::unordered_map<std::string, Phase*> phase_specific_buffs;
+    };
+
     int id;
     std::string name;
     std::string desc;
     Flags flags;
     Attributes attribute_modifiers;
+    CommandModdifiers command_modifiers;
     Stats stat_modifiers;
     Greeting adjectives; 
     Opinon opinion;
-    scripting::Scope& charecter_scope;
+    Buffs buffs;
+    scripting::CharacterScope& charecter_scope;
 
     std::optional<openck::scripting::ConditionBlock> condition_block;
     
-    Trait(const Node& trait_node, scripting::Scope& _charecter_scope);
-    Trait(const std::string& _name, scripting::Scope& _charecter_scope) : name(_name), charecter_scope(_charecter_scope) {};
+    Trait(const Node& trait_node, scripting::CharacterScope& charecter_scope);
+    Trait(const std::string& _name, scripting::CharacterScope& charecter_scope) : name(_name), charecter_scope(charecter_scope) {};
 
     bool init(const parser::Node & trait_node);
 
@@ -183,7 +219,9 @@ struct Trait
     bool set_opinion_modifer(const Node& node, const Opinon::From from);
     bool set_opposites(const Node& node);
 
-    const Trait* get_trait(const std::string& trait_name) {auto s = scripting::Scope(); static Trait dummy_trait("dummy", s); return &dummy_trait;/*Dummy function*/ }
+    bool set_command_modifier(const Node& node);
+
+    const Trait* get_trait(const std::string& trait_name) {auto s = scripting::CharacterScope(); static Trait dummy_trait("dummy", s); return &dummy_trait;/*Dummy function*/ }
 
 
     static std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> trait_field_setters;

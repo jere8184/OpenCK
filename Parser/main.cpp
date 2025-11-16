@@ -5,6 +5,6 @@
 int main()
 {
     std::vector<openck::parser::Node> nodes;
-    openck::parser::generate_nodes("C:/Program Files (x86)/Steam/steamapps/common/Crusader Kings II/common/traits/00_traits.txt", nodes);
+    openck::parser::generate_nodes("01_traits.txt", nodes);
     openck::simulator::generate_traits_from_nodes(nodes); 
 }

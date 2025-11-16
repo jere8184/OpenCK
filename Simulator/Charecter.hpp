@@ -10,6 +10,7 @@
 
 #include <set>
 #include <unordered_map>
+#include <array>
 
 namespace openck::simulator
 {
@@ -87,10 +88,13 @@ namespace openck::simulator
         // bloodline
         // artifacts
         // genes
+        static std::array<Charecter, 1000> charecter_list;
     };
 
     class Ruler : Charecter
     {
         
     };
+
+
 }
