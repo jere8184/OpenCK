@@ -104,6 +104,7 @@ struct Trait
 
         enum struct From
         {
+            NOT_SET,
             GENERAL,
             CHURCH,
             CHRISTIAN_CHURCH,
@@ -120,7 +121,8 @@ struct Trait
             AMBITION,
             SAME_RELIGION,
             TRIBAL,
-            UNREFOMED_TRIBAL
+            UNREFOMED_TRIBAL,
+            DYNAMIC
         };
 
         int general_opinion = 0;
@@ -140,6 +142,7 @@ struct Trait
         int same_religion_opinion = 0;
         int tribal_opinion = 0;
         int unreformed_tribal_opinion = 0;
+        std::unordered_map<Religion*, int> religion_opinions;
     };
 
     struct Buffs
@@ -220,6 +223,8 @@ struct Trait
     bool set_opposites(const Node& node);
 
     bool set_command_modifier(const Node& node);
+
+    bool set_opinion_modifer_dynamic(const Node& node);
 
     const Trait* get_trait(const std::string& trait_name) {auto s = scripting::CharacterScope(); static Trait dummy_trait("dummy", s); return &dummy_trait;/*Dummy function*/ }
 

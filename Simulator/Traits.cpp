@@ -31,13 +31,15 @@ bool Trait::init(const parser::Node& trait_node)
         else
         {
             int index;
-            if (index = child_name.find("_opinion"); index != std::string::npos)
+            if (index = child_name.find("_opinion"); (index != std::string::npos) && (child_name.size() == index + std::string("_opinion").size()))
             {
-                //get subst, check if religion name, holding type ect.
+                return this->set_opinion_modifer(child_node, Opinon::From::DYNAMIC);
             }
-
-            std::print(stderr, "Unknown trait field: {}\n", child_name);
-            return false;
+            else
+            {
+                std::print(stderr, "Unknown trait field: {}\n", child_name);
+                return false;
+            }
         }
     }
     return true;
@@ -164,7 +166,6 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"command_modifier.siege", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.siege); }},
     {"command_modifier.morale_offence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_offence); }},
     {"command_modifier.morale_defence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_defence); }},
-
 
     {"potential", std::bind(&Trait::set_potential, std::placeholders::_1, std::placeholders::_2)},
     {"random", [](Trait* trait, const Node& node){return node.get_value(trait->flags.random);}}
@@ -343,7 +344,6 @@ bool Trait::set_opinion_modifer(const Node &node, const Opinon::From from)
         return node.get_value(this->opinion.spouse_opinion);
         break;
     
-    
     case Opinon::From::SEX_APPEAL :
         return node.get_value(this->opinion.sex_appeal_opinion);;
         break;
@@ -392,6 +392,10 @@ bool Trait::set_opinion_modifer(const Node &node, const Opinon::From from)
         return node.get_value(this->opinion.unreformed_tribal_opinion);
         break;
 
+    case Opinon::From::DYNAMIC :
+        return this->set_opinion_modifer_dynamic(node);
+        break;
+
     default:
         return false;
         break;
@@ -427,6 +431,18 @@ bool Trait::set_command_modifier(const Node &node)
     return is_success;
 }
 
+bool Trait::set_opinion_modifer_dynamic(const Node & node)
+{
+    int val;
+    if (!node.get_value(val))
+        return false;
+
+    std::string from_name = node.name.substr(0, node.name.size() - std::string_view("_opinion").size());
+
+    if (Religion* religion = Religion::get_religion_by_name(from_name))
+        this->opinion.religion_opinions[religion] = val;
+}
+
 bool Trait::set_education(const Node& node)
 {
     if (node.value == "yes")
@@ -443,6 +459,7 @@ bool Trait::set_education(const Node& node)
 }
 
 const std::string* get_localisation(const std::string& key) {static std::string dummy_val(""); return &dummy_val; /*Dummy function*/}
+
 bool Trait::set_greeting_adjective(const Node& node, const Greeting::Target target, const Greeting::Type type)
 {
     const std::string** value_ptr = nullptr;

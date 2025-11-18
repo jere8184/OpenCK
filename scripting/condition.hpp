@@ -39,6 +39,74 @@ namespace openck::simulator
 namespace openck::scripting
 {
 
+
+struct Scope;
+
+struct Target 
+{
+    enum class Type
+    {
+        BOOL,
+        CHARECTER,
+        RELIGION,
+        RELIGION_GROUP,
+        ENUM_SIZE
+    };
+
+    enum class DataLocation
+    {
+        NOT_SET,
+        STATIC,
+        FROM,
+        FROMFROM,
+        ROOT
+    };
+
+    struct has_portrait_property 
+    {
+        int layer;
+        int index;
+    };
+
+    struct holding_diff 
+    {
+        bool first_count_vassals;
+    };
+
+    union Clause
+    {
+        has_portrait_property has_portrait_property;
+        holding_diff holding_diff;
+    };
+
+    union Data //if data location not static, this has to be populated at run time
+    {
+        bool bool_val;
+        simulator::Charecter* charecter;
+        simulator::Religion* religion;
+        simulator::ReligionGroup* religion_group;
+        Scope* dynamic_data;
+        Clause clause;
+    };
+    
+    union Function
+    {
+        simulator::Charecter* (* charecter)(const Target& target);
+        simulator::Religion* (* religion)(const Target& target);
+        simulator::ReligionGroup* (* religion_group)(const Target& target);
+    };
+
+    using TypeBitSet = std::bitset<(size_t)Type::ENUM_SIZE>;
+    using ComparisonOperator = bool(std::partial_ordering);
+
+
+    DataLocation data_location;
+    Type type;
+    Data data;
+    Function function;
+    ComparisonOperator* comparison_function;
+};
+
 struct Scope
 {
     enum class Type
@@ -77,10 +145,20 @@ struct Scope
     Data data;
     Scope* parent_scope = nullptr;
 
-    virtual bool adventurer() const { assert(false); return false; };
-    virtual int age() const { assert(false); return 0; };
-    virtual simulator::ReligionGroup* religion_group() const { assert(false); return 0; }
-    virtual bool controls_religion() const { assert(false); return false; }
+    //if i keep going down this road we will have 700 virt functions for each condition.
+    
+    //instead when Condition has its operator called it switches on Scope::Type, union of scopes to get correct subclass (n > 10)
+    //calls correct subclass method based on large condition switch, which you pass the target to.
+    //
+    virtual bool adventurer(const Target&) const { assert(false); return false; };
+    virtual bool age(const Target&) const { assert(false); return false; };
+    virtual bool adventurer(const Target&) const { assert(false); return false; };
+    virtual bool character(const Target&) const { assert(false); return false; };
+    virtual bool claimed_by(const Target&) const { assert(false); return false; };
+    virtual bool religion_group(const Target&) const { assert(false); return false; }
+    virtual bool controls_religion(const Target&) const { assert(false); return false; }
+    virtual bool de_jure_liege(const Target&) const { assert(false); return false; }
+
 };
 
 
@@ -91,57 +169,10 @@ struct CharacterScope : Scope
         this->type = Type::CHARACTER;
     }
 
-    virtual int age() const override;
+    //virtual int age() const override;
 
     simulator::Charecter* charecter;
 }; 
-
-using ComparisonOperator = bool(std::partial_ordering);
-
-struct Target 
-{
-    enum class Type
-    {
-        BOOL,
-        CHARECTER,
-        RELIGION,
-        RELIGION_GROUP,
-        ENUM_SIZE
-    };
-
-    enum class DataLocation
-    {
-        NOT_SET,
-        STATIC,
-        FROM,
-        FROMFROM,
-        ROOT
-    };
-
-    union Data //if data location not static, this has to be populated at run time
-    {
-        bool bool_val;
-        simulator::Charecter* charecter;
-        simulator::Religion* religion;
-        simulator::ReligionGroup* religion_group;
-    };
-    
-    union Function
-    {
-        simulator::Charecter* (* charecter)(const Target& target);
-        simulator::Religion* (* religion)(const Target& target);
-        simulator::ReligionGroup* (* religion_group)(const Target& target);
-    };
-
-    using TypeBitSet = std::bitset<(size_t)Type::ENUM_SIZE>;
-
-    DataLocation data_location;
-    Type type;
-    Data data;
-    Function function;
-    ComparisonOperator* comparison_function;
-};
-
 
 struct ICondition
 {
@@ -187,6 +218,9 @@ struct Condition : ICondition
 
     bool religion_group(const Scope& scope);
     bool controls_religion(const Scope& scope);
+    bool charecter(const Scope & scope);
+    bool claimed_by(const Scope & scope);
+    bool de_jure_liege(const Scope & scope);
 };
 
 
@@ -199,6 +233,7 @@ struct ConditionBlock : ICondition
     };
 
     Type block_type;
+    std::vector<std::unique_ptr<ICondition>> conditions;
 
     ConditionBlock(parser::Node condition_block_node, bool& is_success);
 
@@ -206,7 +241,6 @@ struct ConditionBlock : ICondition
 
     ConditionBlock(ConditionBlock&&) = default;
 
-    std::vector<std::unique_ptr<ICondition>> conditions;
     
     bool run_not_block(const Scope& scope) const;
 

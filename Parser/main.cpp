@@ -2,6 +2,11 @@
 #include "prdx_parser.h"
 #include "simulator/traits.hpp"
 
+
+void test_conditional()
+{    
+}
+
 int main()
 {
     std::vector<openck::parser::Node> nodes;

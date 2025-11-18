@@ -66,7 +66,7 @@ struct Node
     {
         try
         {
-            ret = std::stoi(value);
+            ret = std::stod(value);
         }
         catch (const std::exception& e)
         {

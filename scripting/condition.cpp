@@ -19,16 +19,34 @@ namespace openck::scripting
 
 bool Condition::religion_group(const Scope& scope)
 {
-    simulator::ReligionGroup* scope_religion_group = scope.religion_group();
-    simulator::ReligionGroup* target_religion_group = this->target.data.religion_group;
-    return this->target.comparison_function(scope_religion_group <=> target_religion_group);
+    return scope.religion_group(this->target);
+    //return this->target.comparison_function(scope.get_religion_group() <=> this->target.data.religion_group);
 }
 
 bool Condition::controls_religion(const Scope& scope)
 {
-    bool is_head = scope.controls_religion();
-    return this->target.comparison_function(is_head <=> this->target.data.bool_val);
+    return scope.controls_religion(this->target);
+    //return this->target.comparison_function(scope.controls_religion() <=> this->target.data.bool_val);
 }
+
+bool Condition::charecter(const Scope& scope)
+{
+    return scope.character(this->target);
+    //return this->target.comparison_function(scope.get_charecter() <=> this->target.data.charecter);
+}
+
+bool Condition::claimed_by(const Scope& scope)
+{
+    return scope.claimed_by(this->target);
+    //return scope.get_title().claimants().contains(this->target.data.charecter);
+}
+
+bool Condition::de_jure_liege(const Scope& scope)
+{
+    return scope.de_jure_liege(this->target);
+}
+
+
 
 
 std::unordered_map<std::string, Target::DataLocation> dynamic_data_location_map = 
@@ -177,11 +195,6 @@ ICondition::ICondition(const std::string& name, Type type) :
     type(type)
 {
 
-}
-
-int CharacterScope::age() const
-{
-    return charecter->age;
 }
 
 }
