@@ -42,23 +42,31 @@ concept Numeric = std::integral<T> || std::floating_point<T>;
 
 struct Node
 {
-    enum struct ValueType
+    enum struct Type
     {
         NOT_SET,
         STRING,
         BLOCK
     };
 
+    enum struct Operator
+    {
+        NOT_SET,
+        EQUALS,
+        LESS
+    };
+
     Node* parent = nullptr;
     std::string name = "";
     std::string value = "";
-    std::unordered_map<std::string, std::pair<Node, Token::Type>> children_map = {};
-    ValueType value_type = ValueType::NOT_SET;
+    std::unordered_map<std::string, Node> children_map = {};
+    Type type = Type::NOT_SET;
+    Operator op = Operator::NOT_SET;
 
-    void AddChild(Node& child_node, Token::Type assignment_operator)
+    void AddChild(Node& child_node)
     {
         child_node.parent = this;
-        children_map[child_node.name] = {child_node, assignment_operator};
+        children_map[child_node.name] = child_node;
     }
     
     template<Numeric Val>

@@ -189,9 +189,9 @@ struct Trait
     Greeting adjectives; 
     Opinon opinion;
     Buffs buffs;
+    
     scripting::CharacterScope& charecter_scope;
-
-    std::optional<openck::scripting::ConditionBlock> condition_block;
+    std::optional<openck::scripting::ConditionBlock<scripting::CharacterScope>> condition_block;
     
     Trait(const Node& trait_node, scripting::CharacterScope& charecter_scope);
     Trait(const std::string& _name, scripting::CharacterScope& charecter_scope) : name(_name), charecter_scope(charecter_scope) {};

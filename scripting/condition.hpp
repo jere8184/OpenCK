@@ -39,29 +39,10 @@ namespace openck::simulator
 namespace openck::scripting
 {
 
-
 struct Scope;
 
 struct Target 
 {
-    enum class Type
-    {
-        BOOL,
-        CHARECTER,
-        RELIGION,
-        RELIGION_GROUP,
-        ENUM_SIZE
-    };
-
-    enum class DataLocation
-    {
-        NOT_SET,
-        STATIC,
-        FROM,
-        FROMFROM,
-        ROOT
-    };
-
     struct has_portrait_property 
     {
         int layer;
@@ -88,24 +69,45 @@ struct Target
         Scope* dynamic_data;
         Clause clause;
     };
-    
-    union Function
+
+    enum class Type
     {
-        simulator::Charecter* (* charecter)(const Target& target);
-        simulator::Religion* (* religion)(const Target& target);
-        simulator::ReligionGroup* (* religion_group)(const Target& target);
+        NOT_SET,
+        BOOL,
+        CHARECTER,
+        RELIGION,
+        RELIGION_GROUP
     };
 
-    using TypeBitSet = std::bitset<(size_t)Type::ENUM_SIZE>;
+    enum class DataLocation
+    {
+        NOT_SET,
+        STATIC,
+        FROM,
+        FROMFROM,
+        ROOT
+    };
+
+    Target(const parser::Node& node, bool& is_success);
+
+    bool read_static_data(const openck::parser::Node& node);
+
     using ComparisonOperator = bool(std::partial_ordering);
-
-
+    
+    ComparisonOperator* comparison_function;
     DataLocation data_location;
     Type type;
     Data data;
-    Function function;
-    ComparisonOperator* comparison_function;
 };
+
+static std::unordered_map<std::string, Target::DataLocation> dynamic_data_location_map = 
+{
+    {"FROM", Target::DataLocation::FROM},
+    {"FROMFROM", Target::DataLocation::FROMFROM},
+    {"ROOT", Target::DataLocation::ROOT}
+};
+
+bool read_static_data(Target& target, const openck::parser::Node& node);
 
 struct Scope
 {
@@ -124,56 +126,54 @@ struct Scope
         ENUM_SIZE
     };
 
-
-    union Data
-    {
-        simulator::Charecter* charecter;
-        simulator::Title* title;
-        simulator::Province* province;
-        simulator::War* war;
-        simulator::Flank* flank;
-        simulator::Unit* unit;
-        simulator::Religion* religion;
-        simulator::Culture* culture;
-        simulator::Society* society;
-        simulator::Artifact* artifact;
-    };
-
-    using TypeBitSet = std::bitset<(size_t)Type::ENUM_SIZE>;
-
     Type type;
-    Data data;
     Scope* parent_scope = nullptr;
 
-    //if i keep going down this road we will have 700 virt functions for each condition.
+    //if i keep going down this road we will have 700 virt functions coresponding to each condition.
     
     //instead when Condition has its operator called it switches on Scope::Type, union of scopes to get correct subclass (n > 10)
     //calls correct subclass method based on large condition switch, which you pass the target to.
     //
-    virtual bool adventurer(const Target&) const { assert(false); return false; };
-    virtual bool age(const Target&) const { assert(false); return false; };
-    virtual bool adventurer(const Target&) const { assert(false); return false; };
-    virtual bool character(const Target&) const { assert(false); return false; };
-    virtual bool claimed_by(const Target&) const { assert(false); return false; };
-    virtual bool religion_group(const Target&) const { assert(false); return false; }
-    virtual bool controls_religion(const Target&) const { assert(false); return false; }
-    virtual bool de_jure_liege(const Target&) const { assert(false); return false; }
+    /*bool adventurer(const Target&) const { assert(false); return false; };
+    bool age(const Target&) const { assert(false); return false; };
+    bool adventurer(const Target&) const { assert(false); return false; };
+    bool character(const Target&) const { assert(false); return false; };
+    bool claimed_by(const Target&) const { assert(false); return false; };
+    bool religion_group(const Target&) const { assert(false); return false; }
+    bool controls_religion(const Target&) const { assert(false); return false; }
+    bool de_jure_liege(const Target&) const { assert(false); return false; }*/
 
 };
 
 
-struct CharacterScope : Scope
+struct CharacterScope : public Scope
 {
+    enum struct ConditionName
+    {
+        NOT_SET,
+        RELIGION_GROUP,
+        CONTROLS_RELIGION,
+    };
+
+
     CharacterScope()
     {
-        this->type = Type::CHARACTER;
+        this->type = Scope::Type::CHARACTER;
     }
 
-    //virtual int age() const override;
+    static ConditionName get_condition_name(const parser::Node& node);
 
-    simulator::Charecter* charecter;
+    //virtual int age() const override;
+    bool controls_religion(const Target& target) const;
+    bool religion_group(const Target& target) const;
+
+    bool operator()(const Target& target, const ConditionName& condition) const;
+
+    const simulator::Charecter* charecter;
 }; 
 
+
+template<typename ScopeType> //this means scope cannot change within a condition block, I think this is true
 struct ICondition
 {
     enum struct Type
@@ -182,136 +182,112 @@ struct ICondition
         BLOCK
     };
 
-    ICondition(const std::string& name, Type type);
+
+    ICondition::ICondition(const std::string& name, Type type) :
+        name(name),
+        type(type)
+    {
+
+    }
     
     virtual ~ICondition() = default;
 
     std::string name;
     Type type;
     
-    virtual bool operator()(const Scope& scope) const = 0;
-
+    virtual bool operator()(const ScopeType& scope) const = 0;
 };
 
 
-struct Condition : ICondition
+template<typename ScopeType>
+struct Condition : ICondition<ScopeType>
 {
+    using IConditionType = ICondition<ScopeType>;
 
-    using Routine = bool (Condition::*)(const Scope& scope);
-    
-    using RoutineGetter = Routine* (Condition&);
-    
-    Condition(parser::Node node, bool& is_success);
+    Condition::Condition(parser::Node node, bool& is_success) :
+        IConditionType(node.name, ICondition::Type::CONDITION), target(node, is_success), condition_name(ScopeType::get_condition_name(node))
+    {
+
+    }
 
     ~Condition() = default;
-    
-    static std::unordered_map<std::string, RoutineGetter*> routine_getters;
 
-    Target target;
 
-    Routine* routine;
-    
     //looping over list of ICondition* -> calling virtual bool operator()(); -> function pointer call -> virtual function call -> function pointer call = current approch
                                             //vs.
     //looping over list of ICondition -> switch statment vs static calling bool operator()(); -> switch-statement + function call -> switch-statement + function call -> switch-statment + function call
-    virtual bool operator()(const Scope& scope) const override {return false;};
 
-    bool religion_group(const Scope& scope);
-    bool controls_religion(const Scope& scope);
-    bool charecter(const Scope & scope);
-    bool claimed_by(const Scope & scope);
-    bool de_jure_liege(const Scope & scope);
+    bool operator()(const ScopeType& scope) const
+    {
+        return scope(this->target, condition_name);
+    }
+
+    typename ScopeType::ConditionName condition_name;
+    
+    Target target;
 };
 
-
-struct ConditionBlock : ICondition
+template<typename ScopeType>
+struct ConditionBlock : ICondition<ScopeType>
 {
     enum struct Type
     {
         NOT_SET,
-        NOT
+        NOT,
+        OR,
+        AND
     };
+    
+    using ConditionBlockType = ConditionBlock<ScopeType>;
+    using IConditionType = ICondition<ScopeType>;
+    using ConditionType = Condition<ScopeType>;
 
     Type block_type;
-    std::vector<std::unique_ptr<ICondition>> conditions;
+    std::vector<std::unique_ptr<IConditionType>> conditions;
 
-    ConditionBlock(parser::Node condition_block_node, bool& is_success);
+    ConditionBlock::ConditionBlock(parser::Node node, bool& is_success) : 
+        IConditionType(node.name, ICondition::Type::BLOCK)
+    {
+        using namespace openck::parser;
+
+        for (const auto& [child_name, child_node] : node.children_map)
+        {        
+            switch (child_node.type)
+            {
+                case Node::Type::STRING :
+                {
+                    std::unique_ptr<IConditionType> condition = std::make_unique<ConditionType>(child_node, is_success);
+                    if (is_success == false)
+                        return;
+                    
+                    this->conditions.emplace_back(std::move(condition));
+                    break;
+                }
+                case Node::Type::BLOCK :
+                {
+                    std::unique_ptr<IConditionType> condition_block = std::make_unique<ConditionBlockType>(child_node, is_success);
+                    if (is_success == false)
+                        return;
+                    
+                    this->conditions.emplace_back(std::move(condition_block));
+                    break;
+                }
+                default:
+                    is_success = false;
+                    return;
+                    break;
+            }
+        }
+
+        is_success = true;
+        return;
+    }
 
     ~ConditionBlock() = default;
 
     ConditionBlock(ConditionBlock&&) = default;
 
-    
-    bool run_not_block(const Scope& scope) const;
-
-    virtual bool operator()(const Scope& scope) const override;
+    virtual bool operator()(const ScopeType& scope) const override {};
 };
 
-
-/*
-    template <typename T, typename Scope, typename Target = TARGET_NOT_SET, typename Container = CONTAINER_NOT_SET>
-    struct ConditionImpl : Condition
-    {
-        enum class Operator
-        {
-            NOT_SET
-            EQUAL,
-            NOT_EQUAL,
-            CONTAIN
-        };
-
-        Condition(T (Scope::_scope_getter*)() = nullptr, T (Target::_target_getter*)() = nullptr, Container<T> (Scope::_scope_container_getter*)() = nullptr) :
-            scope_getter(_scope_getter),
-            target_getter(_target_getter),
-            scope_container_getter(_scope_container_getter)
-        {}
-
-
-        std::string name;
-
-        Scope& enclosing_scope;
-
-        T (Scope::scope_getter*)() = nullptr;
-        T (Target::target_getter*)() = nullptr;
-        std::set<T> (Scope::scope_container_getter*)() = nullptr;
-
-        bool operator()(Scope& scope, Target& target, Operator op)
-        {
-            case (op)
-            {
-                switch (Operator::EQUALS) :
-                    return scope_getter(scope) == target_getter(target);
-                    break;
-
-                switch (Operator::NOT_EQUAL)
-                    return scope_getter(scope) != target_getter(target);
-                    break;
-
-                switch (Operator::CONTAIN)
-                    return scope_set_getter(target_getter(target))
-            }
-        }
-
-        bool operator()(Scope& scope, T val, Operator op)
-        {
-            case (op)
-            {
-                switch (Operator::EQUALS) :
-                    return scope_getter(scope) == val;
-                    break;
-
-                switch (Operator::NOT_EQUAL)
-                    return scope_getter(scope) != val;
-                    break;
-
-                switch (Operator::CONTAIN)
-                    return std::ranges::contains(scope_container_getter, val);
-                    break;
-            }
-        }
-    };
-
-    auto controls_religion = [](auto& scope, bool b) -> bool { return scope.controls_religion() == b; };
-
-    auto controlled_by = [](auto& scope, auto& target) -> bool { return scope.controlled_by() == target.get_charecter(); };*/
 }

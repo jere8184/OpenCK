@@ -13,9 +13,8 @@ bool Trait::init(const parser::Node& trait_node)
 {
     this->name = trait_node.name;
 
-    for (const auto& [child_name, child_name_and_operator] : trait_node.children_map)
+    for (const auto& [child_name, child_node] : trait_node.children_map)
     {
-        auto [child_node, op] = child_name_and_operator;
         if (trait_field_setters.contains(child_name))
         {
             if (trait_field_setters.at(child_name)(this, child_node))
@@ -48,7 +47,7 @@ bool Trait::init(const parser::Node& trait_node)
 bool Trait::set_potential(const Node &node)
 {
     bool is_success = true;
-    scripting::ConditionBlock block = scripting::ConditionBlock(node, is_success);
+    scripting::ConditionBlock<scripting::CharacterScope> block = scripting::ConditionBlock<scripting::CharacterScope>(node, is_success);
     
     if (is_success)
     {
@@ -418,10 +417,8 @@ bool Trait::set_opposites(const Node &node)
 bool Trait::set_command_modifier(const Node &node)
 {
     bool is_success = true;
-    for (const auto& [child_name, child_node_and_operator] : node.children_map)
+    for (const auto& [child_name, child_node] : node.children_map)
     {
-        auto [child_node, op] = child_node_and_operator;
-
         std::string setter_key = ("command_modifier.") + child_name;
         if (trait_field_setters.contains(setter_key))
             trait_field_setters.at(setter_key)(this, child_node);
