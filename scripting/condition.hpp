@@ -27,12 +27,12 @@ namespace openck::simulator
     struct Province;
     struct War;
     struct Flank;
-    struct Unit;
+    struct UnitType;
+    struct Trait;
     struct Religion;
     struct Culture;
     struct Society;
     struct Artifact;
-    
     struct ReligionGroup;
 }
 
@@ -63,10 +63,13 @@ struct Target
     union Data //if data location not static, this has to be populated at run time
     {
         bool bool_val;
-        simulator::Charecter* charecter;
-        simulator::Religion* religion;
-        simulator::ReligionGroup* religion_group;
-        Scope* dynamic_data;
+        const simulator::Charecter* charecter;
+        const simulator::Religion* religion;
+        const simulator::ReligionGroup* religion_group;
+        const simulator::Title* title;
+        const simulator::Trait* trait;
+        const Scope* dynamic_data;
+        int id;
         Clause clause;
     };
 
@@ -76,7 +79,8 @@ struct Target
         BOOL,
         CHARECTER,
         RELIGION,
-        RELIGION_GROUP
+        RELIGION_GROUP,
+        Trait
     };
 
     enum class DataLocation
@@ -166,6 +170,8 @@ struct CharacterScope : public Scope
     //virtual int age() const override;
     bool controls_religion(const Target& target) const;
     bool religion_group(const Target& target) const;
+    bool has_claim(const Target& target) const;
+    bool has_combat(const Target& target) const;
 
     bool operator()(const Target& target, const ConditionName& condition) const;
 
@@ -183,7 +189,7 @@ struct ICondition
     };
 
 
-    ICondition::ICondition(const std::string& name, Type type) :
+    ICondition(const std::string& name, Type type) :
         name(name),
         type(type)
     {
@@ -204,8 +210,8 @@ struct Condition : ICondition<ScopeType>
 {
     using IConditionType = ICondition<ScopeType>;
 
-    Condition::Condition(parser::Node node, bool& is_success) :
-        IConditionType(node.name, ICondition::Type::CONDITION), target(node, is_success), condition_name(ScopeType::get_condition_name(node))
+    Condition(parser::Node node, bool& is_success) :
+        IConditionType(node.name, IConditionType::Type::CONDITION), target(node, is_success), condition_name(ScopeType::get_condition_name(node))
     {
 
     }
@@ -245,8 +251,8 @@ struct ConditionBlock : ICondition<ScopeType>
     Type block_type;
     std::vector<std::unique_ptr<IConditionType>> conditions;
 
-    ConditionBlock::ConditionBlock(parser::Node node, bool& is_success) : 
-        IConditionType(node.name, ICondition::Type::BLOCK)
+    ConditionBlock(parser::Node node, bool& is_success) : 
+        IConditionType(node.name, IConditionType::Type::BLOCK)
     {
         using namespace openck::parser;
 
@@ -287,7 +293,7 @@ struct ConditionBlock : ICondition<ScopeType>
 
     ConditionBlock(ConditionBlock&&) = default;
 
-    virtual bool operator()(const ScopeType& scope) const override {};
+    virtual bool operator()(const ScopeType& scope) const override {return false;};
 };
 
 }

@@ -4,6 +4,7 @@
 #include "parser/prdx_parser.h"
 
 #include "simulator/charecter.hpp"
+#include "simulator/traits.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -57,7 +58,17 @@ bool CharacterScope::controls_religion(const Target &target) const
 
 bool CharacterScope::religion_group(const Target & target) const
 {
-    //return charecter->get_religion()->group == target.data.religion_group;
+    return charecter->get_religion()->group == target.data.religion_group;
+}
+
+bool CharacterScope::has_claim(const Target & target) const
+{
+    return charecter->all_claims.contains(target.data.title);
+}
+
+bool CharacterScope::has_combat(const Target & target) const
+{
+    return false;
 }
 
 Target::Target(const parser::Node & node, bool& is_success)
@@ -79,27 +90,33 @@ Target::Target(const parser::Node & node, bool& is_success)
 
 bool Target::read_static_data(const openck::parser::Node& node)
 {
+
+    //one approch is for each condition, we have a bit set of valid target values and use this to chose what data to attempt to load.
     if (node.get_value(this->data.bool_val))
     {
         this->type = Target::Type::BOOL;
-        return true;
     }
     else if (simulator::ReligionGroup* religion_group = simulator::ReligionGroup::get_religion_group_by_name(node.value))
     {
         this->type = Target::Type::RELIGION_GROUP;
         this->data.religion_group = religion_group;
-        return true;
     }
     else if (simulator::Religion* religion = simulator::Religion::get_religion_by_name(node.value))
     {
         this->type = Target::Type::RELIGION;
         this->data.religion = religion;
-        return true;
+    }
+    else if (const simulator::Trait* trait = simulator::Trait::get_trait_by_name(node.value))
+    {
+        this->type = Target::Type::Trait;
+        this->data.trait = trait;
     }
     else
     {
         return false;
     }
+
+    return true;
     
     //if (target.type_bitset.test((size_t)Target::Type::RELIGION_GROUP))
     {
@@ -109,7 +126,6 @@ bool Target::read_static_data(const openck::parser::Node& node)
             target.type = Target::Type::RELIGION_GROUP;
             return true;*/
     }
-    return false;
 }
 
 }

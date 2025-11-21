@@ -13,9 +13,10 @@ namespace openck::simulator
 
 struct Title;
 
-class Province
+struct Province
 {
-    int id;
+    using Id = int;
+    Id id;
     Title* county;
     std::set<Holding*> holdings;
     Religion* religion;

@@ -125,6 +125,7 @@ Node::Operator token_type_to_node_operator(Token::Type type)
         break;
     
     default:
+        return Node::Operator::NOT_SET;
         break;
     }
 }

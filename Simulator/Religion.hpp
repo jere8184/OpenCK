@@ -26,8 +26,8 @@ namespace openck::simulator
         std::string name;
         float moral_authority;
 
-        static Religion* get_religion_by_name(const std::string& name) {return religion.contains(name) ? religion.at(name) : nullptr;}
-        static std::unordered_map<std::string, Religion*> religion;
+        static Religion* get_religion_by_name(const std::string& name) {return religions.contains(name) ? religions.at(name) : nullptr;}
+        static std::unordered_map<std::string, Religion*> religions;
         Charecter* get_head(){return nullptr;};
     };
 }

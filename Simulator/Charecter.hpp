@@ -14,6 +14,9 @@
 
 namespace openck::simulator
 {
+
+    struct Army;
+
     struct Abilities  
     {
         bool can_change_religion = true;
@@ -77,9 +80,15 @@ namespace openck::simulator
         Attributes attributes = {};
         bool ai = false;
 
-        bool can_copy_personality_trait_from(Charecter* someone_elese);
-        bool can_grant_title(Charecter* someone_else);
-        Religion* get_religion() {return nullptr;};
+        std::set<const Title*> strong_claims;
+        std::set<const Title*> weak_claims;
+        std::set<const Title*> all_claims;
+
+        std::vector<Army*> controlled_armies;
+
+        bool can_copy_personality_trait_from(Charecter* someone_elese) const;
+        bool can_grant_title(Charecter* someone_else) const;
+        Religion* get_religion() const {return nullptr;};
         bool controls_religion() const {return false;} 
         
         // house

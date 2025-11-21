@@ -15,6 +15,10 @@
 namespace openck::simulator
 { 
 
+    struct Phase;
+    struct UnitType;
+    struct Terraine;
+
 using parser::Node;
 
 struct Trait
@@ -48,7 +52,7 @@ struct Trait
         bool childhood = false;
         bool lifestyle = false;
         bool personality = false;
-        std::vector<Trait*> opposites = {}; //List of traits that cannot be held simultaneously with this trait 
+        std::vector<const Trait*> opposites = {}; //List of traits that cannot be held simultaneously with this trait 
         bool prevent_decadence = false;
         bool priest = false;
         bool pilgrimage = false;
@@ -153,9 +157,6 @@ struct Trait
    };
 
 
-    struct Phase;
-    struct UnitType;
-    struct Terraine;
     struct CommandModdifiers
     {
         float random = 0;
@@ -174,9 +175,9 @@ struct Trait
         float narrow_flank = 0;
         float winter_combat = 0;
 
-        std::unordered_map<std::string, UnitType*> unit_specific_buffs;
-        std::unordered_map<std::string, Terraine*> terraine_specific_buffs;
-        std::unordered_map<std::string, Phase*> phase_specific_buffs;
+        std::unordered_map<const UnitType*, float> unit_specific_buffs;
+        std::unordered_map<const Terraine*, float> terraine_specific_buffs;
+        std::unordered_map<const Phase*, float> phase_specific_buffs;
     };
 
     int id;
@@ -226,10 +227,10 @@ struct Trait
 
     bool set_opinion_modifer_dynamic(const Node& node);
 
-    const Trait* get_trait(const std::string& trait_name) {auto s = scripting::CharacterScope(); static Trait dummy_trait("dummy", s); return &dummy_trait;/*Dummy function*/ }
-
+    static const Trait* get_trait_by_name(const std::string& trait_name) { return Trait::traits.contains(trait_name) ? Trait::traits.at(trait_name) : nullptr; }
 
     static std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> trait_field_setters;
+    static std::unordered_map<std::string, Trait*> traits;
 };
 
 

@@ -8,5 +8,5 @@ namespace openck::simulator
     std::unordered_map<std::string, ReligionGroup*> ReligionGroup::religion_groups = {{"muslim", &muslim}};
 
     Religion jain;
-    std::unordered_map<std::string, Religion*> Religion::religion = {{"jain", &jain}};
+    std::unordered_map<std::string, Religion*> Religion::religions = {{"jain", &jain}};
 }

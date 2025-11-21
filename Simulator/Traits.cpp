@@ -1,5 +1,6 @@
 
 #include "traits.hpp"
+#include "army.hpp"
 
 #include <concepts>
 #include <functional>
@@ -165,16 +166,24 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"command_modifier.siege", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.siege); }},
     {"command_modifier.morale_offence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_offence); }},
     {"command_modifier.morale_defence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_defence); }},
+    {"command_modifier.cavalry", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.cavalry); }},
+
 
     {"potential", std::bind(&Trait::set_potential, std::placeholders::_1, std::placeholders::_2)},
     {"random", [](Trait* trait, const Node& node){return node.get_value(trait->flags.random);}}
 };
 
+std::unordered_map<std::string, Trait*> Trait::traits;
 
-Trait::Trait(const parser::Node& trait_node, scripting::CharacterScope& charecter_scope) : charecter_scope(charecter_scope)
+Trait::Trait(const parser::Node& trait_node, scripting::CharacterScope& charecter_scope) : charecter_scope(charecter_scope), name(trait_node.name)
 {
-    this->name = trait_node.name;
-    init(trait_node);
+    for (const UnitType& unit_type : unit_vector)
+    {
+        this->command_modifiers.unit_specific_buffs[&unit_type] = 0;
+    }
+
+    if (init(trait_node))
+        Trait::traits[this->name] = this; 
 }
 
 bool Trait::set_attribute(const Node& node)
@@ -405,9 +414,9 @@ bool Trait::set_opposites(const Node &node)
 {
     for (const std::string& child_name : node.children_map | std::views::keys)
     {
-        const Trait* opposite_trait = get_trait(child_name);
+        const Trait* opposite_trait = get_trait_by_name(child_name);
         if (opposite_trait)
-            this->flags.opposites.push_back(const_cast<Trait*>(opposite_trait));
+            this->flags.opposites.push_back(opposite_trait);
         else
             return false;
     }
@@ -421,9 +430,28 @@ bool Trait::set_command_modifier(const Node &node)
     {
         std::string setter_key = ("command_modifier.") + child_name;
         if (trait_field_setters.contains(setter_key))
+        {
             trait_field_setters.at(setter_key)(this, child_node);
+        }
+        else if(UnitType::unit_type_map.contains(child_name))
+        {
+            UnitType* unit = UnitType::unit_type_map.at(child_name);
+            float val;
+
+            if (child_node.get_value(val))
+            {
+                this->command_modifiers.unit_specific_buffs.at(unit) = val;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         else
+        {
             is_success = false;
+        }
     }
     return is_success;
 }
@@ -437,7 +465,14 @@ bool Trait::set_opinion_modifer_dynamic(const Node & node)
     std::string from_name = node.name.substr(0, node.name.size() - std::string_view("_opinion").size());
 
     if (Religion* religion = Religion::get_religion_by_name(from_name))
+    {
         this->opinion.religion_opinions[religion] = val;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool Trait::set_education(const Node& node)
