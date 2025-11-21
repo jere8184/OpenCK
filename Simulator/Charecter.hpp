@@ -11,6 +11,8 @@
 #include <set>
 #include <unordered_map>
 #include <array>
+#include <string>
+#include <vector>
 
 namespace openck::simulator
 {

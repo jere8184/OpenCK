@@ -10,6 +10,43 @@
 namespace openck::simulator 
 {
 
+std::unordered_map<std::string, Trait*> Trait::trait_map;
+
+std::vector<Trait> trait_vector;
+
+void allocate_traits(const std::vector<parser::Node>& trait_nodes)
+{
+    static int i = 0;
+    for (const parser::Node& trait_node : trait_nodes)
+    {
+        trait_vector.emplace_back(trait_node.name);
+    }   
+}
+
+void Trait::init_trait_map()
+{
+    for (Trait& trait : trait_vector)
+        Trait::trait_map[trait.name] = &trait;
+}
+
+bool generate_traits_from_nodes(const std::vector<parser::Node>& trait_nodes)
+{
+    bool no_failures = true;
+
+    for (const parser::Node& trait_node : trait_nodes)
+    {
+        if (Trait::trait_map.at(trait_node.name)->init(trait_node))
+            ;
+        else
+            no_failures = false;
+    }
+
+    return no_failures;
+}
+
+
+Trait::Trait(std::string name) : name(name) {};
+
 bool Trait::init(const parser::Node& trait_node)
 {
     this->name = trait_node.name;
@@ -30,10 +67,13 @@ bool Trait::init(const parser::Node& trait_node)
         }
         else
         {
-            int index;
-            if (index = child_name.find("_opinion"); (index != std::string::npos) && (child_name.size() == index + std::string("_opinion").size()))
+            int index = child_name.find("_opinion");
+            if ((index != std::string::npos) && (child_name.size() == index + std::string("_opinion").size()))
             {
-                return this->set_opinion_modifer(child_node, Opinon::From::DYNAMIC);
+                if (this->set_opinion_modifer(child_node, Opinon::From::DYNAMIC))
+                    continue;
+                else
+                    return false;
             }
             else
             {
@@ -172,19 +212,6 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"potential", std::bind(&Trait::set_potential, std::placeholders::_1, std::placeholders::_2)},
     {"random", [](Trait* trait, const Node& node){return node.get_value(trait->flags.random);}}
 };
-
-std::unordered_map<std::string, Trait*> Trait::traits;
-
-Trait::Trait(const parser::Node& trait_node, scripting::CharacterScope& charecter_scope) : charecter_scope(charecter_scope), name(trait_node.name)
-{
-    for (const UnitType& unit_type : unit_vector)
-    {
-        this->command_modifiers.unit_specific_buffs[&unit_type] = 0;
-    }
-
-    if (init(trait_node))
-        Trait::traits[this->name] = this; 
-}
 
 bool Trait::set_attribute(const Node& node)
 {
@@ -428,30 +455,20 @@ bool Trait::set_command_modifier(const Node &node)
     bool is_success = true;
     for (const auto& [child_name, child_node] : node.children_map)
     {
+
+        float val;
+        if (!child_node.get_value(val))
+            return false;
+
         std::string setter_key = ("command_modifier.") + child_name;
         if (trait_field_setters.contains(setter_key))
-        {
             trait_field_setters.at(setter_key)(this, child_node);
-        }
-        else if(UnitType::unit_type_map.contains(child_name))
-        {
-            UnitType* unit = UnitType::unit_type_map.at(child_name);
-            float val;
 
-            if (child_node.get_value(val))
-            {
-                this->command_modifiers.unit_specific_buffs.at(unit) = val;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        else if (UnitType* unit_type = UnitType::get_unit_type_by_name(child_name))
+            this->command_modifiers.unit_specific_buffs[unit_type] = val;
+
         else
-        {
             is_success = false;
-        }
     }
     return is_success;
 }
@@ -462,12 +479,17 @@ bool Trait::set_opinion_modifer_dynamic(const Node & node)
     if (!node.get_value(val))
         return false;
 
-    std::string from_name = node.name.substr(0, node.name.size() - std::string_view("_opinion").size());
+    std::string name = node.name.substr(0, node.name.size() - std::string_view("_opinion").size());
 
-    if (Religion* religion = Religion::get_religion_by_name(from_name))
+    if (Religion* religion = Religion::get_religion_by_name(name))
     {
         this->opinion.religion_opinions[religion] = val;
         return true;
+    }
+    else if (ReligionGroup* religionGroup = ReligionGroup::get_religion_group_by_name(name))
+    {
+        this->opinion.religion_group_opinions[religionGroup] = val;
+        return true; 
     }
     else
     {
@@ -598,24 +620,6 @@ bool Trait::set_greeting(const Node& node, const Greeting::Target target, const 
             break;
         }
     return value_ptr != nullptr && (*value_ptr = get_localisation(node.value)) != nullptr;
-}
-
-
-std::vector<Trait> generate_traits_from_nodes(const std::vector<parser::Node>& root_nodes)
-{
-    std::vector<Trait> traits;
-
-    //auto a = std::bind(set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-    scripting::CharacterScope charecter_scope;
-    charecter_scope.type = scripting::Scope::Type::CHARACTER;
-
-    for (const parser::Node& trait_node : root_nodes) //
-    {
-        Trait trait(trait_node, charecter_scope);
-        traits.push_back(std::move(trait));
-    }
-
-    return traits;
 }
 
 }

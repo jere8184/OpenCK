@@ -15,9 +15,9 @@
 namespace openck::simulator
 { 
 
-    struct Phase;
-    struct UnitType;
-    struct Terraine;
+struct Phase;
+struct UnitType;
+struct Terraine;
 
 using parser::Node;
 
@@ -147,6 +147,7 @@ struct Trait
         int tribal_opinion = 0;
         int unreformed_tribal_opinion = 0;
         std::unordered_map<Religion*, int> religion_opinions;
+        std::unordered_map<ReligionGroup*, int> religion_group_opinions;
     };
 
     struct Buffs
@@ -191,11 +192,18 @@ struct Trait
     Opinon opinion;
     Buffs buffs;
     
-    scripting::CharacterScope& charecter_scope;
     std::optional<openck::scripting::ConditionBlock<scripting::CharacterScope>> condition_block;
     
-    Trait(const Node& trait_node, scripting::CharacterScope& charecter_scope);
-    Trait(const std::string& _name, scripting::CharacterScope& charecter_scope) : name(_name), charecter_scope(charecter_scope) {};
+    //Trait(const Node& trait_node, bool& was_success);
+    //Trait& operator=(Trait&& trait);
+
+    
+    Trait(std::string name);
+
+    //Trait(Trait&&) = delete;
+    //Trait& operator=(Trait&&) = delete;
+    
+    static void init_trait_map();
 
     bool init(const parser::Node & trait_node);
 
@@ -227,15 +235,16 @@ struct Trait
 
     bool set_opinion_modifer_dynamic(const Node& node);
 
-    static const Trait* get_trait_by_name(const std::string& trait_name) { return Trait::traits.contains(trait_name) ? Trait::traits.at(trait_name) : nullptr; }
+    static const Trait* get_trait_by_name(const std::string& trait_name) { return Trait::trait_map.contains(trait_name) ? Trait::trait_map.at(trait_name) : nullptr; }
 
     static std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> trait_field_setters;
-    static std::unordered_map<std::string, Trait*> traits;
+    
+    static std::unordered_map<std::string, Trait*> trait_map;
 };
 
+extern std::vector<Trait> trait_vector;
 
-
-
-std::vector<Trait> generate_traits_from_nodes(const std::vector<Node>& root_nodes);
+bool generate_traits_from_nodes(const std::vector<Node>& root_nodes);
+void allocate_traits(const std::vector<parser::Node>& trait_nodes);
 
 } // namespace openck::simulator

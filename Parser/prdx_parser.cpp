@@ -240,13 +240,14 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
 }
 
 
-std::string read_file(const std::string& path)
+std::string read_file(const std::filesystem::path& path)
 {
     FILE* File;
-    fopen_s(&File, path.c_str(), "r");
+
+    fopen_s(&File, path.string().c_str(), "r");
     if (File == nullptr)
     {
-        std::print(stderr, "Could not open file \"{}\"", path); 
+        std::print(stderr, "Could not open file \"{}\"", path.string()); 
         return "";
     }
 
@@ -264,11 +265,11 @@ std::string read_file(const std::string& path)
 }
 
 
-bool generate_nodes(const std::string &path, std::vector<Node>& nodes)
+bool generate_nodes(const std::filesystem::path& path, std::vector<Node>& nodes)
 {
     bool res = true;
 
-    const std::string& file_contents = read_file(path.c_str());
+    const std::string& file_contents = read_file(path);
     
     std::vector<Token> tokens;
     tokenise_text(file_contents, tokens);

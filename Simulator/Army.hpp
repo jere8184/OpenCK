@@ -14,7 +14,8 @@ namespace openck::simulator
         //Id id;
         std::string name;
 
-        static const std::map<std::string, UnitType*> unit_type_map;
+        static UnitType* get_unit_type_by_name(const std::string name) { return UnitType::unit_types.contains(name) ? UnitType::unit_types.at(name) : nullptr;};
+        static std::map<std::string, UnitType*> unit_types;
     };
 
     extern std::vector<UnitType> unit_vector;

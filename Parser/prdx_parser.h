@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <concepts>
 #include <utility>
+#include <filesystem>
 
 namespace openck::parser 
 {
@@ -96,5 +97,5 @@ struct Node
     }
 };
 
-    bool generate_nodes(const std::string &path, std::vector<Node>& nodes);
+    bool generate_nodes(const std::filesystem::path &path, std::vector<Node>& nodes);
 };

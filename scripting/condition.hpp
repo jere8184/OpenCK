@@ -293,7 +293,18 @@ struct ConditionBlock : ICondition<ScopeType>
 
     ConditionBlock(ConditionBlock&&) = default;
 
+    ConditionBlock& operator=(ConditionBlock&& condition_block);
+
     virtual bool operator()(const ScopeType& scope) const override {return false;};
 };
+
+template <typename ScopeType>
+inline ConditionBlock<ScopeType> &ConditionBlock<ScopeType>::operator=(ConditionBlock &&condition_block)
+{
+    this->block_type = condition_block.block_type;
+    this->conditions = std::move(condition_block.conditions);
+    this->name = std::move(condition_block.name);
+    this->type = condition_block.type;
+}
 
 }
