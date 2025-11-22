@@ -1,6 +1,7 @@
 
 #include "traits.hpp"
 #include "army.hpp"
+#include "map.hpp"
 
 #include <concepts>
 #include <functional>
@@ -58,28 +59,21 @@ bool Trait::init(const parser::Node& trait_node)
             if (trait_field_setters.at(child_name)(this, child_node))
             {
                 continue;
-            }
+            } 
             else
             {
                 std::print(stderr, "Failed to set trait field: {} for trait: {}\n", child_name, this->name);
                 return false;
             }
         }
+        else if (DynamicFieldType type = this->get_dynamic_field_type(child_node); type != DynamicFieldType::NOT_SET)
+        {
+            this->set_dynamic_field(child_node, type);
+        }
         else
         {
-            int index = child_name.find("_opinion");
-            if ((index != std::string::npos) && (child_name.size() == index + std::string("_opinion").size()))
-            {
-                if (this->set_opinion_modifer(child_node, Opinon::From::DYNAMIC))
-                    continue;
-                else
-                    return false;
-            }
-            else
-            {
-                std::print(stderr, "Unknown trait field: {}\n", child_name);
-                return false;
-            }
+            std::print(stderr, "Unknown trait field: {}\n", child_name);
+            return false;
         }
     }
     return true;
@@ -168,6 +162,7 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"religious", [](Trait* trait, const Node& node){return node.get_value(trait->flags.religious);}},
     {"is_health", [](Trait* trait, const Node& node){return node.get_value(trait->flags.is_health);}},
     {"is_illness", [](Trait* trait, const Node& node){return node.get_value(trait->flags.is_illness);}},
+    {"is_symptom", [](Trait* trait, const Node& node){return node.get_value(trait->flags.is_symptom);}},
     {"is_epidemic", [](Trait* trait, const Node& node){return node.get_value(trait->flags.is_epidemic);}},
     {"inherit_chance", [](Trait* trait, const Node& node){return node.get_value(trait->flags.inherit_chance);}},
     {"succession_gfx", [](Trait* trait, const Node& node){return node.get_value(trait->flags.succession_gfx);}},
@@ -191,6 +186,10 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"vice", [](Trait* trait, const Node& node){return node.get_value(trait->flags.vice);}},
     {"virtue", [](Trait* trait, const Node& node){return node.get_value(trait->flags.virtue);}},
     {"leader", [](Trait* trait, const Node& node){return node.get_value(trait->flags.leader);}},
+    {"cached", [](Trait* trait, const Node& node){return node.get_value(trait->flags.cached);}},
+    {"blinding", [](Trait* trait, const Node& node){return node.get_value(trait->flags.blinding);}},
+    {"rebel_inherited", [](Trait* trait, const Node& node){return node.get_value(trait->flags.rebel_inherited);}},
+
     {"monthly_character_piety", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.monthly_character_piety);}},
     {"monthly_character_prestige", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.monthly_character_prestige);}},
     {"global_tax_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.global_tax_modifier);}},
@@ -207,7 +206,7 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"command_modifier.morale_offence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_offence); }},
     {"command_modifier.morale_defence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_defence); }},
     {"command_modifier.cavalry", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.cavalry); }},
-
+    {"command_modifier.religious_enemy", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.religious_enemy);}},
 
     {"potential", std::bind(&Trait::set_potential, std::placeholders::_1, std::placeholders::_2)},
     {"random", [](Trait* trait, const Node& node){return node.get_value(trait->flags.random);}}
@@ -264,6 +263,29 @@ bool Trait::set_attribute_modifer(const Node& node, const AttributesType attribu
     }
     return true;
 }
+
+Trait::DynamicFieldType Trait::get_dynamic_field_type(const Node &node)
+{
+    int index = node.name.find("_opinion");
+    if ((index != std::string::npos) && (node.name.size() == index + std::string("_opinion").size()))
+    {
+        return DynamicFieldType::OPINION;
+    }
+
+    index = node.name.find("tolerates_");
+    if (index == 0)
+    {
+        return DynamicFieldType::TOLERANCE;
+    }
+
+    return DynamicFieldType::NOT_SET;
+}
+
+
+        /*if (this->set_opinion_modifer(child_node, Opinon::From::DYNAMIC))
+            continue;
+        else
+            return false;*/
 
 bool Trait::set_stat_modifer(const Node &node, const StatType stat_type)
 {
@@ -457,15 +479,25 @@ bool Trait::set_command_modifier(const Node &node)
     {
 
         float val;
-        if (!child_node.get_value(val))
+
+        if (child_name != "terrain" && !child_node.get_value(val))
             return false;
+        
 
         std::string setter_key = ("command_modifier.") + child_name;
         if (trait_field_setters.contains(setter_key))
+        {
             trait_field_setters.at(setter_key)(this, child_node);
-
+        }
         else if (UnitType* unit_type = UnitType::get_unit_type_by_name(child_name))
+        {
             this->command_modifiers.unit_specific_buffs[unit_type] = val;
+        }
+        else if(child_name == "terrain")
+        {
+            Terrain* terrain = Terrain::get_terrain_by_name(child_node.value);
+            this->command_modifiers.terraine_specific_buffs.insert(terrain);
+        }
 
         else
             is_success = false;
@@ -620,6 +652,34 @@ bool Trait::set_greeting(const Node& node, const Greeting::Target target, const 
             break;
         }
     return value_ptr != nullptr && (*value_ptr = get_localisation(node.value)) != nullptr;
+}
+
+bool Trait::set_tolerance(const Node& node)
+{
+    if(ReligionGroup* religion_group = ReligionGroup::get_religion_group_by_name(node.name.substr(std::string_view("tolerates_").size())))
+    {
+        tolerated_religion_groups.insert(religion_group);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Trait::set_dynamic_field(const Node& node, DynamicFieldType type)
+{
+    switch (type)
+    {
+    case DynamicFieldType::OPINION :
+        return this->set_opinion_modifer(node, Opinon::From::DYNAMIC);
+        break;
+    case DynamicFieldType::TOLERANCE :
+        return this->set_tolerance(node);
+    
+    default:
+        break;
+    }
 }
 
 }
