@@ -416,12 +416,13 @@ bool Trait::set_command_modifier(const Node &node)
         }
         else if(child_node.name == "terrain")
         {
-            Terrain* terrain = Terrain::get_terrain_by_name(child_node.value);
+            Terrain* terrain = Terrain::get_by_name(child_node.value);
             this->command_modifiers.terraine_specific_buffs.insert(terrain);
         }
-
         else
+        {
             is_success = false;
+        }
     }
     return is_success;
 }

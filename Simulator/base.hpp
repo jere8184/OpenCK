@@ -55,9 +55,15 @@ struct Base
     {
         for (const parser::Node& node : nodes)
         {
-            Base::map.emplace(node.name, Derivived(node.name));
+            Base::allocate(node);
         }   
     }
+
+    static void allocate(const parser::Node& node)
+    {
+        Base::map.emplace(node.name, Derivived(node.name));
+    }
+
 
     static bool initalise_range(const std::vector<parser::Node>& nodes)
     {
@@ -65,7 +71,7 @@ struct Base
 
         for (const parser::Node& node : nodes)
         {
-            if (Base::map.at(node.name).init(node))
+            if (initalise(node))
                 continue;
             else
                 no_failures = false;
@@ -73,6 +79,13 @@ struct Base
 
         return no_failures;
     }
+
+    static bool initalise(const parser::Node& node)
+    {
+        return Base::map.at(node.name).init(node);
+    }
+
+
     
     DynamicFieldType get_dynamic_field_type(const Node& node) {return NOT_SET;}
 
