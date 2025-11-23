@@ -3,31 +3,39 @@
 #pragma once
 
 #include <string>
+
+#include "base.hpp"
 #include "unordered_map"
 
 namespace openck::simulator
 {
     struct Charecter;
+    struct Culture;
 
-    struct ReligionGroup
+    struct ReligionGroup : Base<ReligionGroup>
     {
-        using Id = size_t;
+        struct Flags
+        {
+            bool has_coa_on_barony_only = false;
+            Culture* graphical_culture = nullptr;
+            bool crusade_cb = false;
+            bool playable = false;
+            bool ai_peaceful = false;
+            int ai_convert_same_group = 0;
+            int ai_convert_other_group = 0;
+        };
 
-        std::string name;
-        Id id;
-        static ReligionGroup* get_religion_group_by_name(const std::string& name) {return religion_groups.contains(name) ? religion_groups.at(name) : nullptr;}
-        static std::unordered_map<std::string, ReligionGroup*> religion_groups;
+        Flags flags;        
+        ReligionGroup(const std::string& name) : Base(name) {}
     };
 
-    struct Religion
+    struct Religion : Base<Religion>
     {
         ReligionGroup* group;
-        int id;
-        std::string name;
         float moral_authority;
 
-        static Religion* get_religion_by_name(const std::string& name) {return religions.contains(name) ? religions.at(name) : nullptr;}
-        static std::unordered_map<std::string, Religion*> religions;
+        Religion(const std::string& name) : Base(name) {}
+
         Charecter* get_head(){return nullptr;};
     };
 }

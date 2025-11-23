@@ -3,11 +3,13 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <functional>
 #include <optional>
 
 #include "attributes.hpp"
 #include "religion.hpp"
+#include "base.hpp"
 
 #include "parser/prdx_parser.h"
 #include "scripting/condition.hpp"
@@ -17,12 +19,14 @@ namespace openck::simulator
 
 struct Phase;
 struct UnitType;
-struct Terraine;
+struct Terrain;
 
-using parser::Node;
 
-struct Trait
+
+struct Trait : public Base<Trait>
 {
+    using BaseType = Base<Trait>;
+
     struct Flags
     {
         bool agnatic = false;
@@ -105,7 +109,6 @@ struct Trait
 
     struct Opinon
     {
-
         enum struct From
         {
             NOT_SET,
@@ -155,8 +158,8 @@ struct Trait
         int monthly_character_piety = 0;
         int monthly_character_prestige = 0;
         float global_tax_modifier = 0.0f;
+        float global_levy_size = 0.0f;
    };
-
 
     struct CommandModdifiers
     {
@@ -177,13 +180,12 @@ struct Trait
         float winter_combat = 0;
 
         std::unordered_map<const UnitType*, float> unit_specific_buffs;
-        std::unordered_map<const Terraine*, float> terraine_specific_buffs;
+        std::unordered_set<const Terrain*> terraine_specific_buffs;
         std::unordered_map<const Phase*, float> phase_specific_buffs;
     };
 
-    int id;
-    std::string name;
-    std::string desc;
+    std::unordered_set<ReligionGroup*> tolerated_religion_groups;
+
     Flags flags;
     Attributes attribute_modifiers;
     CommandModdifiers command_modifiers;
@@ -202,10 +204,6 @@ struct Trait
 
     //Trait(Trait&&) = delete;
     //Trait& operator=(Trait&&) = delete;
-    
-    static void init_trait_map();
-
-    bool init(const parser::Node & trait_node);
 
     bool set_potential(const Node& node);
 
@@ -218,33 +216,29 @@ struct Trait
     bool set_learning_modifier(const Node& node);
     
     bool set_greeting(const Node &node, const Greeting::Target target, const Greeting::Type type);
+
     bool set_greeting_adjective(const Node& node, const Greeting::Target target, const Greeting::Type type);
-
-
+    
     bool set_attribute_modifer(const Node& node, const AttributesType attribute_type);
+    
     bool set_attribute_penalty(const Node& node, const AttributesType attribute_type);
-
-
+    
     bool set_stat_modifer(const Node& node, const StatType stat_type);
+    
     bool set_stat_penalty(const Node &node, const StatType stat_type);
-
+    
     bool set_opinion_modifer(const Node& node, const Opinon::From from);
     bool set_opposites(const Node& node);
-
-    bool set_command_modifier(const Node& node);
-
-    bool set_opinion_modifer_dynamic(const Node& node);
-
-    static const Trait* get_trait_by_name(const std::string& trait_name) { return Trait::trait_map.contains(trait_name) ? Trait::trait_map.at(trait_name) : nullptr; }
-
-    static std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> trait_field_setters;
     
-    static std::unordered_map<std::string, Trait*> trait_map;
+    bool set_command_modifier(const Node& node);
+    
+    bool set_opinion_modifer_dynamic(const Node& node);
+    
+    bool set_tolerance(const Node & node);
+
+    DynamicFieldType get_dynamic_field_type(const Node& node);
+
+    bool set_dynamic_field(const Node& node, DynamicFieldType type);
 };
-
-extern std::vector<Trait> trait_vector;
-
-bool generate_traits_from_nodes(const std::vector<Node>& root_nodes);
-void allocate_traits(const std::vector<parser::Node>& trait_nodes);
 
 } // namespace openck::simulator

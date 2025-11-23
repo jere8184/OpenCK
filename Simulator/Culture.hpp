@@ -1,12 +1,13 @@
 
 #pragma once
 
+#include "base.hpp"
+
 #include <string>
 
 namespace openck::simulator 
 {
-    class Culture
+    struct Culture : public Base<Culture>
     {
-        std::string name;
     };
 };

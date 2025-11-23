@@ -19,11 +19,9 @@ void test_conditional()
 int main()
 {
     using GenerateNodesArgs = std::tuple<std::filesystem::path, std::vector<openck::parser::Node>, bool>;
-    std::vector<GenerateNodesArgs> args_vec; 
+    std::vector<GenerateNodesArgs> args_vec;
 
-
-
-    std::filesystem::directory_iterator directory_iterator("./ck2_dir/common/traits");
+    std::filesystem::directory_iterator directory_iterator("./ck2_dir/common/religions");
     for(const std::filesystem::directory_entry& directory_entry : directory_iterator)
     {
         if (directory_entry.is_regular_file() && directory_entry.path().extension() == ".txt")
@@ -44,14 +42,13 @@ int main()
         was_success = openck::parser::generate_nodes(path, nodes);
         if (was_success)
         {
-            openck::simulator::allocate_traits(nodes);
+            openck::simulator::ReligionGroup::allocate_range(nodes);
         }
     }
 
-    openck::simulator::Trait::init_trait_map();
-
     for (auto& [path, nodes, was_success] : args_vec)
     {
-        openck::simulator::generate_traits_from_nodes(nodes);
+        if (was_success)
+            was_success = openck::simulator::ReligionGroup::initalise_range(nodes);
     }
 }

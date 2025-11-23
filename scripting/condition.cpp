@@ -96,17 +96,17 @@ bool Target::read_static_data(const openck::parser::Node& node)
     {
         this->type = Target::Type::BOOL;
     }
-    else if (simulator::ReligionGroup* religion_group = simulator::ReligionGroup::get_religion_group_by_name(node.value))
+    else if (simulator::ReligionGroup* religion_group = simulator::ReligionGroup::get_by_name(node.value))
     {
         this->type = Target::Type::RELIGION_GROUP;
         this->data.religion_group = religion_group;
     }
-    else if (simulator::Religion* religion = simulator::Religion::get_religion_by_name(node.value))
+    else if (simulator::Religion* religion = simulator::Religion::get_by_name(node.value))
     {
         this->type = Target::Type::RELIGION;
         this->data.religion = religion;
     }
-    else if (const simulator::Trait* trait = simulator::Trait::get_trait_by_name(node.value))
+    else if (const simulator::Trait* trait = simulator::Trait::get_by_name(node.value))
     {
         this->type = Target::Type::Trait;
         this->data.trait = trait;

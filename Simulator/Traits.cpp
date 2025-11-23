@@ -11,73 +11,7 @@
 namespace openck::simulator 
 {
 
-std::unordered_map<std::string, Trait*> Trait::trait_map;
-
-std::vector<Trait> trait_vector;
-
-void allocate_traits(const std::vector<parser::Node>& trait_nodes)
-{
-    static int i = 0;
-    for (const parser::Node& trait_node : trait_nodes)
-    {
-        trait_vector.emplace_back(trait_node.name);
-    }   
-}
-
-void Trait::init_trait_map()
-{
-    for (Trait& trait : trait_vector)
-        Trait::trait_map[trait.name] = &trait;
-}
-
-bool generate_traits_from_nodes(const std::vector<parser::Node>& trait_nodes)
-{
-    bool no_failures = true;
-
-    for (const parser::Node& trait_node : trait_nodes)
-    {
-        if (Trait::trait_map.at(trait_node.name)->init(trait_node))
-            ;
-        else
-            no_failures = false;
-    }
-
-    return no_failures;
-}
-
-
-Trait::Trait(std::string name) : name(name) {};
-
-bool Trait::init(const parser::Node& trait_node)
-{
-    this->name = trait_node.name;
-
-    for (const auto& [child_name, child_node] : trait_node.children_map)
-    {
-        if (trait_field_setters.contains(child_name))
-        {
-            if (trait_field_setters.at(child_name)(this, child_node))
-            {
-                continue;
-            } 
-            else
-            {
-                std::print(stderr, "Failed to set trait field: {} for trait: {}\n", child_name, this->name);
-                return false;
-            }
-        }
-        else if (DynamicFieldType type = this->get_dynamic_field_type(child_node); type != DynamicFieldType::NOT_SET)
-        {
-            this->set_dynamic_field(child_node, type);
-        }
-        else
-        {
-            std::print(stderr, "Unknown trait field: {}\n", child_name);
-            return false;
-        }
-    }
-    return true;
-}
+Trait::Trait(std::string name) : Base(name) {};
 
 bool Trait::set_potential(const Node &node)
 {
@@ -95,7 +29,8 @@ bool Trait::set_potential(const Node &node)
     }
 }
 
-std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait::trait_field_setters =
+template<>
+Base<Trait>::FieldSetters Base<Trait>::field_setters =
 {
     {"attribute", &Trait::set_attribute},
     {"education", &Trait::set_education},
@@ -112,19 +47,19 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"intrigue_penalty", std::bind(&Trait::set_attribute_penalty, std::placeholders::_1, std::placeholders::_2, AttributesType::INTRIGUE)},
     {"learning_penalty", std::bind(&Trait::set_attribute_penalty, std::placeholders::_1, std::placeholders::_2, AttributesType::LEARNING)},
     
-    {"male_insult_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Greeting::Target::MALE, Greeting::Type::INSULT)},
-    {"female_insult_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Greeting::Target::FEMALE, Greeting::Type::INSULT)},
-    {"child_insult_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Greeting::Target::CHILD, Greeting::Type::INSULT)},
-    {"male_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Greeting::Target::MALE, Greeting::Type::COMPLIMENT)},
-    {"female_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Greeting::Target::FEMALE, Greeting::Type::COMPLIMENT)},
-    {"child_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Greeting::Target::CHILD, Greeting::Type::COMPLIMENT)},
+    {"male_insult_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::INSULT)},
+    {"female_insult_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::FEMALE, Trait::Greeting::Type::INSULT)},
+    {"child_insult_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::CHILD, Trait::Greeting::Type::INSULT)},
+    {"male_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::COMPLIMENT)},
+    {"female_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::FEMALE, Trait::Greeting::Type::COMPLIMENT)},
+    {"child_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::CHILD, Trait::Greeting::Type::COMPLIMENT)},
     
-    {"male_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Greeting::Target::MALE, Greeting::Type::INSULT)},
-    {"female_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Greeting::Target::FEMALE, Greeting::Type::INSULT)},
-    {"child_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Greeting::Target::CHILD, Greeting::Type::INSULT)},
-    {"male_compliment", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Greeting::Target::MALE, Greeting::Type::COMPLIMENT)},
-    {"female_compliment", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Greeting::Target::FEMALE, Greeting::Type::COMPLIMENT)},
-    {"child_compliment", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Greeting::Target::CHILD, Greeting::Type::COMPLIMENT)},
+    {"male_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::INSULT)},
+    {"female_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::FEMALE, Trait::Greeting::Type::INSULT)},
+    {"child_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::CHILD, Trait::Greeting::Type::INSULT)},
+    {"male_compliment", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::COMPLIMENT)},
+    {"female_compliment", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::FEMALE, Trait::Greeting::Type::COMPLIMENT)},
+    {"child_compliment", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::CHILD, Trait::Greeting::Type::COMPLIMENT)},
     
     {"fertility", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::FERTILITY)},
     {"health", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::HEALTH)},
@@ -137,23 +72,23 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"ai_rationality", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::RATIONALITY)},
     {"ai_honor", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::HONOR)},
 
-    {"general_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::GENERAL)},
-    {"church_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::CHURCH)},
-    {"christian_church_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::CHRISTIAN_CHURCH)},
-    {"spouse_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::SPOUSE)},
-    {"sex_appeal_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::SEX_APPEAL)},
-    {"dynasty_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::DYNASTY)},
-    {"liege_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::LIEGE)},
-    {"vassal_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::VASSAL)},
-    {"infidel_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::INFIDEL)},
-    {"opposite_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::OPPOSITE)},
-    {"same_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::SAME)},
-    {"same_opinion_if_same_religion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::SAME_PLUS_SAME_RELIGION)},
-    {"twin_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::TWIN)},
-    {"ambition_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::AMBITION)},
-    {"same_religion_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::SAME_RELIGION)},
-    {"tribal_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::UNREFOMED_TRIBAL)},
-    {"unreformed_tribal_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Opinon::From::UNREFOMED_TRIBAL)},
+    {"general_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::GENERAL)},
+    {"church_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::CHURCH)},
+    {"christian_church_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::CHRISTIAN_CHURCH)},
+    {"spouse_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::SPOUSE)},
+    {"sex_appeal_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::SEX_APPEAL)},
+    {"dynasty_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::DYNASTY)},
+    {"liege_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::LIEGE)},
+    {"vassal_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::VASSAL)},
+    {"infidel_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::INFIDEL)},
+    {"opposite_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::OPPOSITE)},
+    {"same_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::SAME)},
+    {"same_opinion_if_same_religion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::SAME_PLUS_SAME_RELIGION)},
+    {"twin_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::TWIN)},
+    {"ambition_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::AMBITION)},
+    {"same_religion_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::SAME_RELIGION)},
+    {"tribal_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::UNREFOMED_TRIBAL)},
+    {"unreformed_tribal_opinion", std::bind(&Trait::set_opinion_modifer, std::placeholders::_1, std::placeholders::_2, Trait::Opinon::From::UNREFOMED_TRIBAL)},
 
     {"opposites", &Trait::set_opposites},
 
@@ -189,10 +124,15 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"cached", [](Trait* trait, const Node& node){return node.get_value(trait->flags.cached);}},
     {"blinding", [](Trait* trait, const Node& node){return node.get_value(trait->flags.blinding);}},
     {"rebel_inherited", [](Trait* trait, const Node& node){return node.get_value(trait->flags.rebel_inherited);}},
+    {"caste_tier", [](Trait* trait, const Node& node){return node.get_value(trait->flags.caste_tier);}},
+    {"in_hiding", [](Trait* trait, const Node& node){return node.get_value(trait->flags.in_hiding);}},
+    {"can_hold_titles", [](Trait* trait, const Node& node){return node.get_value(trait->flags.can_hold_titles);}},
 
     {"monthly_character_piety", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.monthly_character_piety);}},
     {"monthly_character_prestige", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.monthly_character_prestige);}},
     {"global_tax_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.global_tax_modifier);}},
+    {"global_levy_size", [](Trait* trait, const Node& node){return node.get_value(trait->buffs.global_levy_size);}},
+
     {"command_modifier", std::bind(&Trait::set_command_modifier, std::placeholders::_1, std::placeholders::_2)},
     {"command_modifier.random", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.random); }},
     {"command_modifier.speed", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.speed); }},
@@ -207,6 +147,7 @@ std::unordered_map<std::string, std::function<bool(Trait*, const Node&)>> Trait:
     {"command_modifier.morale_defence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_defence); }},
     {"command_modifier.cavalry", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.cavalry); }},
     {"command_modifier.religious_enemy", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.religious_enemy);}},
+    {"command_modifier.narrow_flank", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.narrow_flank);}},
 
     {"potential", std::bind(&Trait::set_potential, std::placeholders::_1, std::placeholders::_2)},
     {"random", [](Trait* trait, const Node& node){return node.get_value(trait->flags.random);}}
@@ -263,24 +204,6 @@ bool Trait::set_attribute_modifer(const Node& node, const AttributesType attribu
     }
     return true;
 }
-
-Trait::DynamicFieldType Trait::get_dynamic_field_type(const Node &node)
-{
-    int index = node.name.find("_opinion");
-    if ((index != std::string::npos) && (node.name.size() == index + std::string("_opinion").size()))
-    {
-        return DynamicFieldType::OPINION;
-    }
-
-    index = node.name.find("tolerates_");
-    if (index == 0)
-    {
-        return DynamicFieldType::TOLERANCE;
-    }
-
-    return DynamicFieldType::NOT_SET;
-}
-
 
         /*if (this->set_opinion_modifer(child_node, Opinon::From::DYNAMIC))
             continue;
@@ -461,9 +384,9 @@ bool Trait::set_opinion_modifer(const Node &node, const Opinon::From from)
 
 bool Trait::set_opposites(const Node &node)
 {
-    for (const std::string& child_name : node.children_map | std::views::keys)
+    for (const Node& child_node : node.children)
     {
-        const Trait* opposite_trait = get_trait_by_name(child_name);
+        const Trait* opposite_trait = this->get_by_name(child_node.name);
         if (opposite_trait)
             this->flags.opposites.push_back(opposite_trait);
         else
@@ -475,25 +398,23 @@ bool Trait::set_opposites(const Node &node)
 bool Trait::set_command_modifier(const Node &node)
 {
     bool is_success = true;
-    for (const auto& [child_name, child_node] : node.children_map)
+    for (const Node& child_node : node.children)
     {
-
         float val;
 
-        if (child_name != "terrain" && !child_node.get_value(val))
+        if (child_node.name != "terrain" && !child_node.get_value(val))
             return false;
         
-
-        std::string setter_key = ("command_modifier.") + child_name;
-        if (trait_field_setters.contains(setter_key))
+        std::string setter_key = ("command_modifier.") + child_node.name;
+        if (field_setters.contains(setter_key))
         {
-            trait_field_setters.at(setter_key)(this, child_node);
+            Trait::field_setters.at(setter_key)(this, child_node);
         }
-        else if (UnitType* unit_type = UnitType::get_unit_type_by_name(child_name))
+        else if (UnitType* unit_type = UnitType::get_unit_type_by_name(child_node.name))
         {
             this->command_modifiers.unit_specific_buffs[unit_type] = val;
         }
-        else if(child_name == "terrain")
+        else if(child_node.name == "terrain")
         {
             Terrain* terrain = Terrain::get_terrain_by_name(child_node.value);
             this->command_modifiers.terraine_specific_buffs.insert(terrain);
@@ -513,12 +434,12 @@ bool Trait::set_opinion_modifer_dynamic(const Node & node)
 
     std::string name = node.name.substr(0, node.name.size() - std::string_view("_opinion").size());
 
-    if (Religion* religion = Religion::get_religion_by_name(name))
+    if (Religion* religion = Religion::get_by_name(name))
     {
         this->opinion.religion_opinions[religion] = val;
         return true;
     }
-    else if (ReligionGroup* religionGroup = ReligionGroup::get_religion_group_by_name(name))
+    else if (ReligionGroup* religionGroup = ReligionGroup::get_by_name(name))
     {
         this->opinion.religion_group_opinions[religionGroup] = val;
         return true; 
@@ -656,7 +577,7 @@ bool Trait::set_greeting(const Node& node, const Greeting::Target target, const 
 
 bool Trait::set_tolerance(const Node& node)
 {
-    if(ReligionGroup* religion_group = ReligionGroup::get_religion_group_by_name(node.name.substr(std::string_view("tolerates_").size())))
+    if(ReligionGroup* religion_group = ReligionGroup::get_by_name(node.name.substr(std::string_view("tolerates_").size())))
     {
         tolerated_religion_groups.insert(religion_group);
         return true;
@@ -667,6 +588,31 @@ bool Trait::set_tolerance(const Node& node)
     }
 }
 
+template<>
+enum struct Base<Trait>::DynamicFieldType
+{
+    NOT_SET,
+    OPINION,
+    TOLERANCE
+};
+
+Base<Trait>::DynamicFieldType Trait::get_dynamic_field_type(const Node &node)
+{
+    int index = node.name.find("_opinion");
+    if ((index != std::string::npos) && (node.name.size() == index + std::string("_opinion").size()))
+    {
+        return DynamicFieldType::OPINION;
+    }
+
+    index = node.name.find("tolerates_");
+    if (index == 0)
+    {
+        return DynamicFieldType::TOLERANCE;
+    }
+
+    return DynamicFieldType::NOT_SET;
+}
+
 bool Trait::set_dynamic_field(const Node& node, DynamicFieldType type)
 {
     switch (type)
@@ -674,10 +620,12 @@ bool Trait::set_dynamic_field(const Node& node, DynamicFieldType type)
     case DynamicFieldType::OPINION :
         return this->set_opinion_modifer(node, Opinon::From::DYNAMIC);
         break;
+    
     case DynamicFieldType::TOLERANCE :
         return this->set_tolerance(node);
     
     default:
+        return false;
         break;
     }
 }

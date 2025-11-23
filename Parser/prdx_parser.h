@@ -60,14 +60,15 @@ struct Node
     Node* parent = nullptr;
     std::string name = "";
     std::string value = "";
-    std::unordered_map<std::string, Node> children_map = {};
+    std::vector<Node> children;
+
     Type type = Type::NOT_SET;
     Operator op = Operator::NOT_SET;
 
     void AddChild(Node& child_node)
     {
         child_node.parent = this;
-        children_map[child_node.name] = child_node;
+        this->children.push_back(child_node);
     }
     
     template<Numeric Val>

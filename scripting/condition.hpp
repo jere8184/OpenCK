@@ -256,8 +256,10 @@ struct ConditionBlock : ICondition<ScopeType>
     {
         using namespace openck::parser;
 
-        for (const auto& [child_name, child_node] : node.children_map)
-        {        
+        for (const Node& child_node : node.children)
+        {
+            const std::string& child_name = child_node.name;
+
             switch (child_node.type)
             {
                 case Node::Type::STRING :
