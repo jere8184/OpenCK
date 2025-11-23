@@ -11,7 +11,6 @@
 namespace openck::parser 
 {
 
-
 struct Token
 {
     enum struct Type

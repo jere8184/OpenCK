@@ -159,6 +159,13 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
             }
             else
             {
+                if (current_node != nullptr && current_node->value.empty() && scope_stack.size()) //lists
+                {
+                    current_node->type = Node::Type::STRING;
+                    scope_stack.top()->AddChild(*current_node);
+                    current_node.reset();
+                }
+
                 node_count++;
                 current_node = std::make_shared<Node>();
                 current_node->name = token.text;
@@ -220,12 +227,18 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
         case Token::Type::BLOCK_END:
             completed_block = scope_stack.top();
             scope_stack.pop();
+
             if (scope_stack.size() == 0)
             {
                 root_nodes.push_back(std::move(*completed_block));
             }
             else
             {
+                if (current_node)
+                {
+                    completed_block->AddChild(*current_node);
+                    current_node.reset();
+                }
                 scope_stack.top()->AddChild(*completed_block);
             }
             completed_block.reset();
