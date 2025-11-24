@@ -223,7 +223,7 @@ struct Condition : ICondition<ScopeType>
                                             //vs.
     //looping over list of ICondition -> switch statment vs static calling bool operator()(); -> switch-statement + function call -> switch-statement + function call -> switch-statment + function call
 
-    bool operator()(const ScopeType& scope) const
+    virtual bool operator()(const ScopeType& scope) const override
     {
         return scope(this->target, condition_name);
     }
@@ -232,6 +232,7 @@ struct Condition : ICondition<ScopeType>
     
     Target target;
 };
+
 
 template<typename ScopeType>
 struct ConditionBlock : ICondition<ScopeType>
@@ -251,7 +252,7 @@ struct ConditionBlock : ICondition<ScopeType>
     Type block_type;
     std::vector<std::unique_ptr<IConditionType>> conditions;
 
-    ConditionBlock(parser::Node node, bool& is_success) : 
+    ConditionBlock(const parser::Node& node, bool& is_success) : 
         IConditionType(node.name, IConditionType::Type::BLOCK)
     {
         using namespace openck::parser;
@@ -273,7 +274,7 @@ struct ConditionBlock : ICondition<ScopeType>
                 }
                 case Node::Type::BLOCK :
                 {
-                    std::unique_ptr<IConditionType> condition_block = std::make_unique<ConditionBlockType>(child_node, is_success);
+                    std::unique_ptr<IConditionType> condition_block = condition_block_factory(child_node, is_success);
                     if (is_success == false)
                         return;
                     
@@ -297,8 +298,65 @@ struct ConditionBlock : ICondition<ScopeType>
 
     ConditionBlock& operator=(ConditionBlock&& condition_block);
 
+    std::unique_ptr<IConditionType> condition_block_factory(const parser::Node& node, bool& is_success);
+
     virtual bool operator()(const ScopeType& scope) const override {return false;};
 };
+
+
+template <typename ScopeType>
+struct OrBlock : public ConditionBlock<ScopeType>
+{
+    OrBlock(const parser::Node& node, bool& is_success) : 
+        ConditionBlock<ScopeType>(node, is_success) {}
+
+    virtual bool operator()(const ScopeType& scope) const override 
+    {
+        for (const std::unique_ptr<ICondition<ScopeType>>& condition : this->conditions)
+        {
+            if ((*condition)(scope))
+                return true;
+        }
+        return false;
+    };
+};
+
+
+template <typename ScopeType>
+struct AndBlock : public ConditionBlock<ScopeType>
+{
+    AndBlock(const parser::Node& node, bool& is_success) : 
+        ConditionBlock<ScopeType>(node, is_success) {}
+
+    virtual bool operator()(const ScopeType& scope) const override 
+    {
+        for (const std::unique_ptr<ICondition<ScopeType>>& condition : this->conditions)
+        {
+            if (!(*condition)(scope))
+                return false;
+        }
+        return true;
+    };
+};
+
+
+template <typename ScopeType>
+struct NotBlock : public ConditionBlock<ScopeType>
+{
+    NotBlock(const parser::Node& node, bool& is_success) : 
+        ConditionBlock<ScopeType>(node, is_success) {}
+
+    virtual bool operator()(const ScopeType& scope) const override 
+    {
+        for (const std::unique_ptr<ICondition<ScopeType>>& condition : this->conditions)
+        {
+            if ((*condition)(scope))
+                return false;
+        }
+        return true;
+    };
+};
+
 
 template <typename ScopeType>
 inline ConditionBlock<ScopeType> &ConditionBlock<ScopeType>::operator=(ConditionBlock &&condition_block)
@@ -307,6 +365,21 @@ inline ConditionBlock<ScopeType> &ConditionBlock<ScopeType>::operator=(Condition
     this->conditions = std::move(condition_block.conditions);
     this->name = std::move(condition_block.name);
     this->type = condition_block.type;
+
+    return *this;
+}
+
+template <typename ScopeType>
+auto ConditionBlock<ScopeType>::condition_block_factory(const parser::Node& node, bool& is_success) -> std::unique_ptr<IConditionType>
+{
+    if (node.name == "NOT")
+        return std::make_unique<NotBlock<ScopeType>>(node, is_success);
+    else if (node.name == "AND")
+        return std::make_unique<AndBlock<ScopeType>>(node, is_success);
+    else if (node.name == "OR")
+        return std::make_unique<OrBlock<ScopeType>>(node, is_success);
+    else
+        return std::make_unique<AndBlock<ScopeType>>(node, is_success);
 }
 
 }
