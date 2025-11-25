@@ -71,6 +71,20 @@ bool CharacterScope::has_combat(const Target & target) const
     return false;
 }
 
+bool CharacterScope::populate(BloodLineScope& blood_line_scope, ScopeChangeName name) const
+{
+    //CharacterScope will store bloodline iterator, and advance it once per call, using it to populate blood_line_scope
+    // when
+    return false;
+}
+
+bool CharacterScope::populate(Scope& scope, ScopeChangeName name) const
+{
+    //CharacterScope will store bloodline iterator, and advance it once per call, using it to populate blood_line_scope
+    // when
+    return false;
+}
+
 Target::Target(const parser::Node & node, bool& is_success)
 {
     if (dynamic_data_location_map.contains(node.value))

@@ -149,6 +149,7 @@ struct Scope
 
 };
 
+struct BloodLineScope;
 
 struct CharacterScope : public Scope
 {
@@ -159,11 +160,25 @@ struct CharacterScope : public Scope
         CONTROLS_RELIGION,
     };
 
+    enum struct ScopeChangeName 
+    {
+        NOT_SET,
+        ANY_OWNED_BLOODLINE
+    };
+
+    const simulator::Charecter* charecter;
 
     CharacterScope()
     {
         this->type = Scope::Type::CHARACTER;
     }
+
+    bool operator()(const Target& target, const ConditionName& condition) const;
+    
+    bool populate(BloodLineScope& blood_line_scope, ScopeChangeName name) const;
+
+    bool populate(Scope& scope, ScopeChangeName name) const;
+
 
     static ConditionName get_condition_name(const parser::Node& node);
 
@@ -173,10 +188,22 @@ struct CharacterScope : public Scope
     bool has_claim(const Target& target) const;
     bool has_combat(const Target& target) const;
 
-    bool operator()(const Target& target, const ConditionName& condition) const;
-
-    const simulator::Charecter* charecter;
 }; 
+
+
+struct BloodLineScope : public Scope
+{
+    enum struct ConditionName
+    {
+        NOT_SET,
+        RELIGION_GROUP,
+        CONTROLS_RELIGION,
+    };
+
+    static ConditionName get_condition_name(const parser::Node& node);
+
+    bool operator()(const Target& target, const ConditionName& condition) const;
+};
 
 
 template<typename ScopeType> //this means scope cannot change within a condition block, I think this is true
@@ -245,15 +272,14 @@ struct ConditionBlock : ICondition<ScopeType>
         AND
     };
     
-    using ConditionBlockType = ConditionBlock<ScopeType>;
-    using IConditionType = ICondition<ScopeType>;
-    using ConditionType = Condition<ScopeType>;
+
 
     Type block_type;
-    std::vector<std::unique_ptr<IConditionType>> conditions;
+    std::vector<std::unique_ptr<ICondition<ScopeType>>> conditions;
 
-    ConditionBlock(const parser::Node& node, bool& is_success) : 
-        IConditionType(node.name, IConditionType::Type::BLOCK)
+    template <typename Deriveved = ConditionBlock, typename ChildScopeType = ScopeType>
+    ConditionBlock(const parser::Node& node, bool& is_success, std::type_identity<Deriveved> = {}, std::type_identity<ChildScopeType> = {}) : 
+        ICondition<ScopeType>(node.name, ICondition<ScopeType>::Type::BLOCK)
     {
         using namespace openck::parser;
 
@@ -265,20 +291,20 @@ struct ConditionBlock : ICondition<ScopeType>
             {
                 case Node::Type::STRING :
                 {
-                    std::unique_ptr<IConditionType> condition = std::make_unique<ConditionType>(child_node, is_success);
+                    std::unique_ptr<ICondition<ChildScopeType>> condition = std::make_unique<Condition<ChildScopeType>>(child_node, is_success);
                     if (is_success == false)
                         return;
                     
-                    this->conditions.emplace_back(std::move(condition));
+                    static_cast<Deriveved*>(this)->conditions.emplace_back(std::move(condition));
                     break;
                 }
                 case Node::Type::BLOCK :
                 {
-                    std::unique_ptr<IConditionType> condition_block = condition_block_factory(child_node, is_success);
+                    std::unique_ptr<ICondition<ChildScopeType>> condition_block = condition_block_factory<ChildScopeType>(child_node, is_success);
                     if (is_success == false)
                         return;
                     
-                    this->conditions.emplace_back(std::move(condition_block));
+                    static_cast<Deriveved*>(this)->conditions.emplace_back(std::move(condition_block));
                     break;
                 }
                 default:
@@ -298,7 +324,8 @@ struct ConditionBlock : ICondition<ScopeType>
 
     ConditionBlock& operator=(ConditionBlock&& condition_block);
 
-    std::unique_ptr<IConditionType> condition_block_factory(const parser::Node& node, bool& is_success);
+    template<typename ChildScopeType>
+    std::unique_ptr<ICondition<ChildScopeType>> condition_block_factory(const parser::Node& node, bool& is_success);
 
     virtual bool operator()(const ScopeType& scope) const override {return false;};
 };
@@ -309,7 +336,7 @@ struct OrBlock : public ConditionBlock<ScopeType>
 {
     OrBlock(const parser::Node& node, bool& is_success) : 
         ConditionBlock<ScopeType>(node, is_success) {}
-
+    
     virtual bool operator()(const ScopeType& scope) const override 
     {
         for (const std::unique_ptr<ICondition<ScopeType>>& condition : this->conditions)
@@ -358,6 +385,43 @@ struct NotBlock : public ConditionBlock<ScopeType>
 };
 
 
+template <typename ScopeType, typename ChildScopeType>
+struct ScopeChangeBlock : public ConditionBlock<ScopeType>
+{
+    std::vector<std::unique_ptr<ICondition<ChildScopeType>>> conditions;
+    ScopeType::ScopeChangeName name;
+
+
+    ScopeChangeBlock(const parser::Node& node, bool& is_success) : 
+        ConditionBlock<ScopeType>(node, is_success, std::type_identity<ScopeChangeBlock>{}, std::type_identity<ChildScopeType>{}) 
+    {
+        if (node.name == "any_owned_bloodline")
+            this->name = ScopeType::ScopeChangeName::ANY_OWNED_BLOODLINE;
+    }
+
+
+    virtual bool operator()(const ScopeType& scope) const override 
+    {
+        ChildScopeType child_scope;
+        while (scope.populate(child_scope, this->name))
+        {
+            bool is_success = true;
+            for (const std::unique_ptr<ICondition<ChildScopeType>>& condition : this->conditions)
+            {
+                if (!(*condition)(child_scope))
+                {
+                    is_success = false;
+                    break;
+                }
+            }
+            if (is_success == true)
+                return true;
+        }
+        return false;
+    };
+};
+
+
 template <typename ScopeType>
 inline ConditionBlock<ScopeType> &ConditionBlock<ScopeType>::operator=(ConditionBlock &&condition_block)
 {
@@ -369,17 +433,21 @@ inline ConditionBlock<ScopeType> &ConditionBlock<ScopeType>::operator=(Condition
     return *this;
 }
 
+
 template <typename ScopeType>
-auto ConditionBlock<ScopeType>::condition_block_factory(const parser::Node& node, bool& is_success) -> std::unique_ptr<IConditionType>
+template <typename ChildScopeType>
+std::unique_ptr<ICondition<ChildScopeType>> ConditionBlock<ScopeType>::condition_block_factory(const parser::Node& node, bool& is_success)
 {
     if (node.name == "NOT")
-        return std::make_unique<NotBlock<ScopeType>>(node, is_success);
+        return std::make_unique<NotBlock<ChildScopeType>>(node, is_success);
     else if (node.name == "AND")
-        return std::make_unique<AndBlock<ScopeType>>(node, is_success);
+        return std::make_unique<AndBlock<ChildScopeType>>(node, is_success);
     else if (node.name == "OR")
-        return std::make_unique<OrBlock<ScopeType>>(node, is_success);
+        return std::make_unique<OrBlock<ChildScopeType>>(node, is_success);
+    else if (node.name == "any_owned_bloodline")
+        return std::make_unique<ScopeChangeBlock<ScopeType, ChildScopeType>>(node, is_success);
     else
-        return std::make_unique<AndBlock<ScopeType>>(node, is_success);
+        return std::make_unique<AndBlock<ChildScopeType>>(node, is_success);
 }
 
 }
