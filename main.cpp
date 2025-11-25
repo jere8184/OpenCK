@@ -56,7 +56,7 @@ void allocate_objects(const std::vector<Node>& nodes)
 template <typename ObjectType>
 bool initalise_objects(const std::vector<Node>& nodes)
 {
-    ObjectType::initalise_range(nodes);
+    return ObjectType::initalise_range(nodes);
 }
 
 template <typename ObjectType>
@@ -72,4 +72,10 @@ std::vector<PathNodesPair> allocate_objects(const std::filesystem::path& folder_
 int main()
 {
     const auto& religion_group_nodes = allocate_objects<openck::simulator::ReligionGroup>("./ck2_dir/common/religions");
+
+    const auto& trait_nodes = allocate_objects<openck::simulator::Trait>("./ck2_dir/common/traits");
+
+    std::ranges::for_each(trait_nodes, [](PathNodesPair pair){initalise_objects<openck::simulator::Trait>(pair.second);});
+    
+    return 0;
 }

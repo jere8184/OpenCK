@@ -23,6 +23,7 @@ struct Base
 
     bool init(const Node& node)
     {
+        bool was_succes = true;
         for (const Node& child_node : node.children)
         {
             const std::string& child_name = child_node.name;
@@ -35,7 +36,7 @@ struct Base
                 else
                 {
                     std::print(stderr, "Failed to set field: {} for: {}\n", child_name, this->name);
-                    return false;
+                    was_succes = false;
                 }
             }
             else if (DynamicFieldType type = static_cast<Derivived*>(this)->get_dynamic_field_type(child_node); type != NOT_SET)
@@ -45,7 +46,7 @@ struct Base
             else
             {
                 std::print(stderr, "Unknown field: {} for : {}\n", child_name, this->name);
-                return false;
+                was_succes = false;
             }
         }
         return true;

@@ -7,6 +7,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace openck::simulator
 {
@@ -21,7 +22,11 @@ namespace openck::simulator
             GraphicalCulture* graphical_culture = nullptr;
             bool crusade_cb = false;
             bool playable = false;
+            bool hostile_within_group = false;
+            
             bool ai_peaceful = false;
+            bool ai_fabricate_claims = true;
+
             int ai_convert_same_group = 0;
             int ai_convert_other_group = 0;
 
@@ -29,11 +34,15 @@ namespace openck::simulator
         };
 
         Flags flags;
+
+        std::vector<std::string> male_names;
+        std::vector<std::string> female_names;
+
         ReligionGroup(const std::string& name) : Base(name) {}
 
         static void allocate_range(const std::vector<parser::Node>& nodes);
 
-        static void initalise_range(const std::vector<parser::Node>& nodes);
+        static bool initalise_range(const std::vector<parser::Node>& nodes);
     };
 
     struct Religion : Base<Religion>

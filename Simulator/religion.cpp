@@ -5,6 +5,9 @@
 
 #include "utils/colour.h"
 
+#include <algorithm>
+#include <ranges>
+
 namespace openck::simulator
 {
 
@@ -15,7 +18,11 @@ Base<ReligionGroup>::FieldSetters Base<ReligionGroup>::field_setters =
 {
     {"has_coa_on_barony_only",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.has_coa_on_barony_only);}},
     {"playable",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.playable);}},
+    {"hostile_within_group",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.hostile_within_group);}},
+
     {"crusade_cb",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.crusade_cb);}},
+   
+
     {
         "graphical_culture", 
         [](ReligionGroup* religion_group, const Node& node)
@@ -25,12 +32,20 @@ Base<ReligionGroup>::FieldSetters Base<ReligionGroup>::field_setters =
             return grapical_culture != nullptr;
         }
     },
+
+    {"interface_skin", [](ReligionGroup* religion_group, const Node& node){return true; /*todo*/}},
     
     {"ai_peaceful",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_peaceful);}},
     {"ai_convert_same_group",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_same_group);}},
     {"ai_convert_other_group", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_other_group);}},
+    {"ai_fabricate_claims", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_fabricate_claims);}},
+
     
-    {"colour", [](ReligionGroup* religion_group, const Node& node){return Colour::create_from_node(node, religion_group->flags.color);}}
+    {"colour", [](ReligionGroup* religion_group, const Node& node){return Colour::create_from_node(node, religion_group->flags.color);}},
+
+    {"male_name", [](ReligionGroup* religion_group, const Node& node){ for(const Node& child : node.children) religion_group->male_names.push_back(child.name); return true;}},
+    {"female_name", [](ReligionGroup* religion_group, const Node& node){ for(const Node& child : node.children) religion_group->female_names.push_back(child.name); return true;}}
+
 };
 
 void ReligionGroup::allocate_range(const std::vector<parser::Node>& nodes)
@@ -55,8 +70,9 @@ void ReligionGroup::allocate_range(const std::vector<parser::Node>& nodes)
     }
 }
 
-void ReligionGroup::initalise_range(const std::vector<parser::Node>& nodes)
+bool ReligionGroup::initalise_range(const std::vector<parser::Node>& nodes)
 {
+    bool was_success;
     for (const parser::Node& node : nodes)
     {
         if (node.name == "secret_religion_visibility_trigger")
@@ -65,10 +81,12 @@ void ReligionGroup::initalise_range(const std::vector<parser::Node>& nodes)
         }
         else
         {
-            ReligionGroup::initalise(node);
+            if (!ReligionGroup::initalise(node)) was_success = false;
             //Religion::initalise_range(node.children);
         }
     }
+
+    return was_success;
 }
 
 
