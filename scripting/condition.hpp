@@ -39,6 +39,7 @@ namespace openck::simulator
 namespace openck::scripting
 {
 
+template<typename Derived>
 struct Scope;
 
 struct Target 
@@ -68,7 +69,7 @@ struct Target
         const simulator::ReligionGroup* religion_group;
         const simulator::Title* title;
         const simulator::Trait* trait;
-        const Scope* dynamic_data;
+        //const Scope* dynamic_data;
         int id;
         Clause clause;
     };
@@ -113,9 +114,11 @@ static std::unordered_map<std::string, Target::DataLocation> dynamic_data_locati
 
 bool read_static_data(Target& target, const openck::parser::Node& node);
 
+
+template <typename Derived>
 struct Scope
 {
-    enum class Type
+    /*enum class Type
     {
         CHARACTER,
         TITLE,
@@ -130,81 +133,124 @@ struct Scope
         ENUM_SIZE
     };
 
-    Type type;
+    Type type;*/
+
+    enum struct EnumCondition;
+
+    enum struct EnumScopeChange;
+
+    using EnumConditionMap = std::unordered_map<std::string, EnumCondition>;
+
+    using EnumScopeChangeMap = std::unordered_map<std::string, EnumScopeChange>;
+
+
+    static EnumConditionMap condition_enum_map;
+
+    static EnumScopeChangeMap scope_change_enum_map;
+
+    static const int NOT_SET = 0;
+
     Scope* parent_scope = nullptr;
 
-    //if i keep going down this road we will have 700 virt functions coresponding to each condition.
-    
-    //instead when Condition has its operator called it switches on Scope::Type, union of scopes to get correct subclass (n > 10)
-    //calls correct subclass method based on large condition switch, which you pass the target to.
-    //
-    /*bool adventurer(const Target&) const { assert(false); return false; };
-    bool age(const Target&) const { assert(false); return false; };
-    bool adventurer(const Target&) const { assert(false); return false; };
-    bool character(const Target&) const { assert(false); return false; };
-    bool claimed_by(const Target&) const { assert(false); return false; };
-    bool religion_group(const Target&) const { assert(false); return false; }
-    bool controls_religion(const Target&) const { assert(false); return false; }
-    bool de_jure_liege(const Target&) const { assert(false); return false; }*/
+    bool operator()(const Target& target, const EnumCondition& condition) const;
 
+    bool populate(Scope& scope, EnumScopeChange name) const
+    {
+        assert(false);
+        return false;
+    }
+
+    static EnumCondition get_condition_enum(const parser::Node& node)
+    {
+        if (condition_enum_map.contains(node.name))
+            return condition_enum_map.at(node.name);
+        else
+            return (EnumCondition)NOT_SET;
+    }
+
+    static EnumScopeChange get_scope_change_enum(const parser::Node& node)
+    {
+        if (scope_change_enum_map.contains(node.name))
+            return scope_change_enum_map.at(node.name);
+        else
+            return (EnumScopeChange)NOT_SET;
+    }
 };
 
 struct BloodLineScope;
 
-struct CharacterScope : public Scope
+struct CharacterScope : public Scope<CharacterScope>
 {
-    enum struct ConditionName
-    {
-        NOT_SET,
-        RELIGION_GROUP,
-        CONTROLS_RELIGION,
-    };
-
-    enum struct ScopeChangeName 
-    {
-        NOT_SET,
-        ANY_OWNED_BLOODLINE
-    };
-
     const simulator::Charecter* charecter;
-
-    CharacterScope()
+    
+    bool populate(BloodLineScope& blood_line_scope, EnumScopeChange name) const
     {
-        this->type = Scope::Type::CHARACTER;
+        return false;
     }
 
-    bool operator()(const Target& target, const ConditionName& condition) const;
-    
-    bool populate(BloodLineScope& blood_line_scope, ScopeChangeName name) const;
+    using Scope::populate;
 
-    bool populate(Scope& scope, ScopeChangeName name) const;
-
-
-    static ConditionName get_condition_name(const parser::Node& node);
-
-    //virtual int age() const override;
     bool controls_religion(const Target& target) const;
     bool religion_group(const Target& target) const;
     bool has_claim(const Target& target) const;
     bool has_combat(const Target& target) const;
-
 }; 
 
-
-struct BloodLineScope : public Scope
+template<>
+enum struct Scope<CharacterScope>::EnumCondition
 {
-    enum struct ConditionName
-    {
-        NOT_SET,
-        RELIGION_GROUP,
-        CONTROLS_RELIGION,
-    };
-
-    static ConditionName get_condition_name(const parser::Node& node);
-
-    bool operator()(const Target& target, const ConditionName& condition) const;
+    NOT_SET,
+    RELIGION_GROUP,
+    CONTROLS_RELIGION,
 };
 
+template<>
+enum struct Scope<CharacterScope>::EnumScopeChange 
+{
+    NOT_SET,
+    ANY_OWNED_BLOODLINE
+};
+
+template<>
+Scope<CharacterScope>::EnumConditionMap Scope<CharacterScope>::condition_enum_map 
+{
+    {"controls_religion", EnumCondition::CONTROLS_RELIGION},
+    {"religion_group", EnumCondition::RELIGION_GROUP}
+};
+
+template<>
+Scope<CharacterScope>::EnumScopeChangeMap Scope<CharacterScope>::scope_change_enum_map 
+{
+    {"any_owned_bloodline", EnumScopeChange::ANY_OWNED_BLOODLINE}
+};
+
+
+struct BloodLineScope : public Scope<BloodLineScope>
+{
+    bool operator()(const Target& target, const EnumCondition& condition) const;
+};
+
+
+template<>
+enum struct Scope<BloodLineScope>::EnumCondition
+{
+    NOT_SET,
+    HAS_BLOODLINE_FLAG,
+    HAD_BLOODLINE_FLAG,
+};
+
+template<>
+Scope<BloodLineScope>::EnumConditionMap Scope<BloodLineScope>::condition_enum_map 
+{
+    {"has_bloodline_flag", EnumCondition::HAS_BLOODLINE_FLAG},
+    {"had_bloodline_flag", EnumCondition::HAD_BLOODLINE_FLAG}
+};
+
+template<>
+Scope<BloodLineScope>::EnumScopeChangeMap Scope<BloodLineScope>::scope_change_enum_map 
+{
+
+};
 
 template<typename ScopeType> //this means scope cannot change within a condition block, I think this is true
 struct ICondition
@@ -237,8 +283,13 @@ struct Condition : ICondition<ScopeType>
 {
     using IConditionType = ICondition<ScopeType>;
 
+
+    typename ScopeType::EnumCondition condition_enum;
+    
+    Target target;
+    
     Condition(parser::Node node, bool& is_success) :
-        IConditionType(node.name, IConditionType::Type::CONDITION), target(node, is_success), condition_name(ScopeType::get_condition_name(node))
+        IConditionType(node.name, IConditionType::Type::CONDITION), target(node, is_success), condition_enum(ScopeType::get_condition_enum(node))
     {
 
     }
@@ -252,12 +303,8 @@ struct Condition : ICondition<ScopeType>
 
     virtual bool operator()(const ScopeType& scope) const override
     {
-        return scope(this->target, condition_name);
+        return scope(this->target, this->condition_enum);
     }
-
-    typename ScopeType::ConditionName condition_name;
-    
-    Target target;
 };
 
 
@@ -272,7 +319,6 @@ struct ConditionBlock : ICondition<ScopeType>
         AND
     };
     
-
 
     Type block_type;
     std::vector<std::unique_ptr<ICondition<ScopeType>>> conditions;
@@ -389,21 +435,20 @@ template <typename ScopeType, typename ChildScopeType>
 struct ScopeChangeBlock : public ConditionBlock<ScopeType>
 {
     std::vector<std::unique_ptr<ICondition<ChildScopeType>>> conditions;
-    ScopeType::ScopeChangeName name;
+    ScopeType::EnumScopeChange scope_change_name;
 
 
     ScopeChangeBlock(const parser::Node& node, bool& is_success) : 
         ConditionBlock<ScopeType>(node, is_success, std::type_identity<ScopeChangeBlock>{}, std::type_identity<ChildScopeType>{}) 
     {
-        if (node.name == "any_owned_bloodline")
-            this->name = ScopeType::ScopeChangeName::ANY_OWNED_BLOODLINE;
+        this->scope_change_name = ScopeType::get_scope_change_enum(node);
     }
 
 
     virtual bool operator()(const ScopeType& scope) const override 
     {
         ChildScopeType child_scope;
-        while (scope.populate(child_scope, this->name))
+        while (scope.populate(child_scope, this->scope_change_name))
         {
             bool is_success = true;
             for (const std::unique_ptr<ICondition<ChildScopeType>>& condition : this->conditions)

@@ -18,15 +18,17 @@
 namespace openck::scripting
 {
 
-bool CharacterScope::operator()(const Target & target, const ConditionName & condition) const
+
+template<>
+bool Scope<CharacterScope>::operator()(const Target & target, const EnumCondition & condition) const
 {
     switch (condition)
     {
-    case ConditionName::CONTROLS_RELIGION :
-        return this->controls_religion(target);
+    case EnumCondition::CONTROLS_RELIGION :
+        return static_cast<const CharacterScope*>(this)->controls_religion(target);
         break;
 
-    case ConditionName::RELIGION_GROUP :
+    case EnumCondition::RELIGION_GROUP :
         return false;
 
     default:
@@ -37,19 +39,6 @@ bool CharacterScope::operator()(const Target & target, const ConditionName & con
     assert(false);
 }
 
-CharacterScope::ConditionName CharacterScope::get_condition_name(const parser::Node& node)
-{
-    static std::unordered_map<std::string, ConditionName> name_map
-    {
-        {"controls_religion", ConditionName::CONTROLS_RELIGION},
-        {"religion_group", ConditionName::RELIGION_GROUP}
-    };
-
-    if (name_map.contains(node.name))
-        return name_map.at(node.name);
-    else
-        return ConditionName::NOT_SET;
-}
 
 bool CharacterScope::controls_religion(const Target &target) const
 {
@@ -68,20 +57,6 @@ bool CharacterScope::has_claim(const Target & target) const
 
 bool CharacterScope::has_combat(const Target & target) const
 {
-    return false;
-}
-
-bool CharacterScope::populate(BloodLineScope& blood_line_scope, ScopeChangeName name) const
-{
-    //CharacterScope will store bloodline iterator, and advance it once per call, using it to populate blood_line_scope
-    // when
-    return false;
-}
-
-bool CharacterScope::populate(Scope& scope, ScopeChangeName name) const
-{
-    //CharacterScope will store bloodline iterator, and advance it once per call, using it to populate blood_line_scope
-    // when
     return false;
 }
 

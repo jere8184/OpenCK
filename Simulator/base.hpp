@@ -17,7 +17,7 @@ struct Base
     using Node = parser::Node;
 
     enum struct DynamicFieldType;
-    DynamicFieldType NOT_SET = (DynamicFieldType)0;
+    static const int NOT_SET = 0;
 
     Base(std::string name) : name(name) {}
 
@@ -39,7 +39,7 @@ struct Base
                     was_succes = false;
                 }
             }
-            else if (DynamicFieldType type = static_cast<Derivived*>(this)->get_dynamic_field_type(child_node); type != NOT_SET)
+            else if (DynamicFieldType type = static_cast<Derivived*>(this)->get_dynamic_field_type(child_node); type != (DynamicFieldType)NOT_SET)
             {
                 static_cast<Derivived*>(this)->set_dynamic_field(child_node, type);
             }
@@ -88,7 +88,7 @@ struct Base
 
 
     
-    DynamicFieldType get_dynamic_field_type(const Node& node) {return NOT_SET;}
+    DynamicFieldType get_dynamic_field_type(const Node& node) {return (DynamicFieldType)NOT_SET;}
 
     bool set_dynamic_field(const Node& node, DynamicFieldType type) {return false;}
 
