@@ -3,7 +3,7 @@
 #pragma once
 
 #include "base.hpp"
-#include "utils/colour.h"
+#include "utils/colour.hpp"
 
 #include <string>
 #include <unordered_map>

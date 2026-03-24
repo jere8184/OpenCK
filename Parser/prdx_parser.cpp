@@ -134,7 +134,6 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
 {
     std::stack<std::shared_ptr<Node>> scope_stack;
     std::shared_ptr<Node> current_node = nullptr;
-    std::shared_ptr<Node> completed_block = nullptr;
     Token::Type previous_token_type = Token::Type::NOT_SET;
 
     int node_count = 0; // for debugging
@@ -225,7 +224,8 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
             break;
 
         case Token::Type::BLOCK_END:
-            completed_block = scope_stack.top();
+        {
+            std::shared_ptr<Node> completed_block = scope_stack.top();
             scope_stack.pop();
 
             if (scope_stack.size() == 0)
@@ -244,7 +244,7 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
             completed_block.reset();
             previous_token_type = Token::Type::BLOCK_END;
             break;
-
+        }
         default:
             break;
         }
@@ -280,8 +280,6 @@ std::string read_file(const std::filesystem::path& path)
 
 bool generate_nodes(const std::filesystem::path& path, std::vector<Node>& nodes)
 {
-    bool res = true;
-
     const std::string& file_contents = read_file(path);
     
     std::vector<Token> tokens;
@@ -289,9 +287,9 @@ bool generate_nodes(const std::filesystem::path& path, std::vector<Node>& nodes)
 
     nodes.reserve(tokens.size());
 
-    res = create_nodes(tokens, nodes);
-
-    return res;
+    return create_nodes(tokens, nodes);
 }
+
+bool generate_chunks();
 
 } //openck

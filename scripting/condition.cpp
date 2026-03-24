@@ -1,120 +1,120 @@
 
+
+
 #include "condition.hpp"
 
-#include "parser/prdx_parser.h"
+#include "religion.hpp"
 
-#include "simulator/charecter.hpp"
-#include "simulator/traits.hpp"
+#include "charecter.hpp"
 
-#include <string>
-#include <unordered_map>
-#include <map>
-#include <utility>
-#include <compare>
-#include <cassert>
-#include <stack>
-#include <memory>
-
-namespace openck::scripting
+namespace openck 
 {
 
-
-template<>
-bool Scope<CharacterScope>::operator()(const Target & target, const EnumCondition & condition) const
+bool ConditionBlock::execute()
 {
-    switch (condition)
-    {
-    case EnumCondition::CONTROLS_RELIGION :
-        return static_cast<const CharacterScope*>(this)->controls_religion(target);
-        break;
-
-    case EnumCondition::RELIGION_GROUP :
-        return false;
-
-    default:
-        assert(false);
-        return false;
-        break;
-    }
-    assert(false);
+	while(advance())
+	{
+		switch (static_cast<OpCode>(*(this->ip)))
+		{
+			case OpCode::SCOPE_CHARECTER:
+				//load charecter in this->root? 
+				execute_charecter();
+				break;
+		}
+	}
 }
 
-
-bool CharacterScope::controls_religion(const Target &target) const
+bool ConditionBlock::execute_charecter()
 {
-    return charecter->controls_religion() == target.data.bool_val;
+	simulator::Charecter* root = static_cast<simulator::Charecter*>(this->root); 
+	bool result;
+
+	while (advance())
+	{
+		switch (static_cast<CharecterOpCode>(*(this->ip)))
+		{
+		case CharecterOpCode::CONTROLS_RELIGION:
+			result = controls_religion(root);
+			break;
+		
+		case CharecterOpCode::RELIGION:
+			result = religion(root);
+
+		case CharecterOpCode::SCOPE_ANY_OWNED_BLOODLINE:
+			result = any_owned_bloodline(root);
+		
+		default:
+			break;
+		}
+
+		// needs to be switch
+		StatusCode status_code = evaluate_result(result);
+		if (status_code == StatusCode::SUCCESS)
+			return true;
+		else if (status_code == StatusCode::FAILURE)
+			return false;
+		else
+			continue;
+	}
+	return false;
 }
 
-bool CharacterScope::religion_group(const Target & target) const
+bool ConditionBlock::execute_bloodline()
 {
-    return charecter->get_religion()->group == target.data.religion_group;
+	return false;
 }
 
-bool CharacterScope::has_claim(const Target & target) const
+bool ConditionBlock::advance()
 {
-    return charecter->all_claims.contains(target.data.title);
+	return ++this->ip != this->instructions.end();
 }
 
-bool CharacterScope::has_combat(const Target & target) const
+bool ConditionBlock::controls_religion(simulator::Charecter *charecter)
 {
-    return false;
+	simulator::Religion* religion = static_cast<simulator::Religion*>(this->load_pointer());
+	return religion->get_head() == charecter;
 }
 
-Target::Target(const parser::Node & node, bool& is_success)
+bool ConditionBlock::religion(simulator::Charecter *charecter)
 {
-    if (dynamic_data_location_map.contains(node.value))
-    {
-        this->data_location = dynamic_data_location_map.at(node.value);
-    }
-    else
-    {
-        this->data_location = Target::DataLocation::STATIC;
-        if (!this->read_static_data(node))
-        {
-            is_success = false;
-            return;
-        }
-    }
+	simulator::Religion* religion = static_cast<simulator::Religion*>(this->load_pointer());
+	return religion == charecter->religion;
 }
 
-bool Target::read_static_data(const openck::parser::Node& node)
+bool ConditionBlock::any_owned_bloodline(simulator::Charecter *charecter)
 {
+	for (simulator::BloodLine* bloodline : charecter->bloodlines)
+		execute_bloodline();
+}
 
-    //one approch is for each condition, we have a bit set of valid target values and use this to chose what data to attempt to load.
-    if (node.get_value(this->data.bool_val))
-    {
-        this->type = Target::Type::BOOL;
-    }
-    else if (simulator::ReligionGroup* religion_group = simulator::ReligionGroup::get_by_name(node.value))
-    {
-        this->type = Target::Type::RELIGION_GROUP;
-        this->data.religion_group = religion_group;
-    }
-    else if (simulator::Religion* religion = simulator::Religion::get_by_name(node.value))
-    {
-        this->type = Target::Type::RELIGION;
-        this->data.religion = religion;
-    }
-    else if (const simulator::Trait* trait = simulator::Trait::get_by_name(node.value))
-    {
-        this->type = Target::Type::Trait;
-        this->data.trait = trait;
-    }
-    else
-    {
-        return false;
-    }
+void* ConditionBlock::load_pointer()
+{
+	this->advance();
+	return this->pointers[*(this->ip)];
+} 
 
-    return true;
-    
-    //if (target.type_bitset.test((size_t)Target::Type::RELIGION_GROUP))
-    {
-        //Dummy function to get religion group from name
-        /*simulator::ReligionGroup* religion_group = simulator::ReligionGroup::get_religion_group_by_name(node.value);
-        if (religion_group != nullptr)
-            target.type = Target::Type::RELIGION_GROUP;
-            return true;*/
-    }
+StatusCode ConditionBlock::evaluate_result(bool result)
+{
+	switch (this->stack.top())
+	{
+	case BlockType::AND:
+		return result ? StatusCode::CONTINUE : StatusCode::FAILURE;
+		break;
+	case BlockType::OR:
+		return result ? StatusCode::SUCCESS : StatusCode::CONTINUE;
+		break;
+	case BlockType::NOR:
+		return result ? StatusCode::FAILURE : StatusCode::CONTINUE;
+		break;
+	case BlockType::NAND:
+		return result ? StatusCode::CONTINUE : StatusCode::SUCCESS;
+		break;
+	default:
+		return StatusCode::NOT_HANDLED;
+		break;
+	}
+
+
 }
 
 }

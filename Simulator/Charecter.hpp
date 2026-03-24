@@ -77,9 +77,13 @@ namespace openck::simulator
         Date dateOfBirth ={};
         Date dateOfDeath = {};
         Holding* location = nullptr;
-        Religion* religion = nullptr;
+        
+		Religion* religion = nullptr;
         Religion* secret_religion = nullptr;
-        Attributes attributes = {};
+        
+		std::vector<BloodLine*> bloodlines;
+		
+		Attributes attributes = {};
         bool ai = false;
 
         std::set<const Title*> strong_claims;
@@ -90,7 +94,8 @@ namespace openck::simulator
 
         bool can_copy_personality_trait_from(Charecter* someone_elese) const;
         bool can_grant_title(Charecter* someone_else) const;
-        Religion* get_religion() const {return nullptr;};
+        
+		Religion* get_religion() const {return nullptr;};
         bool controls_religion() const {return false;} 
         
         // house

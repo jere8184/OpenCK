@@ -16,11 +16,11 @@ Trait::Trait(std::string name) : Base(name) {};
 bool Trait::set_potential(const Node &node)
 {
     bool is_success = true;
-    scripting::ConditionBlock<scripting::CharacterScope> block = scripting::ConditionBlock<scripting::CharacterScope>(node, is_success);
+    //scripting::ConditionBlock block = scripting::ConditionBlock<scripting::CharacterScope>(node, is_success);
     
     if (is_success)
     {
-        this->condition_block.emplace(std::move(block));
+        //this->condition_block.emplace(std::move(block));
         return true;
     }
     else

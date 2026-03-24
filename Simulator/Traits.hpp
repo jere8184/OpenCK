@@ -21,8 +21,6 @@ struct Phase;
 struct UnitType;
 struct Terrain;
 
-
-
 struct Trait : public Base<Trait>
 {
     using BaseType = Base<Trait>;
@@ -193,9 +191,9 @@ struct Trait : public Base<Trait>
     Greeting adjectives; 
     Opinon opinion;
     Buffs buffs;
-    
-    std::optional<openck::scripting::ConditionBlock<scripting::CharacterScope>> condition_block;
-    
+
+    //std::optional<openck::scripting::ConditionBlock> condition_block;
+
     //Trait(const Node& trait_node, bool& was_success);
     //Trait& operator=(Trait&& trait);
 
@@ -208,11 +206,17 @@ struct Trait : public Base<Trait>
     bool set_potential(const Node& node);
 
     bool set_attribute(const Node& node);
+
     bool set_education(const Node& node);
+
     bool set_martial_modifier(const Node& node);
+
     bool set_diplomacy_modifier(const Node& node);
+
     bool set_stewardship_modifier(const Node& node);
+
     bool set_intrigue_modifier(const Node& node);
+
     bool set_learning_modifier(const Node& node);
     
     bool set_greeting(const Node &node, const Greeting::Target target, const Greeting::Type type);
@@ -228,6 +232,7 @@ struct Trait : public Base<Trait>
     bool set_stat_penalty(const Node &node, const StatType stat_type);
     
     bool set_opinion_modifer(const Node& node, const Opinon::From from);
+
     bool set_opposites(const Node& node);
     
     bool set_command_modifier(const Node& node);

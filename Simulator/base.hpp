@@ -91,17 +91,16 @@ struct Base
     DynamicFieldType get_dynamic_field_type(const Node& node) {return (DynamicFieldType)NOT_SET;}
 
     bool set_dynamic_field(const Node& node, DynamicFieldType type) {return false;}
-
-    static std::unordered_map<std::string, Derivived> map;
-    
-    using FieldSetters = std::unordered_map<std::string, std::function<bool(Derivived*, const parser::Node&)>>;
-    
+        
     static Derivived* get_by_name(const std::string& name) { return Base::map.contains(name) ? &Base::map.at(name) : nullptr; }
     
     using Id = size_t;
+
+    //maps node names to their functions
+    using FieldSetters = std::unordered_map<std::string, std::function<bool(Derivived*, const parser::Node&)>>;
     
     static FieldSetters field_setters;
-    
+    static std::unordered_map<std::string, Derivived> map;
     std::string name;
     Id id;
 };

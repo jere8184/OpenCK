@@ -7,6 +7,7 @@
 #include <concepts>
 #include <utility>
 #include <filesystem>
+#include <cstddef>
 
 namespace openck::parser 
 {
@@ -36,6 +37,7 @@ struct Token
         this->text = text;
     }
 };
+
 
 template<typename T>
 concept Numeric = std::integral<T> || std::floating_point<T>;
@@ -97,5 +99,13 @@ struct Node
     }
 };
 
-    bool generate_nodes(const std::filesystem::path &path, std::vector<Node>& nodes);
+bool generate_nodes(const std::filesystem::path &path, std::vector<Node>& nodes);
+
+
+
+struct Chunk
+{
+    std::vector<std::byte> code;
+};
+
 };
