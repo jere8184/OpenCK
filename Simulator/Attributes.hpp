@@ -2,7 +2,7 @@
 
 namespace openck::simulator
 {
-    enum struct AttributesType 
+    enum struct AttributesType
     {
         NOT_SET,
         DIPLOMACY,
@@ -12,7 +12,7 @@ namespace openck::simulator
         MARTIAL,
         COMBAT_RATING
     };
-   
+
     struct Attributes
     {
         int diplomacy = 0;
@@ -30,8 +30,7 @@ namespace openck::simulator
         int combat_penalty = 0;
     };
 
-
-    enum struct StatType 
+    enum struct StatType
     {
         NOT_SET,
         HEALTH,

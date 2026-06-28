@@ -1,5 +1,4 @@
 
-
 #pragma once
 
 #include "base.hpp"
@@ -11,47 +10,53 @@
 
 namespace openck::simulator
 {
-    struct Charecter;
-    struct GraphicalCulture;
 
-    struct ReligionGroup : Base<ReligionGroup>
-    {
-        struct Flags
-        {
-            bool has_coa_on_barony_only = false;
-            GraphicalCulture* graphical_culture = nullptr;
-            bool crusade_cb = false;
-            bool playable = false;
-            bool hostile_within_group = false;
-            
-            bool ai_peaceful = false;
-            bool ai_fabricate_claims = true;
+struct Character;
+struct GraphicalCulture;
 
-            int ai_convert_same_group = 0;
-            int ai_convert_other_group = 0;
+struct ReligionGroup : Base<ReligionGroup>
+{
+	struct Flags
+	{
+		bool has_coa_on_barony_only = false;
+		const GraphicalCulture* graphical_culture = nullptr;
+		bool crusade_cb = false;
+		bool playable = false;
+		bool hostile_within_group = false;
 
-            openck::util::Colour color;
-        };
+		bool ai_peaceful = false;
+		bool ai_fabricate_claims = true;
 
-        Flags flags;
+		int ai_convert_same_group = 0;
+		int ai_convert_other_group = 0;
 
-        std::vector<std::string> male_names;
-        std::vector<std::string> female_names;
+		openck::util::Colour color;
+	};
 
-        ReligionGroup(const std::string& name) : Base(name) {}
+	Flags flags;
 
-        static void allocate_range(const std::vector<parser::Node>& nodes);
+	std::vector<std::string> male_names;
+	std::vector<std::string> female_names;
 
-        static bool initalise_range(const std::vector<parser::Node>& nodes);
-    };
+	ReligionGroup(const std::string& name) : Base(name) {}
 
-    struct Religion : Base<Religion>
-    {
-        ReligionGroup* group;
-        float moral_authority;
+	static void allocate_range(const std::vector<parser::Node>& nodes);
 
-        Religion(const std::string& name) : Base(name) {}
+	static bool initalise_range(const std::vector<parser::Node>& nodes);
+};
 
-        Charecter* get_head(){return nullptr;};
-    };
+struct Religion : Base<Religion>
+{
+	ReligionGroup* group;
+	float moral_authority;
+	const Character* head;
+
+	Religion(const std::string& name) : Base(name) {}
+
+	static void init_field_setters() {};
+	static void init_static_objects();
+
+	Character* get_head() const {return nullptr;}
+};
+
 }

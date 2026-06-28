@@ -4,4 +4,4 @@
 class Modifiers
 {
 
-};
+;

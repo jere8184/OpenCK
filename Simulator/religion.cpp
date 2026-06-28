@@ -1,9 +1,8 @@
 
-
 #include "religion.hpp"
 #include "culture.hpp"
 
-#include "utils/colour.h"
+#include "utils/colour.hpp"
 
 #include <algorithm>
 #include <ranges>
@@ -14,93 +13,100 @@ namespace openck::simulator
 using openck::util::Colour;
 
 template<>
-Base<ReligionGroup>::FieldSetters Base<ReligionGroup>::field_setters = 
+Base<ReligionGroup>::FieldSetters Base<ReligionGroup>::field_setters =
 {
-    {"has_coa_on_barony_only",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.has_coa_on_barony_only);}},
-    {"playable",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.playable);}},
-    {"hostile_within_group",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.hostile_within_group);}},
+	{"has_coa_on_barony_only",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.has_coa_on_barony_only);}},
+	{"playable",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.playable);}},
+	{"hostile_within_group",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.hostile_within_group);}},
 
-    {"crusade_cb",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.crusade_cb);}},
-   
+	{"crusade_cb",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.crusade_cb);}},
 
-    {
-        "graphical_culture", 
-        [](ReligionGroup* religion_group, const Node& node)
-        {
-            GraphicalCulture* grapical_culture = GraphicalCulture::get_by_name(node.name);
-            religion_group->flags.graphical_culture = grapical_culture;
-            return grapical_culture != nullptr;
-        }
-    },
 
-    {"interface_skin", [](ReligionGroup* religion_group, const Node& node){return true; /*todo*/}},
-    
-    {"ai_peaceful",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_peaceful);}},
-    {"ai_convert_same_group",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_same_group);}},
-    {"ai_convert_other_group", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_other_group);}},
-    {"ai_fabricate_claims", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_fabricate_claims);}},
+	{
+		"graphical_culture",
+		[](ReligionGroup* religion_group, const Node& node)
+		{
+			const GraphicalCulture* grapical_culture;
+			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::get_by_name(grapical_culture, node.name));
+			religion_group->flags.graphical_culture = grapical_culture;
+			return StatusCode::SUCCESS;
+		}
+	},
 
-    
-    {"colour", [](ReligionGroup* religion_group, const Node& node){return Colour::create_from_node(node, religion_group->flags.color);}},
+	{"interface_skin", [](ReligionGroup* religion_group, const Node& node){return StatusCode::SUCCESS; /*todo*/}},
 
-    {"male_name", [](ReligionGroup* religion_group, const Node& node){ for(const Node& child : node.children) religion_group->male_names.push_back(child.name); return true;}},
-    {"female_name", [](ReligionGroup* religion_group, const Node& node){ for(const Node& child : node.children) religion_group->female_names.push_back(child.name); return true;}}
+	{"ai_peaceful",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_peaceful);}},
+	{"ai_convert_same_group",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_same_group);}},
+	{"ai_convert_other_group", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_other_group);}},
+	{"ai_fabricate_claims", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_fabricate_claims);}},
+
+
+	{"colour", [](ReligionGroup* religion_group, const Node& node){return Colour::create_from_node(node, religion_group->flags.color);}},
+
+	{"male_name", [](ReligionGroup* religion_group, const Node& node){ for(const Node& child : node.children) religion_group->male_names.push_back(child.name); return StatusCode::SUCCESS;}},
+	{"female_name", [](ReligionGroup* religion_group, const Node& node){ for(const Node& child : node.children) religion_group->female_names.push_back(child.name); return StatusCode::SUCCESS;}}
 
 };
 
 void ReligionGroup::allocate_range(const std::vector<parser::Node>& nodes)
 {
-    for (const parser::Node& node : nodes)
-    {
-        if (node.name == "secret_religion_visibility_trigger")
-        {
-            ; //do something
-        }
-        else
-        {
-            ReligionGroup::allocate(node);
+	for (const parser::Node& node : nodes)
+	{
+		if (node.name == "secret_religion_visibility_trigger")
+		{
+			; //do something
+		}
+		else
+		{
+			ReligionGroup::allocate(node);
 
-            for (const Node& child : node.children)
-            {
-                if (child.type == Node::Type::BLOCK && !ReligionGroup::field_setters.contains(child.name))
-                    Religion::allocate(child);
-            }
-                
-        }
-    }
+			for (const Node& child : node.children)
+			{
+				if (child.type == Node::Type::BLOCK && !ReligionGroup::field_setters.contains(child.name))
+					Religion::allocate(child);
+			}
+
+		}
+	}
 }
 
 bool ReligionGroup::initalise_range(const std::vector<parser::Node>& nodes)
 {
-    bool was_success;
-    for (const parser::Node& node : nodes)
-    {
-        if (node.name == "secret_religion_visibility_trigger")
-        {
-            ; //do something
-        }
-        else
-        {
-            if (!ReligionGroup::initalise(node)) was_success = false;
-            //Religion::initalise_range(node.children);
-        }
-    }
+	bool was_success;
+	for (const parser::Node& node : nodes)
+	{
+		if (node.name == "secret_religion_visibility_trigger")
+		{
+			; //do something
+		}
+		else
+		{
+			if (!ReligionGroup::initalise(node)) was_success = false;
+			//Religion::initalise_range(node.children);
+		}
+	}
 
-    return was_success;
+	return was_success;
 }
 
-
+void Religion::init_static_objects()
+{
+	map =
+	{
+		{"pagan_reformation", Religion("pagan_reformation")}
+	};
+};
 
 template<>
 enum struct Base<ReligionGroup>::DynamicFieldType
 {
-    NOT_SET
+	NOT_SET
 };
 
 template<>
 enum struct Base<Religion>::DynamicFieldType
 {
-    NOT_SET
+	NOT_SET
 };
 
 }

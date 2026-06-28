@@ -8,7 +8,8 @@
 
 namespace openck::simulator
 {
-    struct Terrain : Base<Terrain>
-    {
-    };
+
+struct Terrain : Base<Terrain>
+{};
+
 }
