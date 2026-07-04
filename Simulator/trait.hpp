@@ -151,7 +151,7 @@ struct Trait : public Base<Trait>
 		std::unordered_map<const ReligionGroup*, int> religion_group_opinions;
 	};
 
-	struct Moddifiers
+	struct modifiers
 	{
 		float diplomacy = 0.0;
 		float diplomacy_penalty = 0.0;
@@ -230,7 +230,7 @@ struct Trait : public Base<Trait>
 		float local_build_cost_temple_modifier = 0.0;
 	};
 
-	struct CommandModdifiers
+	struct Commandmodifiers
 	{
 		float cavalry = 0;
 		float center = 0;
@@ -258,8 +258,8 @@ struct Trait : public Base<Trait>
 
 	Flags flags;
 	Attributes attribute_modifiers;
-	Moddifiers moddifiers;
-	CommandModdifiers command_modifiers;
+	modifiers modifiers;
+	Commandmodifiers command_modifiers;
 	Stats stat_modifiers;
 	Greeting adjectives;
 	Opinon opinion;
