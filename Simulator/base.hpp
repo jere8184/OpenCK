@@ -31,13 +31,18 @@ struct Base
 			if (field_setters.contains(child.name))
 			{
 				// JM: we need to eventually error on StatusCode::NOT_IMPLIMENTED
-				if (StatusCode statusCode = field_setters.at(child.name)(static_cast<Derived*>(this), child); StatusCode::SUCCESS == statusCode || StatusCode::NOT_IMPLIMENTED == statusCode)
+				if (StatusCode statusCode = child.debugging.store_and_forward_result(
+						field_setters.at(child.name)(static_cast<Derived*>(this), child),
+						"set field"
+					);
+					StatusCode::SUCCESS == statusCode || StatusCode::NOT_IMPLIMENTED == statusCode)
 				{
-					continue;
+					;
 				}
 				else
 				{
-					std::println(stderr, "set field <{}> for <{}>, failed with <{}>", child.name, this->name, status_code_to_string(statusCode));
+					//std::println(stderr, "set field <{}> for <{}>, failed with <{}>", child.name, this->name, status_code_to_string(statusCode));
+					std::println(stderr, "{}", Node::Debugging::report_error<true>(child));
 					was_succes = false;
 				}
 			}
@@ -47,11 +52,14 @@ struct Base
 			}
 			else
 			{
-				std::println(stderr, "Unknown field <{}> for : <{}>", child.name, this->name);
+				if (child.value.size())
+					std::println(stderr, "Unknown field <{} = {}> for : <{}>", child.path_to_string(), child.value, this->name);
+				else
+					std::println(stderr, "Unknown field <{}> for : <{}>", child.path_to_string(), this->name);
 				was_succes = false;
 			}
 		}
-		return true;
+		return was_succes;
 	}
 
 	static void allocate_range(const std::vector<Node>& nodes)

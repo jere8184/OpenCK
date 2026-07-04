@@ -151,7 +151,7 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
 				current_node->op = token_type_to_node_operator(previous_token_type);
 				if (scope_stack.size())
 				{
-					scope_stack.top()->AddChild(*current_node);
+					scope_stack.top()->add_child(*current_node);
 					current_node.reset();
 				}
 				current_node = nullptr;
@@ -161,7 +161,7 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
 				if (current_node != nullptr && current_node->value.empty() && scope_stack.size()) //lists
 				{
 					current_node->type = Node::Type::STRING;
-					scope_stack.top()->AddChild(*current_node);
+					scope_stack.top()->add_child(*current_node);
 					current_node.reset();
 				}
 
@@ -180,7 +180,7 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
 				current_node->op = token_type_to_node_operator(previous_token_type);
 				if (scope_stack.size())
 				{
-					scope_stack.top()->AddChild(*current_node);
+					scope_stack.top()->add_child(*current_node);
 					current_node.reset();
 				}
 				current_node = nullptr;
@@ -201,7 +201,7 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
 		case Token::Type::NEW_LINE:
 			if (current_node && scope_stack.size())
 			{
-				scope_stack.top()->AddChild(*current_node);
+				scope_stack.top()->add_child(*current_node);
 				current_node.reset();
 			}
 
@@ -236,10 +236,10 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
 			{
 				if (current_node)
 				{
-					completed_block->AddChild(*current_node);
+					completed_block->add_child(*current_node);
 					current_node.reset();
 				}
-				scope_stack.top()->AddChild(*completed_block);
+				scope_stack.top()->add_child(*completed_block);
 			}
 			completed_block.reset();
 			previous_token_type = Token::Type::BLOCK_END;

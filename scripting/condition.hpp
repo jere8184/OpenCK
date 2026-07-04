@@ -15,6 +15,7 @@ namespace openck
 namespace simulator
 {
 struct Character;
+struct Culture;
 struct Title;
 struct Province;
 struct War;
@@ -36,15 +37,26 @@ namespace scripting
 
 struct ConditionBlock
 {
+	using Node = openck::parser::Node;
+
 	ConditionBlock();
 
-	enum struct ValueOpCode
+	enum struct LoadOpCode : uint8_t
 	{
 		LOAD_TRUE,
 		LOAD_FALSE,
 		LOAD_IMEDIATE,
+		LOAD_STRING,
 		LOAD_FROM,
-		LOAD_ROOT
+		LOAD_ROOT,
+		LOAD_NUMBER,
+	};
+
+	enum struct DateOpCode
+	{
+		LOAD_DAY,
+		LOAD_MONTH,
+		LOAD_YEAR
 	};
 
 	enum struct BlockType : uint8_t
@@ -60,12 +72,11 @@ struct ConditionBlock
 		enum struct OpCode : uint8_t
 		{
 			RETURN = 200,
-			SCOPE_CHARACTER,
-			SCOPE_OR,
-			SCOPE_AND,
-			SCOPE_NOR,
-			SCOPE_NAND,
-			SCOPE_NOT,
+			OR,
+			AND,
+			NOR,
+			NAND,
+			NOT,
 			CONTROL_OP_CODE_MAX
 		};
 
@@ -88,8 +99,8 @@ struct ConditionBlock
 		{
 			CONTROLS_RELIGION = static_cast<uint8_t>(AnyScope::OpCode::MAX_VALUE),
 			RELIGION,
+			CULTURE,
 			RELIGION_GROUP,
-			SCOPE_ANY_OWNED_BLOODLINE,
 			IS_TRIBAL,
 			TRAIT,
 			IS_RULER,
@@ -97,19 +108,30 @@ struct ConditionBlock
 			CHARACTER,
 			SOCIETY_MEMBER_OF,
 			HAS_RELIGION_FEATURE,
-			ANY_OWNED_BLOODLINE
+			ANY_OWNED_BLOODLINE,
+			AGE,
+			IS_THEOCRACY,
+			AI,
+			PRISONER,
+			RACE,
+			HAS_FLAG,
 		};
 
 		static std::unordered_map<std::string, OpCode> name_to_opcode;
 	};
 
-	std::vector<uint8_t> instructions; ///< List of instructions to execute when evaluating this block.
-	std::vector<uint8_t>::iterator ip; ///< Instruction pointer.
-	std::vector<const void*> pointers; ///< List of pointers
-	std::stack<BlockType> stack;
+	struct BloodlineScope
+	{
+		enum struct OpCode : uint8_t
+		{
+			BLOODLINE = static_cast<uint8_t>(AnyScope::OpCode::MAX_VALUE),
+			BLOODLINE_IS_ACTIVE_FOR,
+			HAD_BLOODLINE_FLAG,
+			HAS_BLOODLINE_FLAG,
+		};
 
-	void* root_register;
-	void* from_register;
+		static std::unordered_map<std::string, OpCode> name_to_opcode;
+	};
 
 	StatusCode execute();
 
@@ -129,24 +151,47 @@ struct ConditionBlock
 
 	bool advance();
 
-	StatusCode compile_tree(const openck::parser::Node& node);
+	template <typename ScopeType>
+	StatusCode compile(const Node& node);
 
-	template <typename T>
-	StatusCode compile(const openck::parser::Node& node);
+	StatusCode compile_had_flag(const Node& node);
 
-	template <typename T>
-	StatusCode handle_opcode(const openck::parser::Node& node, const CharacterScope::OpCode op_code);
+	StatusCode compile_date(const Node& node);
 
-	StatusCode handle_anyscope_opcode(const openck::parser::Node& node, const AnyScope::OpCode op);
+	template <typename ScopeType, typename OpCode>
+	StatusCode handle_opcode(const Node& node, const OpCode op_code);
+
+	StatusCode handle_anyscope_opcode(const Node& node, const AnyScope::OpCode op);
 
 	StatusCode evaluate_result(bool result);
 
-	StatusCode append_bool_val(const parser::Node& node);
+	StatusCode append_bool_val(const Node& node);
 
 	template <typename SimulatorType>
-	StatusCode append_imdieate(const parser::Node& node);
+	StatusCode append_pointer(const Node& node);
 
-	StatusCode append_register(const parser::Node& node);
+	StatusCode append_register(const Node& node);
+
+	template <bool SHOULD_APPEND_LOAD_OPCODE>
+	StatusCode append_string(const Node& node);
+
+	template <bool SHOULD_APPEND_LOAD_OPCODE>
+	StatusCode append_number(const Node& node);
+
+	template <bool SHOULD_APPEND_LOAD_OPCODE, ConditionBlock::LoadOpCode LOAD_OPOCDE>
+	void append_immediate(auto& immediate_list, const auto& val);
+
+	std::vector<uint8_t> instructions; ///< List of instructions to execute when evaluating this block.
+	std::vector<uint8_t>::iterator ip; ///< Instruction pointer.
+	
+	std::vector<const void*> pointers; ///< List of pointers
+	std::vector<std::string> strings; ///< List of strings
+	std::vector<float> numbers; ///< List of strings
+
+	std::stack<BlockType> stack;
+
+	void* root_register;
+	void* from_register;
 };
 
 struct Scope : ConditionBlock
@@ -171,31 +216,32 @@ struct characterScope : Scope
 	bool controls_religion() const;
 };
 
-
-template <typename T>
-StatusCode ConditionBlock::compile(const openck::parser::Node& node)
+template <typename ScopeType>
+StatusCode ConditionBlock::compile(const Node& node)
 {
-	for (const openck::parser::Node& child : node.children)
+	for (const Node& child : node.children)
 	{
-		if (const auto iter = CharacterScope::name_to_opcode.find(child.name); CharacterScope::name_to_opcode.end() != iter)
+		if (const auto iter = ScopeType::name_to_opcode.find(child.name); ScopeType::name_to_opcode.end() != iter)
 		{
 			this->instructions.push_back(static_cast<uint8_t>(iter->second));
-			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<T>(child, iter->second));
+			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
 		}
 		else if (const auto iter2 = Control::name_to_opcode.find(child.name); Control::name_to_opcode.end() != iter2)
 		{
 			this->instructions.push_back(static_cast<uint8_t>(iter2->second));
-			if (node.children.size())
-				RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<T>(child));
+			if (child.children.size())
+				RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+			else
+				;
 		}
 		else if (const auto iter3 = AnyScope::name_to_opcode.find(child.name); AnyScope::name_to_opcode.end() != iter3)
 		{
 			this->instructions.push_back(static_cast<uint8_t>(iter3->second));
-			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second));
+			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
 		}
 		else
 		{
-			return StatusCode::NOT_FOUND;
+			return child.debugging.store_and_forward_result(StatusCode::NOT_FOUND);
 		}
 	}
 

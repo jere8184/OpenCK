@@ -1,5 +1,7 @@
 #pragma once
 
+#include "base.hpp"
+
 #include "title.hpp"
 #include "date.hpp"
 #include "attributes.hpp"
@@ -59,7 +61,7 @@ namespace openck::simulator
 		FEMALE = 1
 	};
 
-	struct Character
+	struct Character : Base<Character>
 	{
 		Mana mana = {};
 		Stats stats = {};

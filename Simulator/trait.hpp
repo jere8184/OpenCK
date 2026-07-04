@@ -151,33 +151,103 @@ struct Trait : public Base<Trait>
 		std::unordered_map<const ReligionGroup*, int> religion_group_opinions;
 	};
 
-	struct Buffs
+	struct Moddifiers
 	{
-		int monthly_grace = 0;
-		float monthly_character_wealth = 0;
-		float monthly_character_piety = 0;
-		float monthly_character_prestige = 0;
-		float global_tax_modifier = 0.0f;
-		float global_levy_size = 0.0f;
-   };
+		float diplomacy = 0.0;
+		float diplomacy_penalty = 0.0;
+		float stewardship = 0.0;
+		float stewardship_penalty = 0.0;
+		float martial = 0.0;
+		float martial_penalty = 0.0;
+		float intrigue = 0.0;
+		float intrigue_penalty = 0.0;
+		float learning = 0.0;
+		float learning_penalty = 0.0;
+		float fertility = 0.0;
+		float fertility_penalty = 0.0;
+		float health = 0.0;
+		float health_penalty = 0.0;
+		float combat_rating = 0.0;
+		float threat_decay_speed = 0.0;
+		float demesne_size = 0.0;
+		float global_revolt_risk = 0.0;
+		float culture_flex = 0.0;
+		float religion_flex = 0.0;
+		float assassinate_chance_modifier = 0.0;
+		float arrest_chance_modifier = 0.0;
+		float plot_power_modifier = 0.0;
+		float tax_income = 0.0;
+		float global_tax_modifier = 0.0;
+		float local_tax_modifier = 0.0;
+		float monthly_character_prestige = 0.0;
+		float monthly_character_piety = 0.0;
+		float monthly_character_wealth = 0.0;
+		float ai_rationality = 0.0;
+		float ai_zeal = 0.0;
+		float ai_greed = 0.0;
+		float ai_honor = 0.0;
+		float ai_ambition = 0.0;
+		float build_cost_modifier = 0.0;
+		float build_time_modifier = 0.0;
+		float local_build_cost_modifier = 0.0;
+		float local_build_time_modifier = 0.0;
+		float vassal_opinion = 0.0;
+		float sex_appeal_opinion = 0.0;
+		float same_opinion = 0.0;
+		float same_opinion_if_same_religion = 0.0;
+		float opposite_opinion = 0.0;
+		float liege_opinion = 0.0;
+		float general_opinion = 0.0;
+		float global_levy_size = 0.0;
+		float wonder_build_time_modifier = 0.0;
+		float wonder_build_cost_modifier = 0.0;
+		float twin_opinion = 0.0;
+		float dynasty_opinion = 0.0;
+		float spouse_opinion = 0.0;
+		float days_of_supply = 0.0;
+		float attrition = 0.0;
+		//float <religion>_opinion = 0.0;
+		//float <religion_group>_opinion = 0.0;
+		float same_religion_opinion = 0.0;
+		float infidel_opinion = 0.0;
+		//float <religion_group>_church_opinion = 0.0;
+		float church_opinion = 0.0;
+		float town_opinion = 0.0;
+		float tribal_opinion = 0.0;
+		float unreformed_tribal_opinion = 0.0;
+		float levy_size = 0.0;
+		float levy_reinforce_rate = 0.0;
+		float land_morale = 0.0;
+		float global_supply_limit = 0.0;
+		float supply_limit = 0.0;
+		float max_attrition = 0.0;
+		float siege_speed = 0.0;
+		float tradevalue = 0.0;
+		float max_manpower_mult = 0.0;
+		float murder_plot_power_modifier = 0.0;
+		float defensive_plot_power_modifier = 0.0;
+		float build_cost_temple_modifier = 0.0;
+		float local_build_cost_temple_modifier = 0.0;
+	};
 
 	struct CommandModdifiers
 	{
-		float random = 0;
-		float speed = 0;
-		float retreat = 0;
-		float defence = 0;
-		float damage = 0;
-		float center = 0;
-		float flank = 0;
-		float pursue = 0;
-		float siege = 0;
-		float morale_offence = 0;
-		float morale_defence = 0;
 		float cavalry = 0;
-		float religious_enemy = 0;
+		float center = 0;
+		float damage = 0;
+		float defence = 0;
+		float flank = 0;
+		float morale_defence = 0;
+		float morale_offence = 0;
 		float narrow_flank = 0;
+		float pursue = 0;
+		float random = 0;
+		float religious_enemy = 0;
+		float retreat = 0;
+		float siege = 0;
+		float speed = 0;
 		float winter_combat = 0;
+		float winter_supply = 0;
 
 		std::unordered_map<const UnitType*, float> unit_specific_buffs;
 		std::unordered_set<const Terrain*> terraine_specific_buffs;
@@ -188,11 +258,11 @@ struct Trait : public Base<Trait>
 
 	Flags flags;
 	Attributes attribute_modifiers;
+	Moddifiers moddifiers;
 	CommandModdifiers command_modifiers;
 	Stats stat_modifiers;
 	Greeting adjectives;
 	Opinon opinion;
-	Buffs buffs;
 
 	//std::optional<openck::scripting::ConditionBlock> condition_block;
 

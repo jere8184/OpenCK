@@ -61,7 +61,7 @@ std::vector<PathNodesPair> allocate_objects(const std::filesystem::path& folder_
 {
 	std::vector<std::filesystem::path> files = get_text_files(folder_path);
 	std::vector<PathNodesPair> pairs = parse_files(files);
-	std::ranges::for_each(pairs, [](const PathNodesPair p){allocate_objects<ObjectType>(p.second);});
+	std::ranges::for_each(pairs, [](const PathNodesPair& p){allocate_objects<ObjectType>(p.second);});
 	return pairs;
 }
 
@@ -74,7 +74,14 @@ int main()
 	const auto& religion_group_nodes = allocate_objects<openck::simulator::ReligionGroup>("./ck2_dir/common/religions/");
 	const std::vector<PathNodesPair>& trait_nodes = allocate_objects<openck::simulator::Trait>("./ck2_dir/common/traits/");
 
-	std::ranges::for_each(trait_nodes, [](PathNodesPair pair){initalise_objects<openck::simulator::Trait>(pair.second);});
+	std::ranges::for_each(
+		trait_nodes, 
+		[](const PathNodesPair& pair)
+		{
+			std::println("Initalising traits from <{}>", pair.first.generic_string());
+			initalise_objects<openck::simulator::Trait>(pair.second);
+		}
+	);
 
 	return 0;
 }
