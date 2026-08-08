@@ -21,7 +21,7 @@ struct Token
 		NOT_SET,
 		QUOTED_STRING,
 		STRING,
-		EQUALS,
+		EQUAL,
 		LESS,
 		COMMA,
 		NEW_LINE,

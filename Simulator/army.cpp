@@ -32,7 +32,10 @@ namespace openck::simulator
 			{"light_cavalry", UnitType("light_cavalry")},
 			{"knights", UnitType("knights")},
 			{"archers", UnitType("archers")},
-			{"special_troops", UnitType("special_troops")}
+			//JM remove special troops and dynamically load them
+			{"horse_archers", UnitType("horse_archers")},
+			{"war_elephants", UnitType("war_elephants")},
+			{"camel_cavalry", UnitType("camel_cavalry")},
 		};
 	}
 }

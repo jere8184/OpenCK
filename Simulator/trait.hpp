@@ -182,6 +182,7 @@ struct Trait : public Base<Trait>
 		float monthly_character_prestige = 0.0;
 		float monthly_character_piety = 0.0;
 		float monthly_character_wealth = 0.0;
+		float monthly_grace = 0.0;
 		float ai_rationality = 0.0;
 		float ai_zeal = 0.0;
 		float ai_greed = 0.0;

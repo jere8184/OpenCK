@@ -2,6 +2,7 @@
 #pragma once
 
 #include "parser/prdx_parser.h"
+#include "simulator/scripted_trigger.hpp"
 
 #include "utils/status_code.hpp"
 
@@ -43,13 +44,15 @@ struct ConditionBlock
 
 	enum struct LoadOpCode : uint8_t
 	{
+		UNDEFINED,
 		LOAD_TRUE,
 		LOAD_FALSE,
-		LOAD_IMEDIATE,
+		LOAD_POINTER,
 		LOAD_STRING,
 		LOAD_FROM,
 		LOAD_ROOT,
 		LOAD_NUMBER,
+		LOAD_RELIGION_ID,
 	};
 
 	enum struct DateOpCode
@@ -77,7 +80,7 @@ struct ConditionBlock
 			NOR,
 			NAND,
 			NOT,
-			CONTROL_OP_CODE_MAX
+			MAX_VALUE
 		};
 
 		static std::unordered_map<std::string, OpCode> name_to_opcode;
@@ -167,8 +170,11 @@ struct ConditionBlock
 
 	StatusCode append_bool_val(const Node& node);
 
-	template <typename SimulatorType>
+	template <typename SimulatorType, ConditionBlock::LoadOpCode LOAD_OP_CODE = ConditionBlock::LoadOpCode::UNDEFINED>
 	StatusCode append_pointer(const Node& node);
+
+	template <typename SimulatorType, ConditionBlock::LoadOpCode LOAD_OP_CODE = ConditionBlock::LoadOpCode::UNDEFINED>
+	StatusCode append_id(const Node& node);
 
 	StatusCode append_register(const Node& node);
 
@@ -178,7 +184,7 @@ struct ConditionBlock
 	template <bool SHOULD_APPEND_LOAD_OPCODE>
 	StatusCode append_number(const Node& node);
 
-	template <bool SHOULD_APPEND_LOAD_OPCODE, ConditionBlock::LoadOpCode LOAD_OPOCDE>
+	template <ConditionBlock::LoadOpCode LOAD_OPOCDE>
 	void append_immediate(auto& immediate_list, const auto& val);
 
 	std::vector<uint8_t> instructions; ///< List of instructions to execute when evaluating this block.
@@ -238,6 +244,10 @@ StatusCode ConditionBlock::compile(const Node& node)
 		{
 			this->instructions.push_back(static_cast<uint8_t>(iter3->second));
 			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+		}
+		else if (const auto iter4 = simulator::ScriptedTrigger::map.find(child.name); simulator::ScriptedTrigger::map.end() != iter4)
+		{
+			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
 		}
 		else
 		{

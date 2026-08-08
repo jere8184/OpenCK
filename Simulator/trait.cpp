@@ -32,7 +32,7 @@ StatusCode Trait::set_attribute(const Node& node)
 {
 	if (node.value == "intrigue")
 		this->flags.attribute = AttributesType::INTRIGUE;
-	else if (node.value == "martial")
+	else if (node.value == "martia")
 		this->flags.attribute = AttributesType::MARTIAL;
 	else if (node.value == "learning")
 		this->flags.attribute = AttributesType::LEARNING;
@@ -491,7 +491,7 @@ void Trait::init_field_setters()
 	field_setters =
 	{
 		{"attribute", &Trait::set_attribute},
-		{"martial", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::MARTIAL)},
+		{"martia", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::MARTIAL)},
 		{"diplomacy", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::DIPLOMACY)},
 		{"stewardship", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::STEWARDSHIP)},
 		{"intrigue", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::INTRIGUE)},
@@ -511,7 +511,7 @@ void Trait::init_field_setters()
 		{"female_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::FEMALE, Trait::Greeting::Type::COMPLIMENT)},
 		{"child_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::CHILD, Trait::Greeting::Type::COMPLIMENT)},
 
-		{"male_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::INSULT)},
+//		{"male_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::INSULT)},
 		{"female_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::FEMALE, Trait::Greeting::Type::INSULT)},
 		{"child_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::CHILD, Trait::Greeting::Type::INSULT)},
 		{"male_compliment", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::COMPLIMENT)},
@@ -523,7 +523,7 @@ void Trait::init_field_setters()
 		{"fertility_penalty", std::bind(&Trait::set_stat_penalty, std::placeholders::_1, std::placeholders::_2, StatType::FERTILITY)},
 		{"health_penalty", std::bind(&Trait::set_stat_penalty, std::placeholders::_1, std::placeholders::_2, StatType::HEALTH)},
 
-		{"ai_zeal", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::ZEAL)},
+		{"ai_zea", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::ZEAL)},
 		{"ai_greed", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::GREED)},
 		{"ai_ambition", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::AMBITION)},
 		{"ai_rationality", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::RATIONALITY)},
@@ -565,7 +565,7 @@ void Trait::init_field_setters()
 		{"both_parent_has_trait_inherit_chance", [](Trait* trait, const Node& node){return node.get_value(trait->flags.both_parent_has_trait_inherit_chance);}},
 		{"inbred", [](Trait* trait, const Node& node){return node.get_value(trait->flags.inbred);}},
 		{"hidden", [](Trait* trait, const Node& node){return node.get_value(trait->flags.hidden);}},
-		{"immortal", [](Trait* trait, const Node& node){return node.get_value(trait->flags.immortal);}},
+		{"immorta", [](Trait* trait, const Node& node){return node.get_value(trait->flags.immortal);}},
 		{"cannot_inherit", [](Trait* trait, const Node& node){return node.get_value(trait->flags.cannot_inherit);}},
 		{"cannot_marry", [](Trait* trait, const Node& node){return node.get_value(trait->flags.cannot_marry);}},
 		{"agnatic", [](Trait* trait, const Node& node){return node.get_value(trait->flags.agnatic);}},
@@ -594,7 +594,7 @@ void Trait::init_field_setters()
 		{"diplomacy_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.diplomacy_penalty);}},
 		{"stewardship", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.stewardship);}},
 		{"stewardship_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.stewardship_penalty);}},
-		{"martial", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.martial);}},
+		{"martia", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.martial);}},
 		{"martial_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.martial_penalty);}},
 		{"intrigue", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.intrigue);}},
 		{"intrigue_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.intrigue_penalty);}},
@@ -624,8 +624,9 @@ void Trait::init_field_setters()
 		{"monthly_character_prestige", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_character_prestige);}},
 		{"monthly_character_piety", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_character_piety);}},
 		{"monthly_character_wealth", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_character_wealth);}},
+		{"monthly_grace", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_grace);}},
 		{"ai_rationality", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_rationality);}},
-		{"ai_zeal", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_zeal);}},
+		{"ai_zea", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_zeal);}},
 		{"ai_greed", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_greed);}},
 		{"ai_honor", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_honor);}},
 		{"ai_ambition", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_ambition);}},
@@ -666,7 +667,6 @@ void Trait::init_field_setters()
 		{"build_cost_temple_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.build_cost_temple_modifier);}},
 		{"local_build_cost_temple_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.local_build_cost_temple_modifier);}},
 
-
 		{"command_modifier.cavalry", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.cavalry); }},
 		{"command_modifier.center", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.center); }},
 		{"command_modifier.damage", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.damage); }},
@@ -685,7 +685,7 @@ void Trait::init_field_setters()
 		{"command_modifier.winter_supply", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.winter_supply); }},
 		{"command_modifier", std::bind(&Trait::set_command_modifier, std::placeholders::_1, std::placeholders::_2)},
 
-		{"potential", &Trait::set_potential},
+		{"potentia", &Trait::set_potential},
 		{"is_visible", &Trait::set_is_visible},
 		{"random", [](Trait* trait, const Node& node){return node.get_value(trait->flags.random);}},
 	};

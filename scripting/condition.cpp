@@ -4,6 +4,7 @@
 #include "simulator/religion.hpp"
 #include "simulator/character.hpp"
 #include "simulator/date.hpp"
+#include "simulator/flag.hpp"
 
 #include <cassert>
 
@@ -23,7 +24,7 @@ std::unordered_map<std::string, ConditionBlock::CharacterScope::OpCode> Conditio
 	{"religion", OpCode::RELIGION},
 	{"culture", OpCode::CULTURE},
 	{"religion_group", OpCode::RELIGION_GROUP},
-	{"is_tribal", OpCode::IS_TRIBAL},
+	{"is_triba", OpCode::IS_TRIBAL},
 	{"is_theocracy", OpCode::IS_THEOCRACY},
 	{"trait", OpCode::TRAIT},
 	{"is_ruler", OpCode::IS_RULER},
@@ -132,14 +133,6 @@ bool ConditionBlock::religion(simulator::Character *character)
 	return religion == character->religion;
 }
 
-StatusCode ConditionBlock::any_owned_bloodline(simulator::Character *character)
-{
-	/*for (simulator::BloodLine* bloodline : character->bloodlines)
-		execute_bloodline();*/
-
-	return StatusCode::NOT_IMPLIMENTED;
-}
-
 const void* ConditionBlock::load_pointer()
 {
 	this->advance();
@@ -177,31 +170,61 @@ StatusCode ConditionBlock::evaluate_result(bool result)
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::Society>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::Society, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::Culture>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::Culture, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::ReligionFeature>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::ReligionFeature, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::Dlc>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::Dlc, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::BloodLine>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::BloodLine, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+{
+	return StatusCode::NOT_IMPLIMENTED;
+}
+
+template <>
+StatusCode ConditionBlock::append_id<simulator::Society, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+{
+	return StatusCode::NOT_IMPLIMENTED;
+}
+
+template <>
+StatusCode ConditionBlock::append_id<simulator::Culture, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+{
+	return StatusCode::NOT_IMPLIMENTED;
+}
+
+template <>
+StatusCode ConditionBlock::append_id<simulator::ReligionFeature, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+{
+	return StatusCode::NOT_IMPLIMENTED;
+}
+
+template <>
+StatusCode ConditionBlock::append_id<simulator::Dlc, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+{
+	return StatusCode::NOT_IMPLIMENTED;
+}
+
+template <>
+StatusCode ConditionBlock::append_id<simulator::BloodLine, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
@@ -210,6 +233,7 @@ StatusCode ConditionBlock::compile_had_flag(const Node& node)
 {
 	const Node* flag;
 	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_child_by_name(flag, "flag"));
+	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, append_id<simulator::Flag>(*flag));
 	return compile_date(node);
 }
 
@@ -220,38 +244,39 @@ StatusCode ConditionBlock::handle_opcode<ConditionBlock::CharacterScope>(const N
 	{
 		case CharacterScope::OpCode::RELIGION:
 		{
-			return append_pointer<simulator::Religion>(node);
+			return append_id<simulator::Religion, LoadOpCode::LOAD_RELIGION_ID>(node);
+			//others
 			break;
 		}
 		case CharacterScope::OpCode::CONTROLS_RELIGION:
 		{
-			RETURN_RESULT_IF(StatusCode::SUCCESS, ==, append_bool_val(node));
-			return append_pointer<simulator::Religion>(node);
+			return append_bool_val(node);
 			break;
 		}
 		case CharacterScope::OpCode::RELIGION_GROUP:
 		{
-			return append_pointer<simulator::ReligionGroup>(node);
+			return append_id<simulator::ReligionGroup>(node);
+			//others
 			break;
 		}
 		case CharacterScope::OpCode::HAS_RELIGION_FEATURE:
 		{
-			return append_pointer<simulator::ReligionFeature>(node);
+			return append_id<simulator::ReligionFeature>(node);
 			break;
 		}
 		case CharacterScope::OpCode::TRAIT:
 		{
-			return append_pointer<simulator::Trait>(node);
+			return append_id<simulator::Trait>(node);
 			break;
 		}
 		case CharacterScope::OpCode::SOCIETY_MEMBER_OF:
 		{
-			return append_pointer<simulator::Society>(node);
+			return append_id<simulator::Society>(node);
 			break;
 		}
 		case CharacterScope::OpCode::CULTURE:
 		{
-			return append_pointer<simulator::Culture>(node);
+			return append_id<simulator::Culture>(node);
 			break;
 		}
 		case CharacterScope::OpCode::HAS_FLAG:
@@ -332,7 +357,7 @@ StatusCode ConditionBlock::handle_anyscope_opcode(const Node& node, const AnySco
 	{
 		case AnyScope::OpCode::HAS_DLC:
 		{
-			return append_pointer<simulator::Dlc>(node);
+			return append_id<simulator::Dlc>(node);
 			break;
 		}
 		default:
@@ -353,12 +378,24 @@ StatusCode ConditionBlock::append_bool_val(const Node& node)
 	return StatusCode::SUCCESS;
 }
 
-template <typename SimulatorType>
+template <typename SimulatorType, ConditionBlock::LoadOpCode LOAD_OP_CODE>
 StatusCode ConditionBlock::append_pointer(const Node& node)
 {
 	const SimulatorType* ptr;
 	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, SimulatorType::get_by_name(ptr, node.value));
-	append_immediate<true, LoadOpCode::LOAD_IMEDIATE>(this->pointers, ptr);
+	
+	append_immediate<LOAD_OP_CODE>(this->pointers, ptr);
+
+	return StatusCode::SUCCESS;
+}
+
+template <typename SimulatorType, ConditionBlock::LoadOpCode LOAD_OP_CODE>
+StatusCode ConditionBlock::append_id(const Node& node)
+{
+	const SimulatorType* ptr;
+	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, SimulatorType::get_by_name(ptr, node.value));
+	
+	append_immediate<LOAD_OP_CODE>(this->numbers, ptr->id);
 
 	return StatusCode::SUCCESS;
 }
@@ -378,7 +415,10 @@ StatusCode ConditionBlock::append_register(const Node& node)
 template <bool SHOULD_APPEND_LOAD_OPCODE>
 StatusCode ConditionBlock::append_string(const Node& node)
 {
-	append_immediate<SHOULD_APPEND_LOAD_OPCODE, LoadOpCode::LOAD_STRING>(this->strings, node.value);
+	if constexpr (SHOULD_APPEND_LOAD_OPCODE)
+		append_immediate<LoadOpCode::LOAD_STRING>(this->strings, node.value);
+	else
+		append_immediate<LoadOpCode::UNDEFINED>(this->strings, node.value);
 	return StatusCode::SUCCESS;
 }
 
@@ -387,11 +427,16 @@ StatusCode ConditionBlock::append_number(const Node& node)
 {
 	decltype(this->numbers)::value_type val;
 	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
-	append_immediate<SHOULD_APPEND_LOAD_OPCODE, LoadOpCode::LOAD_NUMBER>(this->numbers, val);
+
+	if constexpr (SHOULD_APPEND_LOAD_OPCODE)
+		append_immediate<LoadOpCode::LOAD_NUMBER>(this->numbers, val);
+	else
+		append_immediate<LoadOpCode::UNDEFINED>(this->numbers, val);
+
 	return StatusCode::SUCCESS;
 }
 
-template <bool SHOULD_APPEND_LOAD_OPCODE, ConditionBlock::LoadOpCode LOAD_OPOCDE>
+template <ConditionBlock::LoadOpCode LOAD_OPOCDE>
 void ConditionBlock::append_immediate(auto& immediate_list, const auto& val)
 {
 	uint8_t indx;
@@ -404,7 +449,7 @@ void ConditionBlock::append_immediate(auto& immediate_list, const auto& val)
 	assert(std::numeric_limits<decltype(this->instructions)::value_type>::max() > indx);
 
 	immediate_list.push_back(val);
-	if constexpr(SHOULD_APPEND_LOAD_OPCODE)
+	if constexpr(LoadOpCode::UNDEFINED == LOAD_OPOCDE)
 		this->instructions.push_back(static_cast<uint8_t>(LOAD_OPOCDE));
 	this->instructions.push_back(indx);
 }

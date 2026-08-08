@@ -35,7 +35,7 @@ Base<ReligionGroup>::FieldSetters Base<ReligionGroup>::field_setters =
 
 	{"interface_skin", [](ReligionGroup* religion_group, const Node& node){return StatusCode::SUCCESS; /*todo*/}},
 
-	{"ai_peaceful",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_peaceful);}},
+	{"ai_peacefu",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_peaceful);}},
 	{"ai_convert_same_group",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_same_group);}},
 	{"ai_convert_other_group", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_other_group);}},
 	{"ai_fabricate_claims", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_fabricate_claims);}},
@@ -81,7 +81,7 @@ bool ReligionGroup::initalise_range(const std::vector<parser::Node>& nodes)
 		}
 		else
 		{
-			if (!ReligionGroup::initalise(node)) was_success = false;
+			if (!initalise(node)) was_success = false;
 			//Religion::initalise_range(node.children);
 		}
 	}

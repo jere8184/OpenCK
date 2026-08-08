@@ -1,11 +1,14 @@
 
+#include "prdx_parser.h"
+
+#include <cctype>
 #include <string>
 #include <print>
 #include <vector>
 #include <unordered_map>
 #include <stack>
+#include <cwctype>
 
-#include "prdx_parser.h"
 
 namespace openck::parser
 {
@@ -22,43 +25,51 @@ void tokenise_text(const std::string& source, std::vector<Token>& tokens)
 		{
 			case '\t':
 			case ' ':
+			{
 				break;
-
+			}
 			case '\n':
+			{
 				tokens.emplace_back(Token::Type::NEW_LINE, std::string_view(&source[i], 1));
 				break;
-
+			}
 			case '#':
+			{
 				while (source[i] != '\n' && source[i] != '\0')
 				{
 					i++;
 				}
 				break;
-
+			}
 			case '=':
-				tokens.emplace_back(Token::Type::EQUALS, std::string_view(&source[i], 1));
+			{
+				tokens.emplace_back(Token::Type::EQUAL, std::string_view(&source[i], 1));
 				break;
-
+			}
 			case '{':
+			{
 				tokens.emplace_back(Token::Type::BLOCK_START, std::string_view(&source[i], 1));
 				break;
-
+			}
 			case '}':
+			{
 				tokens.emplace_back(Token::Type::BLOCK_END, std::string_view(&source[i], 1));
 				break;
-
+			}
 			case ',':
+			{
 				tokens.emplace_back(Token::Type::COMMA, std::string_view(&source[i], 1));
 				break;
-
+			}
 			case '"':
+			{
 				i++;
 				length = 0;
 				while (source[i] != '"')
 				{
 					i++;
 					length++;
-
+					
 					if (source[i] == '\n' || source[i] == '\0')
 					{
 						std::puts("unterminated quote");
@@ -66,10 +77,11 @@ void tokenise_text(const std::string& source, std::vector<Token>& tokens)
 					}
 				}
 				if (length)
-					tokens.emplace_back(Token::Type::QUOTED_STRING, std::string_view(&source[i-length], length));
-				break;
-
+				tokens.emplace_back(Token::Type::QUOTED_STRING, std::string_view(&source[i-length], length));
+				break;	
+			}
 			default:
+			{
 				length = 0;
 				if (source[i] == '+' || source[i] == '-')
 				{
@@ -77,18 +89,20 @@ void tokenise_text(const std::string& source, std::vector<Token>& tokens)
 					i++;
 				}
 
-				while (isalnum(source[i]) || source[i] == '_' || source[i] ==  '.')
+				
+
+				while (!(std::iscntrl(source[i]) || std::ispunct(source[i])) || source[i] == '_' || source[i] ==  '.' || source[i] ==  ':')
 				{
 					length++;
 					i++;
 				}
 
 				if (length)
+				{
 					tokens.emplace_back(Token::Type::STRING, std::string_view(&source[i-length], length));
-
-				if (source[i] == '\n')
-					tokens.emplace_back(Token::Type::NEW_LINE, std::string_view(&source[i], 1));
-
+					continue;
+				}
+			}
 		}
 		i++;
 	}
@@ -99,7 +113,7 @@ bool is_operator(Token::Type type)
 {
 	switch (type)
 	{
-	case Token::Type::EQUALS :
+	case Token::Type::EQUAL :
 	case Token::Type::LESS :
 		return true;
 		break;
@@ -116,7 +130,7 @@ Node::Operator token_type_to_node_operator(Token::Type type)
 
 	switch (type)
 	{
-	case Token::Type::EQUALS :
+	case Token::Type::EQUAL :
 		return Node::Operator::EQUALS;
 		break;
 
@@ -192,13 +206,16 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
 			previous_token_type = Token::Type::QUOTED_STRING;
 			break;
 
-		case Token::Type::EQUALS:
+		case Token::Type::EQUAL:
 			if (!current_node)
 				return false;
-			previous_token_type = Token::Type::EQUALS;
+			previous_token_type = Token::Type::EQUAL;
 			break;
 
 		case Token::Type::NEW_LINE:
+			if (Token::Type::EQUAL == previous_token_type)
+				continue;
+
 			if (current_node && scope_stack.size())
 			{
 				scope_stack.top()->add_child(*current_node);
@@ -272,7 +289,6 @@ std::string read_file(const std::filesystem::path& path)
 
 	size_t bytes_read = std::fread(file_contents.data(), sizeof(char), file_size, File);
 	file_contents.resize(bytes_read);
-
 	return file_contents;
 }
 

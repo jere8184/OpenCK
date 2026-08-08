@@ -20,29 +20,25 @@ struct Base
 	enum struct DynamicFieldType;
 	static const int NOT_SET = 0;
 
-	Base(std::string name) : name(name)
-	{}
+	Base(const std::string& name) : name(name)
+	{
+		static Id new_id = 0;
+		this->id = new_id++;
+	}
 
-	bool init(const Node& node)
+	bool initalise_impl(const Node& node)
 	{
 		bool was_succes = true;
 		for (const Node& child : node.children)
 		{
 			if (field_setters.contains(child.name))
 			{
-				// JM: we need to eventually error on StatusCode::NOT_IMPLIMENTED
-				if (StatusCode statusCode = child.debugging.store_and_forward_result(
-						field_setters.at(child.name)(static_cast<Derived*>(this), child),
-						"set field"
-					);
-					StatusCode::SUCCESS == statusCode || StatusCode::NOT_IMPLIMENTED == statusCode)
-				{
-					;
-				}
-				else
+				// JM: we need to eventually error on StatusCode::NOT_IMPLIMENTED'
+				StatusCode statusCode = child.debugging.store_and_forward_result(field_setters.at(child.name)(static_cast<Derived*>(this), child), "set field");
+				if ((StatusCode::SUCCESS != statusCode) && (StatusCode::NOT_IMPLIMENTED != statusCode))
 				{
 					//std::println(stderr, "set field <{}> for <{}>, failed with <{}>", child.name, this->name, status_code_to_string(statusCode));
-					std::println(stderr, "{}", Node::Debugging::report_error<true>(child));
+					std::println("{}", (char*)Node::Debugging::report_error<true>(child).data());
 					was_succes = false;
 				}
 			}
@@ -53,9 +49,9 @@ struct Base
 			else
 			{
 				if (child.value.size())
-					std::println(stderr, "Unknown field <{} = {}> for : <{}>", child.path_to_string(), child.value, this->name);
+					std::println(stderr, "Unknown field <{} = {}> for : <{}>", (char*)child.path_to_string().data(), (char*)child.value.data(), (char*)this->name.data());
 				else
-					std::println(stderr, "Unknown field <{}> for : <{}>", child.path_to_string(), this->name);
+					std::println("Unknown field <{}> for : <{}>", (char*)child.path_to_string().data(), (char*)this->name.data());
 				was_succes = false;
 			}
 		}
@@ -93,7 +89,7 @@ struct Base
 
 	static bool initalise(const Node& node)
 	{
-		return map.at(node.name).init(node);
+		return map.at(node.name).initalise_impl(node);
 	}
 
 	static void initalise_static_fields()

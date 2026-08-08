@@ -63,6 +63,8 @@ namespace openck::simulator
 
 	struct Character : Base<Character>
 	{
+		using Age = int;
+
 		Mana mana = {};
 		Stats stats = {};
 		Family family = {};
