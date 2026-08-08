@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "base.hpp"
-#include "utils/colour.hpp"
+#include "Base.hpp"
+#include "Utils/Colour.hpp"
 
 #include <string>
 #include <unordered_map>

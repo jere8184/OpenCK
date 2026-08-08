@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "simulator/base.hpp"
+#include "Simulator/Base.hpp"
 
 namespace openck::simulator
 {

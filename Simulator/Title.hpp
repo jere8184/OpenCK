@@ -1,9 +1,9 @@
 #pragma once
 
-#include "date.hpp"
-#include "province.hpp"
-#include "culture.hpp"
-#include "character.hpp"
+#include "Date.hpp"
+#include "Province.hpp"
+#include "Culture.hpp"
+#include "Character.hpp"
 
 #include <vector>
 #include <string>

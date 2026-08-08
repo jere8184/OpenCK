@@ -1,5 +1,5 @@
 
-#include "army.hpp"
+#include "Army.hpp"
 
 namespace openck::simulator
 {

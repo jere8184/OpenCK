@@ -1,5 +1,5 @@
 
-#include "scripted_trigger.hpp"
+#include "ScriptedTrigger.hpp"
 
 
 namespace openck::simulator 

@@ -1,8 +1,8 @@
 
-#include "religion.hpp"
-#include "culture.hpp"
+#include "Religion.hpp"
+#include "Culture.hpp"
 
-#include "utils/colour.hpp"
+#include "Utils/Colour.hpp"
 
 #include <algorithm>
 #include <ranges>

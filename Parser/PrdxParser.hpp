@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "utils/status_code.hpp"
+#include "Utils/StatusCode.hpp"
 
 #include <string>
 #include <vector>
@@ -10,6 +10,7 @@
 #include <utility>
 #include <filesystem>
 #include <cstddef>
+#include <meta>
 
 namespace openck::parser
 {
@@ -141,37 +142,37 @@ struct Node
 
 	struct Debugging
 	{
-		StatusCode status_code;
+		StatusCode statusCode;
 		std::string action_name;
 
-		StatusCode store_and_forward_result(StatusCode status_code, const std::string& action_name = "")
+		enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
 		{
-			this->status_code = status_code;
+			this->statusCode = StatusCode;
 			this->action_name = action_name;
-			return status_code;
+			return StatusCode;
 		}
 
 		template <bool REPORT_CHILD_ERRORS>
 		static std::string report_error(const Node& node, int depth = 1)
 		{
 			std::string error = "";
-			if (StatusCode::SUCCESS != node.debugging.status_code)
+			if (StatusCode::SUCCESS != node.debugging.statusCode)
 			{
 				if (node.debugging.action_name.size())
 				{
 					if (node.value.size())
-						error = std::format("<{}> for <{} = {}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), node.value, status_code_to_string(node.debugging.status_code));
+						error = std::format("<{}> for <{} = {}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), node.value, StatusCode_to_string(node.debugging.statusCode));
 					else
-						error = std::format("<{}> for <{}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), status_code_to_string(node.debugging.status_code));
+						error = std::format("<{}> for <{}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), StatusCode_to_string(node.debugging.statusCode));
 
 				}
 				else if (node.value.size())
 				{
-					error = std::format("<{} = {}> has status code <{}>", node.path_to_string(), node.value, status_code_to_string(node.debugging.status_code));
+					error = std::format("<{} = {}> has status code <{}>", node.path_to_string(), node.value, StatusCode_to_string(node.debugging.statusCode));
 				}
 				else
 				{
-					error = std::format("<{}> has status code <{}>", node.path_to_string(), status_code_to_string(node.debugging.status_code));
+					error = std::format("<{}> has status code <{}>", node.path_to_string(), StatusCode_to_string(node.debugging.statusCode));
 				}
 			}
 

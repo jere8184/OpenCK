@@ -1,0 +1,1250 @@
+In file included from Parser/PrdxParser.hpp:4,
+                 from Main.cpp:2:
+./Scripting/Condition.hpp: In member function ‘StatusCode openck::scripting::ConditionBlock::compile(const Node&)’:
+./Scripting/Condition.hpp:233:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:233:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Scripting/Condition.hpp:239:62: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                                              ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:239:71: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                                  ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                              |
+      |                                                              StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Scripting/Condition.hpp:246:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:246:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Scripting/Condition.hpp:250:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:250:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+In file included from ./Simulator/Base.hpp:4,
+                 from ./Simulator/Religion.hpp:4,
+                 from ./Simulator/Trait.hpp:4,
+                 from ./Simulator/Trait.cpp:2:
+./Scripting/Condition.hpp: In member function ‘StatusCode openck::scripting::ConditionBlock::compile(const Node&)’:
+./Scripting/Condition.hpp:233:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:233:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+In file included from ./Simulator/Base.hpp:5:
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Scripting/Condition.hpp:239:62: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                                              ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:239:71: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                                  ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                              |
+      |                                                              StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Scripting/Condition.hpp:246:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:246:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Scripting/Condition.hpp:250:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:250:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Simulator/Trait.cpp: In member function ‘StatusCode openck::simulator::Trait::set_opposites(const openck::simulator::Base<openck::simulator::Trait>::Node&)’:
+./Simulator/Trait.cpp:262:46: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type
+  262 |                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, this->get_by_name(opposite_trait, child_node.name));
+      |                                              ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:262:17: note: in expansion of macro ‘RETURN_RESULT_IF’
+  262 |                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, this->get_by_name(opposite_trait, child_node.name));
+      |                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Simulator/Trait.cpp:262:76: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  262 |                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, this->get_by_name(opposite_trait, child_node.name));
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                            |
+      |                                                                            StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:262:17: note: in expansion of macro ‘RETURN_RESULT_IF’
+  262 |                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, this->get_by_name(opposite_trait, child_node.name));
+      |                 ^~~~~~~~~~~~~~~~
+./Simulator/Trait.cpp:262:55: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’)
+  262 |                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, this->get_by_name(opposite_trait, child_node.name));
+      |                                  ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                              |
+      |                                              StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:262:17: note: in expansion of macro ‘RETURN_RESULT_IF’
+  262 |                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, this->get_by_name(opposite_trait, child_node.name));
+      |                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:39:32: error: cannot convert ‘int’ to ‘StatusCode’ in return
+   39 |                         return result;\
+      |                                ^~~~~~
+      |                                |
+      |                                int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Simulator/Trait.cpp:262:17: note: in expansion of macro ‘RETURN_RESULT_IF’
+  262 |                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, this->get_by_name(opposite_trait, child_node.name));
+      |                 ^~~~~~~~~~~~~~~~
+./Simulator/Trait.cpp: In member function ‘StatusCode openck::simulator::Trait::set_command_modifier(const openck::simulator::Base<openck::simulator::Trait>::Node&)’:
+./Simulator/Trait.cpp:275:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type
+  275 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Terrain::get_by_name(terrain, child.value), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:275:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  275 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Terrain::get_by_name(terrain, child.value), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Simulator/Trait.cpp:275:87: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  275 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Terrain::get_by_name(terrain, child.value), child);
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                       |
+      |                                                                                       StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:275:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  275 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Terrain::get_by_name(terrain, child.value), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Simulator/Trait.cpp:275:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’)
+  275 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Terrain::get_by_name(terrain, child.value), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:275:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  275 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Terrain::get_by_name(terrain, child.value), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Simulator/Trait.cpp:275:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  275 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Terrain::get_by_name(terrain, child.value), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Simulator/Trait.cpp:282:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type
+  282 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, child.get_value(val), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:282:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  282 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, child.get_value(val), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Simulator/Trait.cpp:282:82: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  282 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, child.get_value(val), child);
+      |                                                                   ~~~~~~~~~~~~~~~^~~~~
+      |                                                                                  |
+      |                                                                                  StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:282:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  282 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, child.get_value(val), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Simulator/Trait.cpp:282:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’)
+  282 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, child.get_value(val), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:282:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  282 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, child.get_value(val), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Simulator/Trait.cpp:282:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  282 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, child.get_value(val), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Simulator/Trait.cpp:287:62: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type
+  287 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Trait::field_setters.at(setter_key)(this, child), child);
+      |                                                              ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:287:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  287 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Trait::field_setters.at(setter_key)(this, child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Simulator/Trait.cpp:287:110: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  287 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Trait::field_setters.at(setter_key)(this, child), child);
+      |                                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+      |                                                                                                              |
+      |                                                                                                              StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:287:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  287 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Trait::field_setters.at(setter_key)(this, child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Simulator/Trait.cpp:287:71: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’)
+  287 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Trait::field_setters.at(setter_key)(this, child), child);
+      |                                                  ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                              |
+      |                                                              StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:287:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  287 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Trait::field_setters.at(setter_key)(this, child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Simulator/Trait.cpp:287:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  287 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Trait::field_setters.at(setter_key)(this, child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Simulator/Trait.cpp: In member function ‘StatusCode openck::simulator::Trait::set_opinion_modifer_dynamic(const openck::simulator::Base<openck::simulator::Trait>::Node&)’:
+./Simulator/Trait.cpp:305:38: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type
+  305 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
+      |                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:305:9: note: in expansion of macro ‘RETURN_RESULT_IF’
+  305 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
+      |         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Simulator/Trait.cpp:305:65: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  305 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
+      |                                                   ~~~~~~~~~~~~~~^~~~~
+      |                                                                 |
+      |                                                                 StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:305:9: note: in expansion of macro ‘RETURN_RESULT_IF’
+  305 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
+      |         ^~~~~~~~~~~~~~~~
+./Simulator/Trait.cpp:305:47: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’)
+  305 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
+      |                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                      |
+      |                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:305:9: note: in expansion of macro ‘RETURN_RESULT_IF’
+  305 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
+      |         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:39:32: error: cannot convert ‘int’ to ‘StatusCode’ in return
+   39 |                         return result;\
+      |                                ^~~~~~
+      |                                |
+      |                                int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Simulator/Trait.cpp:305:9: note: in expansion of macro ‘RETURN_RESULT_IF’
+  305 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
+      |         ^~~~~~~~~~~~~~~~
+./Simulator/Trait.cpp: In member function ‘StatusCode openck::simulator::Trait::set_tolerance(const openck::simulator::Base<openck::simulator::Trait>::Node&)’:
+./Simulator/Trait.cpp:441:38: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type
+  441 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ReligionGroup::get_by_name(religion_group, node.name.substr(std::string_view("tolerates_").size())));
+      |                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:441:9: note: in expansion of macro ‘RETURN_RESULT_IF’
+  441 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ReligionGroup::get_by_name(religion_group, node.name.substr(std::string_view("tolerates_").size())));
+      |         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Simulator/Trait.cpp:441:77: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  441 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ReligionGroup::get_by_name(religion_group, node.name.substr(std::string_view("tolerates_").size())));
+      |                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                             |
+      |                                                                             StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:441:9: note: in expansion of macro ‘RETURN_RESULT_IF’
+  441 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ReligionGroup::get_by_name(religion_group, node.name.substr(std::string_view("tolerates_").size())));
+      |         ^~~~~~~~~~~~~~~~
+./Simulator/Trait.cpp:441:47: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’)
+  441 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ReligionGroup::get_by_name(religion_group, node.name.substr(std::string_view("tolerates_").size())));
+      |                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                      |
+      |                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Trait.cpp:441:9: note: in expansion of macro ‘RETURN_RESULT_IF’
+  441 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ReligionGroup::get_by_name(religion_group, node.name.substr(std::string_view("tolerates_").size())));
+      |         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:39:32: error: cannot convert ‘int’ to ‘StatusCode’ in return
+   39 |                         return result;\
+      |                                ^~~~~~
+      |                                |
+      |                                int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Simulator/Trait.cpp:441:9: note: in expansion of macro ‘RETURN_RESULT_IF’
+  441 |         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ReligionGroup::get_by_name(religion_group, node.name.substr(std::string_view("tolerates_").size())));
+      |         ^~~~~~~~~~~~~~~~
+./Scripting/Condition.hpp: In instantiation of ‘StatusCode openck::scripting::ConditionBlock::compile(const Node&) [with ScopeType = CharacterScope; Node = openck::parser::Node]’:
+./Simulator/Trait.cpp:22:65:   required from here
+   22 |         return block.compile<scripting::ConditionBlock::CharacterScope>(node);
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+./Scripting/Condition.hpp:233:91: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+      |                                                                                           |
+      |                                                                                           StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Scripting/Condition.hpp:239:93: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                                                           ~~~~~~~~~~~~~~~~~~^~~~~~~
+      |                                                                                             |
+      |                                                                                             StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Scripting/Condition.hpp:246:89: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                         |
+      |                                                                                         StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Scripting/Condition.hpp:250:85: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                                                                   ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                     |
+      |                                                                                     StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+In file included from ./Simulator/Base.hpp:4,
+                 from ./Simulator/Religion.hpp:4,
+                 from ./Simulator/Religion.cpp:2:
+./Simulator/Religion.cpp: In lambda function:
+./Simulator/Religion.cpp:30:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type
+   30 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::get_by_name(grapical_culture, node.name));
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Religion.cpp:30:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+   30 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::get_by_name(grapical_culture, node.name));
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Simulator/Religion.cpp:30:96: error: cannot convert ‘StatusCode’ to ‘int’ in initialization
+   30 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::get_by_name(grapical_culture, node.name));
+      |                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                                                |
+      |                                                                                                StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Religion.cpp:30:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+   30 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::get_by_name(grapical_culture, node.name));
+      |                         ^~~~~~~~~~~~~~~~
+./Simulator/Religion.cpp:30:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’)
+   30 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::get_by_name(grapical_culture, node.name));
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_3’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Simulator/Religion.cpp:30:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+   30 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::get_by_name(grapical_culture, node.name));
+      |                         ^~~~~~~~~~~~~~~~
+./Simulator/Religion.cpp:32:44: error: inconsistent types ‘int’ and ‘StatusCode’ deduced for lambda return type
+   32 |                         return StatusCode::SUCCESS;
+      |                                ~~~~~~~~~~~~^~~~~~~
+./Simulator/Religion.cpp: At global scope:
+./Simulator/Religion.cpp:49:1: error: could not convert ‘{{"has_coa_on_barony_only", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"playable", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"hostile_within_group", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"crusade_cb", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"graphical_culture", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"interface_skin", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"ai_peacefu", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"ai_convert_same_group", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"ai_convert_other_group", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"ai_fabricate_claims", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"colour", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"male_name", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}, {"female_name", <lambda closure object>openck::simulator::Base<openck::simulator::ReligionGroup>::<lambda(openck::simulator::ReligionGroup*, const openck::simulator::Base<openck::simulator::ReligionGroup>::Node&)>()}}’ from ‘<brace-enclosed initializer list>’ to ‘openck::simulator::Base<openck::simulator::ReligionGroup>::FieldSetters’ {aka ‘std::unordered_map<std::__cxx11::basic_string<char>, std::function<StatusCode(openck::simulator::ReligionGroup*, const openck::parser::Node&)>, std::hash<std::__cxx11::basic_string<char> >, std::equal_to<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::function<StatusCode(openck::simulator::ReligionGroup*, const openck::parser::Node&)> > > >’}
+   49 | };
+      | ^
+      | |
+      | <brace-enclosed initializer list>
+In file included from ./Simulator/Base.hpp:4,
+                 from ./Simulator/Religion.hpp:4,
+                 from ./Simulator/Province.hpp:4,
+                 from ./Simulator/Title.hpp:4,
+                 from ./Simulator/Title.cpp:1:
+./Scripting/Condition.hpp: In member function ‘StatusCode openck::scripting::ConditionBlock::compile(const Node&)’:
+./Scripting/Condition.hpp:233:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:233:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:233:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  233 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+In file included from ./Simulator/Base.hpp:5:
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Scripting/Condition.hpp:239:62: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                                              ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:239:71: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                                  ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                              |
+      |                                                              StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:239:33: note: in expansion of macro ‘RETURN_RESULT_IF’
+  239 |                                 RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+      |                                 ^~~~~~~~~~~~~~~~
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Scripting/Condition.hpp:246:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:246:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:246:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  246 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+./Scripting/Condition.hpp:250:54: error: ‘SUCCESS’ in ‘enum class StatusCode’ does not name a type [-Wtemplate-body]
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                                                      ^~~~~~~
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:10:9: note: ‘StatusCode::SUCCESS’ declared here
+   10 |         SUCCESS,
+      |         ^~~~~~~
+./Scripting/Condition.hpp:250:63: error: no match for ‘operator!=’ (operand types are ‘StatusCode’ and ‘int’) [-Wtemplate-body]
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                                          ~~~~~~~~~~~~~~~~~~~  ^~
+      |                                                      |
+      |                                                      StatusCode
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:51:72: error: cannot convert ‘int’ to ‘StatusCode’ [-Wtemplate-body]
+   51 |                         return node.debugging.store_and_forward_result(result, action);\
+      |                                                                        ^~~~~~
+      |                                                                        |
+      |                                                                        int
+./Utils/StatusCode.hpp:55:25: note: in definition of macro ‘EXPAND’
+   55 | #define EXPAND(x)       x
+      |                         ^
+./Utils/StatusCode.hpp:43:9: note: in expansion of macro ‘RETURN_RESULT_IF_5’
+   43 |         RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
+      |         ^~~~~~~~~~~~~~~~~~
+./Utils/StatusCode.hpp:56:53: note: in expansion of macro ‘RETURN_RESULT_IF_4’
+   56 | #define GET_MACRO(_1, _2, _3, _4, _5, name, ...)    name
+      |                                                     ^~~~
+./Utils/StatusCode.hpp:57:42: note: in expansion of macro ‘GET_MACRO’
+   57 | #define RETURN_RESULT_IF(...)    EXPAND( GET_MACRO(__VA_ARGS__, RETURN_RESULT_IF_5, RETURN_RESULT_IF_4, RETURN_RESULT_IF_3)(__VA_ARGS__) )
+      |                                          ^~~~~~~~~
+./Scripting/Condition.hpp:250:25: note: in expansion of macro ‘RETURN_RESULT_IF’
+  250 |                         RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+      |                         ^~~~~~~~~~~~~~~~
+./Parser/PrdxParser.hpp:147:76: note: initializing argument 1 of ‘StatusCode openck::parser::Node::Debugging::store_and_forward_result(StatusCode, const std::string&)’
+  147 |                 enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+      |                                                           ~~~~~~~~~~~~~~~~~^~~~~~~~~~
+make: *** [makefile:2: openck] Interrupt

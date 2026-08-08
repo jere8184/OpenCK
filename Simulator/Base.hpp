@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "utils/status_code.hpp"
-#include "parser/prdx_parser.h"
+#include "Utils/StatusCode.hpp"
+#include "Parser/PrdxParser.hpp"
 
 #include <unordered_map>
 #include <string>
@@ -37,7 +37,7 @@ struct Base
 				StatusCode statusCode = child.debugging.store_and_forward_result(field_setters.at(child.name)(static_cast<Derived*>(this), child), "set field");
 				if ((StatusCode::SUCCESS != statusCode) && (StatusCode::NOT_IMPLIMENTED != statusCode))
 				{
-					//std::println(stderr, "set field <{}> for <{}>, failed with <{}>", child.name, this->name, status_code_to_string(statusCode));
+					//std::println(stderr, "set field <{}> for <{}>, failed with <{}>", child.name, this->name, StatusCode_to_string(statusCode));
 					std::println("{}", (char*)Node::Debugging::report_error<true>(child).data());
 					was_succes = false;
 				}

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <source_location>
+
 
 enum class StatusCode
 {
@@ -16,7 +16,7 @@ enum class StatusCode
 	EMPTY
 };
 
-const std::unordered_map<StatusCode, const std::string> status_code_to_string_map
+const std::unordered_map<StatusCode, const std::string> StatusCode_to_string_map
 {
 	{StatusCode::SUCCESS,	"SUCCESS"},
 	{StatusCode::FAILURE,	"FAILURE"},
@@ -26,27 +26,27 @@ const std::unordered_map<StatusCode, const std::string> status_code_to_string_ma
 	{StatusCode::NOT_IMPLIMENTED,	"NOT_IMPLIMENTED"}
 };
 
-inline const std::string& status_code_to_string(StatusCode status_code)
+inline const std::string& StatusCode_to_string(StatusCode StatusCode)
 {
-	return status_code_to_string_map.at(status_code);
+	return StatusCode_to_string_map.at(StatusCode);
 }
 
-#define RETURN_RESULT_IF_3(status_code, op, expression)\
+#define RETURN_RESULT_IF_3(StatusCodeVal, op, expression)\
 	do\
 	{\
 		StatusCode result = expression;\
-		if (status_code op result)\
+		if (StatusCodeVal op result)\
 			return result;\
 	} while(false)
 
-#define RETURN_RESULT_IF_4(status_code, op, expression, node)\
-	RETURN_RESULT_IF_5(status_code, op, expression, node, "")
+#define RETURN_RESULT_IF_4(StatusCode, op, expression, node)\
+	RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
 
-#define RETURN_RESULT_IF_5(status_code, op, expression, node, action)\
+#define RETURN_RESULT_IF_5(StatusCodeVal, op, expression, node, action)\
 	do\
 	{\
 		StatusCode result = expression;\
-		if (status_code op result)\
+		if (StatusCodeVal op result)\
 		{\
 			return node.debugging.store_and_forward_result(result, action);\
 		}\

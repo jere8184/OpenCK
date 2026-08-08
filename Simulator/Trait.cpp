@@ -1,7 +1,7 @@
 
-#include "trait.hpp"
-#include "army.hpp"
-#include "map.hpp"
+#include "Trait.hpp"
+#include "Army.hpp"
+#include "Map.hpp"
 
 #include <concepts>
 #include <functional>

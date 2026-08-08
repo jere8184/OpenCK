@@ -1,5 +1,5 @@
 
-#include "prdx_parser.h"
+#include "PrdxParser.hpp"
 
 #include <cctype>
 #include <string>
@@ -273,7 +273,7 @@ std::string read_file(const std::filesystem::path& path)
 {
 	FILE* File;
 
-	fopen_s(&File, path.string().c_str(), "r");
+	//fopen_s(&File, path.string().c_str(), "r");
 	if (File == nullptr)
 	{
 		std::print(stderr, "Could not open file \"{}\"", path.string());

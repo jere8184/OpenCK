@@ -1,2 +1,2 @@
 
-target_sources(OpenCK PUBLIC prdx_parser.cpp)
+target_sources(OpenCK PUBLIC PrdxParser.cpp)

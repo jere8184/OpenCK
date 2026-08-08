@@ -1,10 +1,10 @@
 
-#include "condition.hpp"
+#include "Condition.hpp"
 
-#include "simulator/religion.hpp"
-#include "simulator/character.hpp"
-#include "simulator/date.hpp"
-#include "simulator/flag.hpp"
+#include "Simulator/Religion.hpp"
+#include "Simulator/Character.hpp"
+#include "Simulator/Date.hpp"
+#include "Simulator/Flag.hpp"
 
 #include <cassert>
 
@@ -100,10 +100,10 @@ StatusCode ConditionBlock::execute_character()
 		}
 
 		// Todo: needs to be switch
-		StatusCode status_code = evaluate_result(result);
-		if (status_code == StatusCode::SUCCESS)
+		StatusCode StatusCode = evaluate_result(result);
+		if (StatusCode == StatusCode::SUCCESS)
 			return true;
-		else if (status_code == StatusCode::FAILURE)
+		else if (StatusCode == StatusCode::FAILURE)
 			return false;
 		else
 			continue;
@@ -425,7 +425,7 @@ StatusCode ConditionBlock::append_string(const Node& node)
 template <bool SHOULD_APPEND_LOAD_OPCODE>
 StatusCode ConditionBlock::append_number(const Node& node)
 {
-	decltype(this->numbers)::value_type val;
+	typename decltype(this->numbers)::value_type val;
 	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
 
 	if constexpr (SHOULD_APPEND_LOAD_OPCODE)
@@ -446,7 +446,7 @@ void ConditionBlock::append_immediate(auto& immediate_list, const auto& val)
 	else
 		indx = immediate_list.size();
 
-	assert(std::numeric_limits<decltype(this->instructions)::value_type>::max() > indx);
+	assert(std::numeric_limits<typename decltype(this->instructions)::value_type>::max() > indx);
 
 	immediate_list.push_back(val);
 	if constexpr(LoadOpCode::UNDEFINED == LOAD_OPOCDE)

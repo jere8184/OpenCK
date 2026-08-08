@@ -4,7 +4,7 @@
 #include <string_view>
 #include <string>
 
-#include "token_type.h"
+#include "Token_type.h"
 
 namespace prdx2cpp
 {

@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 #include <set>
-#include "scripting/condition.hpp"
-#include "base.hpp"
-#include "character.hpp"
+#include "Scripting/Condition.hpp"
+#include "Base.hpp"
+#include "Character.hpp"
 
 namespace openck::simulator
 {

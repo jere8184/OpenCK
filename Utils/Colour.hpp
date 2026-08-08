@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "parser/prdx_parser.h"
+#include "Parser/PrdxParser.hpp"
 
-#include "utils/status_code.hpp"
+#include "Utils/StatusCode.hpp"
 
 namespace openck::util
 {

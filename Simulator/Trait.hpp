@@ -1,11 +1,11 @@
 #pragma once
 
-#include "attributes.hpp"
-#include "religion.hpp"
-#include "base.hpp"
+#include "Attributes.hpp"
+#include "Religion.hpp"
+#include "Base.hpp"
 
-#include "parser/prdx_parser.h"
-#include "scripting/condition.hpp"
+#include "Parser/PrdxParser.hpp"
+#include "Scripting/Condition.hpp"
 
 #include <string>
 #include <vector>

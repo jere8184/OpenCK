@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "parser/prdx_parser.h"
-#include "simulator/scripted_trigger.hpp"
+#include "Parser/PrdxParser.hpp"
+#include "Simulator/ScriptedTrigger.hpp"
 
-#include "utils/status_code.hpp"
+#include "Utils/StatusCode.hpp"
 
 #include <vector>
 #include <stack>

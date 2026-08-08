@@ -1,13 +1,13 @@
 #pragma once
 
-#include "base.hpp"
+#include "Base.hpp"
 
-#include "title.hpp"
-#include "date.hpp"
-#include "attributes.hpp"
-#include "trait.hpp"
-#include "holding.hpp"
-#include "religion.hpp"
+#include "Title.hpp"
+#include "Date.hpp"
+#include "Attributes.hpp"
+#include "Trait.hpp"
+#include "Holding.hpp"
+#include "Religion.hpp"
 
 #include <set>
 #include <unordered_map>

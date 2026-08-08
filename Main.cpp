@@ -1,8 +1,8 @@
 
-#include "parser/prdx_parser.h"
-#include "simulator/trait.hpp"
-#include "simulator/army.hpp"
-#include "simulator/scripted_trigger.hpp"
+#include "Parser/PrdxParser.hpp"
+#include "Simulator/Trait.hpp"
+#include "Simulator/Army.hpp"
+#include "Simulator/ScriptedTrigger.hpp"
 
 #include <filesystem>
 #include <vector>

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "holding.hpp"
-#include "religion.hpp"
-#include "trait.hpp"
+#include "Holding.hpp"
+#include "Religion.hpp"
+#include "Trait.hpp"
 
 #include <vector>
 #include <unordered_map>
