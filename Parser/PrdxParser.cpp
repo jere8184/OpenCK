@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <stack>
 #include <cwctype>
+#include <cstdio>
 
 
 namespace openck::parser
@@ -271,9 +272,7 @@ bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_node
 
 std::string read_file(const std::filesystem::path& path)
 {
-	FILE* File;
-
-	//fopen_s(&File, path.string().c_str(), "r");
+	std::FILE* File = std::fopen(path.string().c_str(), "r");
 	if (File == nullptr)
 	{
 		std::print(stderr, "Could not open file \"{}\"", path.string());

@@ -9,4 +9,4 @@ openck:
  ./Simulator/ScriptedTrigger.cpp\
  ./Parser/PrdxParser.cpp\
  ./Scripting/Condition.cpp\
- -std=c++26 -g -I . -o ./bin/openck.exe
+ -std=c++26 -freflection -g -I . -o ./bin/openck.exe

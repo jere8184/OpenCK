@@ -4,7 +4,6 @@
 #include <string>
 #include <unordered_map>
 
-
 enum class StatusCode
 {
 	SUCCESS,
@@ -15,21 +14,6 @@ enum class StatusCode
 	NOT_IMPLIMENTED,
 	EMPTY
 };
-
-const std::unordered_map<StatusCode, const std::string> StatusCode_to_string_map
-{
-	{StatusCode::SUCCESS,	"SUCCESS"},
-	{StatusCode::FAILURE,	"FAILURE"},
-	{StatusCode::CONTINUE,	"CONTINUE"},
-	{StatusCode::NOT_FOUND,	"NOT_FOUND"},
-	{StatusCode::NOT_HANDLED,	"NOT_HANDLED"},
-	{StatusCode::NOT_IMPLIMENTED,	"NOT_IMPLIMENTED"}
-};
-
-inline const std::string& StatusCode_to_string(StatusCode StatusCode)
-{
-	return StatusCode_to_string_map.at(StatusCode);
-}
 
 #define RETURN_RESULT_IF_3(StatusCodeVal, op, expression)\
 	do\

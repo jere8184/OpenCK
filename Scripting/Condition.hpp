@@ -16,7 +16,6 @@ namespace openck
 namespace simulator
 {
 struct Character;
-struct Culture;
 struct Title;
 struct Province;
 struct War;

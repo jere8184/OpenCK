@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Utils/StatusCode.hpp"
+#include "Utils/Utils.hpp"
 
 #include <string>
 #include <vector>
@@ -10,7 +11,6 @@
 #include <utility>
 #include <filesystem>
 #include <cstddef>
-#include <meta>
 
 namespace openck::parser
 {
@@ -161,18 +161,18 @@ struct Node
 				if (node.debugging.action_name.size())
 				{
 					if (node.value.size())
-						error = std::format("<{}> for <{} = {}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), node.value, StatusCode_to_string(node.debugging.statusCode));
+						error = std::format("<{}> for <{} = {}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), node.value, ToString(node.debugging.statusCode));
 					else
-						error = std::format("<{}> for <{}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), StatusCode_to_string(node.debugging.statusCode));
+						error = std::format("<{}> for <{}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), ToString(node.debugging.statusCode));
 
 				}
 				else if (node.value.size())
 				{
-					error = std::format("<{} = {}> has status code <{}>", node.path_to_string(), node.value, StatusCode_to_string(node.debugging.statusCode));
+					error = std::format("<{} = {}> has status code <{}>", node.path_to_string(), node.value, ToString(node.debugging.statusCode));
 				}
 				else
 				{
-					error = std::format("<{}> has status code <{}>", node.path_to_string(), StatusCode_to_string(node.debugging.statusCode));
+					error = std::format("<{}> has status code <{}>", node.path_to_string(), ToString(node.debugging.statusCode));
 				}
 			}
 
