@@ -1,2 +1,2 @@
 
-target_sources(OpenCK PUBLIC army.cpp trait.cpp religion.cpp title.cpp scripted_trigger.cpp)
+target_sources(OpenCK PUBLIC Army.cpp Trait.cpp Religion.cpp Title.cpp ScriptedTrigger.cpp)

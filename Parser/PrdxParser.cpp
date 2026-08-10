@@ -15,7 +15,7 @@ namespace openck::parser
 {
 	
 //Returns number of tokens written.
-void tokenise_text(const std::string& source, std::vector<Token>& tokens)
+void TokeniseText(const std::string& source, std::vector<Token>& tokens)
 {
 	size_t i = 0;
 	size_t length = 0;
@@ -147,120 +147,120 @@ Node::Operator token_type_to_node_operator(Token::Type type)
 
 bool create_nodes(const std::vector<Token>& tokens, std::vector<Node>& root_nodes)
 {
-	std::stack<std::shared_ptr<Node>> scope_stack;
-	std::shared_ptr<Node> current_node = nullptr;
-	Token::Type previous_token_type = Token::Type::NOT_SET;
+	std::stack<std::shared_ptr<Node>> scopeStack;
+	std::shared_ptr<Node> currentNode = nullptr;
+	Token::Type previousTokenType = Token::Type::NOT_SET;
 
-	int node_count = 0; // for debugging
-	int token_count = 0;
+	int nodeCount = 0; // for debugging
+	int tokenCount = 0;
 	for (const Token& token : tokens)
 	{
-		token_count++;
+		tokenCount++;
 		switch (token.type)
 		{
 		case Token::Type::STRING:
-			if(is_operator(previous_token_type))
+			if(is_operator(previousTokenType))
 			{
-				current_node->value = token.text;
-				current_node->type = Node::Type::STRING;
-				current_node->op = token_type_to_node_operator(previous_token_type);
-				if (scope_stack.size())
+				currentNode->value = token.text;
+				currentNode->type = Node::Type::STRING;
+				currentNode->op = token_type_to_node_operator(previousTokenType);
+				if (scopeStack.size())
 				{
-					scope_stack.top()->add_child(*current_node);
-					current_node.reset();
+					scopeStack.top()->add_child(*currentNode);
+					currentNode.reset();
 				}
-				current_node = nullptr;
+				currentNode = nullptr;
 			}
 			else
 			{
-				if (current_node != nullptr && current_node->value.empty() && scope_stack.size()) //lists
+				if (currentNode != nullptr && currentNode->value.empty() && scopeStack.size()) //lists
 				{
-					current_node->type = Node::Type::STRING;
-					scope_stack.top()->add_child(*current_node);
-					current_node.reset();
+					currentNode->type = Node::Type::STRING;
+					scopeStack.top()->add_child(*currentNode);
+					currentNode.reset();
 				}
 
-				node_count++;
-				current_node = std::make_shared<Node>();
-				current_node->name = token.text;
+				nodeCount++;
+				currentNode = std::make_shared<Node>();
+				currentNode->name = token.text;
 			}
-			previous_token_type = Token::Type::STRING;
+			previousTokenType = Token::Type::STRING;
 			break;
 
 		case Token::Type::QUOTED_STRING:
-			if (current_node && is_operator(previous_token_type))
+			if (currentNode && is_operator(previousTokenType))
 			{
-				current_node->value = token.text;
-				current_node->type = Node::Type::STRING;
-				current_node->op = token_type_to_node_operator(previous_token_type);
-				if (scope_stack.size())
+				currentNode->value = token.text;
+				currentNode->type = Node::Type::STRING;
+				currentNode->op = token_type_to_node_operator(previousTokenType);
+				if (scopeStack.size())
 				{
-					scope_stack.top()->add_child(*current_node);
-					current_node.reset();
+					scopeStack.top()->add_child(*currentNode);
+					currentNode.reset();
 				}
-				current_node = nullptr;
+				currentNode = nullptr;
 			}
 			else
 			{
 				return false;
 			}
-			previous_token_type = Token::Type::QUOTED_STRING;
+			previousTokenType = Token::Type::QUOTED_STRING;
 			break;
 
 		case Token::Type::EQUAL:
-			if (!current_node)
+			if (!currentNode)
 				return false;
-			previous_token_type = Token::Type::EQUAL;
+			previousTokenType = Token::Type::EQUAL;
 			break;
 
 		case Token::Type::NEW_LINE:
-			if (Token::Type::EQUAL == previous_token_type)
+			if (Token::Type::EQUAL == previousTokenType)
 				continue;
 
-			if (current_node && scope_stack.size())
+			if (currentNode && scopeStack.size())
 			{
-				scope_stack.top()->add_child(*current_node);
-				current_node.reset();
+				scopeStack.top()->add_child(*currentNode);
+				currentNode.reset();
 			}
 
-			previous_token_type = Token::Type::NEW_LINE;
+			previousTokenType = Token::Type::NEW_LINE;
 			break;
 
 		case Token::Type::BLOCK_START:
-			if (current_node && is_operator(previous_token_type))
+			if (currentNode && is_operator(previousTokenType))
 			{
-				current_node->type = Node::Type::BLOCK;
-				current_node->op = token_type_to_node_operator(previous_token_type);
-				scope_stack.push(current_node);
-				current_node.reset();
+				currentNode->type = Node::Type::BLOCK;
+				currentNode->op = token_type_to_node_operator(previousTokenType);
+				scopeStack.push(currentNode);
+				currentNode.reset();
 			}
 			else
 			{
 				return false;
 			}
-			previous_token_type = Token::Type::BLOCK_START;
+			previousTokenType = Token::Type::BLOCK_START;
 			break;
 
 		case Token::Type::BLOCK_END:
 		{
-			std::shared_ptr<Node> completed_block = scope_stack.top();
-			scope_stack.pop();
+			std::shared_ptr<Node> completedBlock = scopeStack.top();
+			scopeStack.pop();
 
-			if (scope_stack.size() == 0)
+			if (scopeStack.size() == 0)
 			{
-				root_nodes.push_back(std::move(*completed_block));
+				root_nodes.push_back(std::move(*completedBlock));
 			}
 			else
 			{
-				if (current_node)
+				if (currentNode)
 				{
-					completed_block->add_child(*current_node);
-					current_node.reset();
+					completedBlock->add_child(*currentNode);
+					currentNode.reset();
 				}
-				scope_stack.top()->add_child(*completed_block);
+				scopeStack.top()->add_child(*completedBlock);
 			}
-			completed_block.reset();
-			previous_token_type = Token::Type::BLOCK_END;
+			completedBlock.reset();
+			previousTokenType = Token::Type::BLOCK_END;
 			break;
 		}
 		default:
@@ -280,23 +280,23 @@ std::string read_file(const std::filesystem::path& path)
 	}
 
 	fseek(File, 0, SEEK_END);
-	size_t file_size = ftell(File);
+	size_t fileSize = ftell(File);
 	rewind(File);
 
-	std::string file_contents;
-	file_contents.resize(file_size);
+	std::string fileContents;
+	fileContents.resize(fileSize);
 
-	size_t bytes_read = std::fread(file_contents.data(), sizeof(char), file_size, File);
-	file_contents.resize(bytes_read);
-	return file_contents;
+	size_t bytes_read = std::fread(fileContents.data(), sizeof(char), fileSize, File);
+	fileContents.resize(bytes_read);
+	return fileContents;
 }
 
 bool generate_nodes(const std::filesystem::path& path, std::vector<Node>& nodes)
 {
-	const std::string& file_contents = read_file(path);
+	const std::string& fileContents = read_file(path);
 
 	std::vector<Token> tokens;
-	tokenise_text(file_contents, tokens);
+	TokeniseText(fileContents, tokens);
 
 	nodes.reserve(tokens.size());
 

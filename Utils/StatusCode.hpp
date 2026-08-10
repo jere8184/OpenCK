@@ -4,16 +4,23 @@
 #include <string>
 #include <unordered_map>
 
+#define STATUS_CODES(d)\
+	d(SUCCESS),\
+	d(FAILURE),\
+	d(CONTINUE),\
+	d(NOT_FOUND),\
+	d(NOT_HANDLED),\
+	d(NOT_IMPLIMENTED),\
+	d(EMPTY)
+
+#define GET_NAME(e) e
+
 enum class StatusCode
 {
-	SUCCESS,
-	FAILURE,
-	CONTINUE,
-	NOT_FOUND,
-	NOT_HANDLED,
-	NOT_IMPLIMENTED,
-	EMPTY
+	STATUS_CODES(GET_NAME)
 };
+
+#define GET_PAIR(e) {StatusCode::e, #e}
 
 #define RETURN_RESULT_IF_3(StatusCodeVal, op, expression)\
 	do\
