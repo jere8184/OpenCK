@@ -22,6 +22,11 @@ enum class StatusCode
 
 #define GET_PAIR(e) {StatusCode::e, #e}
 
+inline std::unordered_map<StatusCode, std::string> statusCodeToNameMap
+{
+	STATUS_CODES(GET_PAIR)
+};
+
 #define RETURN_RESULT_IF_3(StatusCodeVal, op, expression)\
 	do\
 	{\

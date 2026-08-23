@@ -265,7 +265,7 @@ struct Trait : public Base<Trait>
 	Greeting adjectives;
 	Opinon opinion;
 
-	//std::optional<openck::scripting::ConditionBlock> condition_block;
+	std::optional<openck::scripting::ConditionBlock> conditionBlock;
 
 	//Trait(const Node& trait_node, bool& was_success);
 	//Trait& operator=(Trait&& trait);

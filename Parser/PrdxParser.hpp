@@ -142,13 +142,13 @@ struct Node
 
 	struct Debugging
 	{
-		StatusCode statusCode;
-		std::string action_name;
+		StatusCode m_statusCode;
+		std::string m_actionName;
 
-		enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& action_name = "")
+		enum::StatusCode store_and_forward_result(enum::StatusCode StatusCode, const std::string& actionName = "")
 		{
-			this->statusCode = StatusCode;
-			this->action_name = action_name;
+			m_statusCode = StatusCode;
+			m_actionName = actionName;
 			return StatusCode;
 		}
 
@@ -156,23 +156,23 @@ struct Node
 		static std::string report_error(const Node& node, int depth = 1)
 		{
 			std::string error = "";
-			if (StatusCode::SUCCESS != node.debugging.statusCode)
+			if (StatusCode::SUCCESS != node.debugging.m_statusCode)
 			{
-				if (node.debugging.action_name.size())
+				if (node.debugging.m_actionName.size())
 				{
 					if (node.value.size())
-						error = std::format("<{}> for <{} = {}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), node.value, ToString(node.debugging.statusCode));
+						error = std::format("<{}> for <{} = {}>, failed with <{}>", node.debugging.m_actionName, node.path_to_string(), node.value, ToString(node.debugging.m_statusCode));
 					else
-						error = std::format("<{}> for <{}>, failed with <{}>", node.debugging.action_name, node.path_to_string(), ToString(node.debugging.statusCode));
+						error = std::format("<{}> for <{}>, failed with <{}>", node.debugging.m_actionName, node.path_to_string(), ToString(node.debugging.m_statusCode));
 
 				}
 				else if (node.value.size())
 				{
-					error = std::format("<{} = {}> has status code <{}>", node.path_to_string(), node.value, ToString(node.debugging.statusCode));
+					error = std::format("<{} = {}> has status code <{}>", node.path_to_string(), node.value, ToString(node.debugging.m_statusCode));
 				}
 				else
 				{
-					error = std::format("<{}> has status code <{}>", node.path_to_string(), ToString(node.debugging.statusCode));
+					error = std::format("<{}> has status code <{}>", node.path_to_string(), ToString(node.debugging.m_statusCode));
 				}
 			}
 

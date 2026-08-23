@@ -17,14 +17,21 @@ inline const std::string_view ToString(T t)
 
 #else
 
-std::string_view ToString(StatusCode statusCode)
+template <typename KeyType, typename ValType>
+std::unordered_map<ValType, KeyType> Reverse(std::unordered_map<KeyType, ValType> map)
 {
-	static std::unordered_map<StatusCode, std::string> map
+	std::unordered_map<ValType, KeyType> newMap;
+	for (const auto& [key, val] : map)
 	{
-		STATUS_CODES(GET_PAIR)
-	};
+		newMap[val]  = key;
+	}
 
-	return map.at(statusCode);
+	return newMap;
+}
+
+inline std::string_view ToString(StatusCode statusCode)
+{
+	return statusCodeToNameMap.at(statusCode);
 }
 
 #endif

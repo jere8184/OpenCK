@@ -37,7 +37,7 @@ namespace openck::simulator
 			Date date_released = {0,0,0};
 		};
 
-		bool controls_religion() const { return false; };
+		bool ControlsReligion() const { return false; };
 		simulator::Religion* get_religion() const { return nullptr; };
 
 		bool adventurer = false;

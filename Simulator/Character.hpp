@@ -63,6 +63,9 @@ namespace openck::simulator
 
 	struct Character : Base<Character>
 	{
+		Character(std::string name) : Base(name)
+		{}
+
 		using Age = int;
 
 		Mana mana = {};
@@ -99,7 +102,7 @@ namespace openck::simulator
 		bool can_grant_title(Character* someone_else) const;
 
 		Religion* get_religion() const {return nullptr;};
-		bool controls_religion() const {return false;}
+		bool ControlsReligion() const {return false;}
 
 		// house
 		// culture

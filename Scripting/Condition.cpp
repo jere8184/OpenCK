@@ -5,110 +5,138 @@
 #include "Simulator/Character.hpp"
 #include "Simulator/Date.hpp"
 #include "Simulator/Flag.hpp"
+#include "Utils/StatusCode.hpp"
+#include "Utils/Utils.hpp"
+
 
 #include <cassert>
+#include <exception>
+#include <unordered_map>
 
 namespace openck::scripting
 {
 
-std::unordered_map<std::string, ConditionBlock::Control::OpCode> ConditionBlock::Control::name_to_opcode =
+std::unordered_map<std::string, ConditionBlock::AnyScope::Opcode> ConditionBlock::AnyScope::s_nameToOpcode =
 {
-	{"NOT", Control::OpCode::NOT},
-	{"OR", Control::OpCode::OR},
-	{"AND", Control::OpCode::AND},
+	{"has_dlc", Opcode::HAS_DLC},
+	{"INTERNAL_CHARECTER_SCOPE", Opcode::CHARECTER_SCOPE}
 };
 
-std::unordered_map<std::string, ConditionBlock::CharacterScope::OpCode> ConditionBlock::CharacterScope::name_to_opcode =
+std::unordered_map<ConditionBlock::AnyScope::Opcode, std::string> ConditionBlock::AnyScope::s_opcodeToName = Reverse(ConditionBlock::AnyScope::s_nameToOpcode);
+
+std::unordered_map<std::string, ConditionBlock::Control::Opcode> ConditionBlock::Control::s_nameToOpcode =
 {
-	{"controls_religion", OpCode::CONTROLS_RELIGION},
-	{"religion", OpCode::RELIGION},
-	{"culture", OpCode::CULTURE},
-	{"religion_group", OpCode::RELIGION_GROUP},
-	{"is_triba", OpCode::IS_TRIBAL},
-	{"is_theocracy", OpCode::IS_THEOCRACY},
-	{"trait", OpCode::TRAIT},
-	{"is_ruler", OpCode::IS_RULER},
-	{"is_female", OpCode::IS_FEMALE},
-	{"character", OpCode::CHARACTER},
-	{"society_member_of", OpCode::SOCIETY_MEMBER_OF},
-	{"has_religion_feature", OpCode::HAS_RELIGION_FEATURE},
-	{"age", OpCode::AGE},
-	{"any_owned_bloodline",	OpCode::ANY_OWNED_BLOODLINE},
-	{"ai", OpCode::AI},
-	{"prisoner", OpCode::PRISONER},
-	{"race", OpCode::RACE},
-	{"has_character_flag", OpCode::HAS_FLAG},
-	{"has_flag", OpCode::HAS_FLAG},
+	{"OR", Opcode::OR},
+	{"RETURN", Opcode::RETURN},	
+	{"AND", Opcode::AND},
+	{"NOR", Opcode::NOR},
+	{"NAND", Opcode::NAND},
+	{"NOT", Opcode::NOT},
+	{"LOAD_TRUE", Opcode::LOAD_TRUE},
+	{"LOAD_FALSE", Opcode::LOAD_FALSE},
+	{"LOAD_POINTER", Opcode::LOAD_POINTER},
+	{"LOAD_STRING", Opcode::LOAD_STRING},
+	{"LOAD_FROM", Opcode::LOAD_FROM},
+	{"LOAD_ROOT", Opcode::LOAD_ROOT},
+	{"LOAD_NUMBER", Opcode::LOAD_NUMBER},
+	{"LOAD_RELIGION_ID", Opcode::LOAD_RELIGION_ID},
+	{"MAX_VALUE", Opcode::MAX_VALUE},
 };
 
-std::unordered_map<std::string, ConditionBlock::AnyScope::OpCode> ConditionBlock::AnyScope::name_to_opcode =
+std::unordered_map<ConditionBlock::Control::Opcode, std::string> ConditionBlock::Control::s_opcodeToName = Reverse(ConditionBlock::Control::s_nameToOpcode);
+
+std::unordered_map<std::string, ConditionBlock::CharacterScope::Opcode> ConditionBlock::CharacterScope::s_nameToOpcode
 {
-	{"has_dlc", OpCode::HAS_DLC}
+	{"controls_religion", Opcode::CONTROLS_RELIGION},
+	{"religion", Opcode::RELIGION},
+	{"culture", Opcode::CULTURE},
+	{"religion_group", Opcode::RELIGION_GROUP},
+	{"is_triba", Opcode::IS_TRIBAL},
+	{"is_theocracy", Opcode::IS_THEOCRACY},
+	{"trait", Opcode::TRAIT},
+	{"is_ruler", Opcode::IS_RULER},
+	{"is_female", Opcode::IS_FEMALE},
+	{"character", Opcode::CHARACTER},
+	{"society_member_of", Opcode::SOCIETY_MEMBER_OF},
+	{"has_religion_feature", Opcode::HAS_RELIGION_FEATURE},
+	{"age", Opcode::AGE},
+	{"any_owned_bloodline",	Opcode::ANY_OWNED_BLOODLINE},
+	{"ai", Opcode::AI},
+	{"prisoner", Opcode::PRISONER},
+	{"race", Opcode::RACE},
+	{"has_character_flag", Opcode::HAS_FLAG},
+	{"has_flag", Opcode::HAS_FLAG},
 };
 
-std::unordered_map<std::string, ConditionBlock::BloodlineScope::OpCode> ConditionBlock::BloodlineScope::name_to_opcode =
+std::unordered_map<ConditionBlock::CharacterScope::Opcode, std::string> ConditionBlock::CharacterScope::s_opcodeToName = Reverse(ConditionBlock::CharacterScope::s_nameToOpcode);
+
+std::unordered_map<std::string, ConditionBlock::BloodlineScope::Opcode> ConditionBlock::BloodlineScope::s_nameToOpcode =
 {
-	{"bloodline", OpCode::BLOODLINE},
-	{"bloodline_is_active_for", OpCode::BLOODLINE_IS_ACTIVE_FOR},
-	{"had_bloodline_flag", OpCode::HAD_BLOODLINE_FLAG},
-	{"has_bloodline_flag", OpCode::HAS_BLOODLINE_FLAG},
+	{"bloodline", Opcode::BLOODLINE},
+	{"bloodline_is_active_for", Opcode::BLOODLINE_IS_ACTIVE_FOR},
+	{"had_bloodline_flag", Opcode::HAD_BLOODLINE_FLAG},
+	{"has_bloodline_flag", Opcode::HAS_BLOODLINE_FLAG},
 };
 
-ConditionBlock::ConditionBlock()
+ConditionBlock::ConditionBlock(ConditionBlock::AnyScope::Opcode initalScopeOpcode)
 {
+	this->instructions.push_back(static_cast<uint8_t>(initalScopeOpcode));
 }
-
 
 StatusCode ConditionBlock::execute()
 {
-	/*while(advance())
+	while(Advance())
 	{
-		switch (static_cast<OpCode>(*(this->ip)))
+		switch (static_cast<AnyScope::Opcode>(*(this->ip)))
 		{
-			case OpCode::NOT:
+			case AnyScope::Opcode::CHARECTER_SCOPE:
+				//RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ExecuteCharacter());
 				break;
 
-			case OpCode::SCOPE_character:
-				execute_character();
+			case AnyScope::Opcode::BLOODLINE_SCOPE:
+				
 				break;
 		}
-	}*/
+	}
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
-StatusCode ConditionBlock::execute_character()
+bool ConditionBlock::ExecuteCharacter(simulator::Character& charecter)
 {
-	/*simulator::character* root = static_cast<simulator::character*>(this->root);
-	StatusCode result;
+	bool result;
 
-	while (advance())
+	while (Advance())
 	{
-		switch (static_cast<CharacterScope::OpCode>(*(this->ip)))
+		switch (static_cast<CharacterScope::Opcode>(*(this->ip)))
 		{
-		case CharacterScope::OpCode::CONTROLS_RELIGION:
-			result = controls_religion(root);
+		case CharacterScope::Opcode::CONTROLS_RELIGION:
+			result = ControlsReligion(charecter);
 			break;
 
-		case CharacterScope::OpCode::RELIGION:
-			result = religion(root);
+		case CharacterScope::Opcode::RELIGION:
+			result = Religion(charecter);
+			break;
 
-		case CharacterScope::OpCode::SCOPE_ANY_OWNED_BLOODLINE:
-			result = any_owned_bloodline(root);
+		case CharacterScope::Opcode::ANY_OWNED_BLOODLINE:
+			//result = AnyOwnedBloodline(charecter);
+			break;
 
 		default:
 			break;
 		}
 
 		// Todo: needs to be switch
-		StatusCode StatusCode = evaluate_result(result);
-		if (StatusCode == StatusCode::SUCCESS)
+		StatusCode statusCode = EvaluateResult(result);
+		if (statusCode == StatusCode::SUCCESS)
 			return true;
-		else if (StatusCode == StatusCode::FAILURE)
+		else if (statusCode == StatusCode::FAILURE)
 			return false;
-		else
+		else if (statusCode == StatusCode::CONTINUE)
 			continue;
-	}*/
-	return StatusCode::NOT_IMPLIMENTED;
+		else
+			throw(std::exception());
+	}
+	return false;
 }
 
 bool ConditionBlock::execute_bloodline()
@@ -116,26 +144,34 @@ bool ConditionBlock::execute_bloodline()
 	return false;
 }
 
-bool ConditionBlock::advance()
+bool ConditionBlock::Advance()
 {
-	return ++this->ip != this->instructions.end();
+	if (this->ip == this->instructions.end())
+	{
+		return false;
+	}
+	else
+	{
+		this->ip++;
+		return true;
+	}
 }
 
-bool ConditionBlock::controls_religion(simulator::Character *character)
+bool ConditionBlock::ControlsReligion(const simulator::Character& character)
 {
 	const simulator::Religion* religion = static_cast<const simulator::Religion*>(this->load_pointer());
-	return religion->get_head() == character;
+	return religion->get_head() == &character; 
 }
 
-bool ConditionBlock::religion(simulator::Character *character)
+bool ConditionBlock::Religion(const simulator::Character &character)
 {
 	const simulator::Religion* religion = static_cast<const simulator::Religion*>(this->load_pointer());
-	return religion == character->religion;
+	return religion == character.religion;
 }
 
 const void* ConditionBlock::load_pointer()
 {
-	this->advance();
+	this->Advance();
 	return this->pointers[*(this->ip)];
 }
 
@@ -147,7 +183,7 @@ uint8_t ConditionBlock::store_pointer(const void* pointer)
 	return indx;
 }
 
-StatusCode ConditionBlock::evaluate_result(bool result)
+StatusCode ConditionBlock::EvaluateResult(bool result)
 {
 	switch (this->stack.top())
 	{
@@ -170,61 +206,61 @@ StatusCode ConditionBlock::evaluate_result(bool result)
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::Society, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::Society, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::Culture, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::Culture, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::ReligionFeature, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::ReligionFeature, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::Dlc, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::Dlc, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_pointer<simulator::BloodLine, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_pointer<simulator::BloodLine, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_id<simulator::Society, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_id<simulator::Society, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_id<simulator::Culture, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_id<simulator::Culture, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_id<simulator::ReligionFeature, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_id<simulator::ReligionFeature, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_id<simulator::Dlc, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_id<simulator::Dlc, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
 
 template <>
-StatusCode ConditionBlock::append_id<simulator::BloodLine, ConditionBlock::LoadOpCode::UNDEFINED>(const Node& node)
+StatusCode ConditionBlock::append_id<simulator::BloodLine, ConditionBlock::Control::Opcode::MAX_VALUE>(const Node& node)
 {
 	return StatusCode::NOT_IMPLIMENTED;
 }
@@ -238,74 +274,75 @@ StatusCode ConditionBlock::compile_had_flag(const Node& node)
 }
 
 template <>
-StatusCode ConditionBlock::handle_opcode<ConditionBlock::CharacterScope>(const Node& node, const ConditionBlock::CharacterScope::OpCode op)
+StatusCode ConditionBlock::HandleOpcode<ConditionBlock::CharacterScope>(const Node& node, const ConditionBlock::CharacterScope::Opcode op)
 {
 	switch (op)
 	{
-		case CharacterScope::OpCode::RELIGION:
+		case CharacterScope::Opcode::RELIGION:
 		{
-			return append_id<simulator::Religion, LoadOpCode::LOAD_RELIGION_ID>(node);
-			//others
+			return append_id<simulator::Religion, Control::Opcode::LOAD_RELIGION_ID>(node);
+			//others...
 			break;
 		}
-		case CharacterScope::OpCode::CONTROLS_RELIGION:
+		case CharacterScope::Opcode::CONTROLS_RELIGION:
 		{
 			return append_bool_val(node);
 			break;
 		}
-		case CharacterScope::OpCode::RELIGION_GROUP:
+		case CharacterScope::Opcode::RELIGION_GROUP:
 		{
 			return append_id<simulator::ReligionGroup>(node);
 			//others
 			break;
 		}
-		case CharacterScope::OpCode::HAS_RELIGION_FEATURE:
+		case CharacterScope::Opcode::HAS_RELIGION_FEATURE:
 		{
 			return append_id<simulator::ReligionFeature>(node);
 			break;
 		}
-		case CharacterScope::OpCode::TRAIT:
+		case CharacterScope::Opcode::TRAIT:
 		{
 			return append_id<simulator::Trait>(node);
 			break;
 		}
-		case CharacterScope::OpCode::SOCIETY_MEMBER_OF:
+		case CharacterScope::Opcode::SOCIETY_MEMBER_OF:
 		{
 			return append_id<simulator::Society>(node);
 			break;
 		}
-		case CharacterScope::OpCode::CULTURE:
+		case CharacterScope::Opcode::CULTURE:
 		{
 			return append_id<simulator::Culture>(node);
 			break;
 		}
-		case CharacterScope::OpCode::HAS_FLAG:
+		case CharacterScope::Opcode::HAS_FLAG:
 		{
 			return append_string<false>(node);
 			break;
 		}
-		case CharacterScope::OpCode::IS_FEMALE:
-		case CharacterScope::OpCode::IS_RULER:
-		case CharacterScope::OpCode::IS_TRIBAL:
-		case CharacterScope::OpCode::IS_THEOCRACY:
-		case CharacterScope::OpCode::AI:
-		case CharacterScope::OpCode::PRISONER:
+		case CharacterScope::Opcode::IS_FEMALE:
+		case CharacterScope::Opcode::IS_RULER:
+		case CharacterScope::Opcode::IS_TRIBAL:
+		case CharacterScope::Opcode::IS_THEOCRACY:
+		case CharacterScope::Opcode::AI:
+		case CharacterScope::Opcode::PRISONER:
 		{
 			return append_bool_val(node);
 			break;
 		}
-		case CharacterScope::OpCode::CHARACTER:
+		case CharacterScope::Opcode::CHARACTER:
 		{
 			RETURN_RESULT_IF(StatusCode::SUCCESS, ==, append_register(node));
 			return append_pointer<simulator::Character>(node);
 			break;
 		}
-		case CharacterScope::OpCode::ANY_OWNED_BLOODLINE:
+		case CharacterScope::Opcode::ANY_OWNED_BLOODLINE:
 		{
-			return compile<BloodlineScope>(node);
+			this->instructions.push_back(static_cast<uint8_t>(AnyScope::GetScopeOpcode<BloodlineScope>()));
+			return Compile<BloodlineScope>(node);
 		}
-		case CharacterScope::OpCode::AGE:
-		case CharacterScope::OpCode::RACE:
+		case CharacterScope::Opcode::AGE:
+		case CharacterScope::Opcode::RACE:
 		{
 			return StatusCode::NOT_IMPLIMENTED;
 			break;
@@ -321,27 +358,27 @@ StatusCode ConditionBlock::handle_opcode<ConditionBlock::CharacterScope>(const N
 }
 
 template <>
-StatusCode ConditionBlock::handle_opcode<ConditionBlock::BloodlineScope>(const Node& node, const ConditionBlock::BloodlineScope::OpCode op)
+StatusCode ConditionBlock::HandleOpcode<ConditionBlock::BloodlineScope>(const Node& node, const ConditionBlock::BloodlineScope::Opcode op)
 {
 	switch (op)
 	{
-		case BloodlineScope::OpCode::BLOODLINE:
+		case BloodlineScope::Opcode::BLOODLINE:
 		{
 			RETURN_RESULT_IF(StatusCode::SUCCESS, ==, append_pointer<simulator::BloodLine>(node));
 			break;
 		}
-		case BloodlineScope::OpCode::BLOODLINE_IS_ACTIVE_FOR:
+		case BloodlineScope::Opcode::BLOODLINE_IS_ACTIVE_FOR:
 		{
 			RETURN_RESULT_IF(StatusCode::SUCCESS, ==, append_register(node));
 			return append_pointer<simulator::Character>(node);
 			break;
 		}
-		case BloodlineScope::OpCode::HAD_BLOODLINE_FLAG:
+		case BloodlineScope::Opcode::HAD_BLOODLINE_FLAG:
 		{
 			return compile_had_flag(node);
 			break;
 		}
-		case BloodlineScope::OpCode::HAS_BLOODLINE_FLAG:
+		case BloodlineScope::Opcode::HAS_BLOODLINE_FLAG:
 		{
 			return append_string<false>(node);
 			break;
@@ -351,11 +388,11 @@ StatusCode ConditionBlock::handle_opcode<ConditionBlock::BloodlineScope>(const N
 	return StatusCode::FAILURE;
 }
 
-StatusCode ConditionBlock::handle_anyscope_opcode(const Node& node, const AnyScope::OpCode op)
+StatusCode ConditionBlock::handle_anyscope_opcode(const Node& node, const AnyScope::Opcode op)
 {
 	switch (op)
 	{
-		case AnyScope::OpCode::HAS_DLC:
+		case AnyScope::Opcode::HAS_DLC:
 		{
 			return append_id<simulator::Dlc>(node);
 			break;
@@ -373,12 +410,12 @@ StatusCode ConditionBlock::append_bool_val(const Node& node)
 {
 	bool condition;
 	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(condition));
-	ConditionBlock::LoadOpCode condition_op =  condition ? ConditionBlock::LoadOpCode::LOAD_TRUE : ConditionBlock::LoadOpCode::LOAD_FALSE;
+	ConditionBlock::Control::Opcode condition_op =  condition ? ConditionBlock::Control::Opcode::LOAD_TRUE : ConditionBlock::Control::Opcode::LOAD_FALSE;
 	this->instructions.push_back(static_cast<uint8_t>(condition_op));
 	return StatusCode::SUCCESS;
 }
 
-template <typename SimulatorType, ConditionBlock::LoadOpCode LOAD_OP_CODE>
+template <typename SimulatorType, ConditionBlock::Control::Opcode LOAD_OP_CODE>
 StatusCode ConditionBlock::append_pointer(const Node& node)
 {
 	const SimulatorType* ptr;
@@ -389,7 +426,7 @@ StatusCode ConditionBlock::append_pointer(const Node& node)
 	return StatusCode::SUCCESS;
 }
 
-template <typename SimulatorType, ConditionBlock::LoadOpCode LOAD_OP_CODE>
+template <typename SimulatorType, ConditionBlock::Control::Opcode LOAD_OP_CODE>
 StatusCode ConditionBlock::append_id(const Node& node)
 {
 	const SimulatorType* ptr;
@@ -403,9 +440,9 @@ StatusCode ConditionBlock::append_id(const Node& node)
 StatusCode ConditionBlock::append_register(const Node& node)
 {
 	if ("ROOT" == node.value)
-		this->instructions.push_back(static_cast<uint8_t>(ConditionBlock::LoadOpCode::LOAD_ROOT));
+		this->instructions.push_back(static_cast<uint8_t>(ConditionBlock::Control::Opcode::LOAD_ROOT));
 	else if ("FROM" == node.value)
-		this->instructions.push_back(static_cast<uint8_t>(ConditionBlock::LoadOpCode::LOAD_FROM));
+		this->instructions.push_back(static_cast<uint8_t>(ConditionBlock::Control::Opcode::LOAD_FROM));
 	else
 		return StatusCode::NOT_FOUND;
 
@@ -416,9 +453,9 @@ template <bool SHOULD_APPEND_LOAD_OPCODE>
 StatusCode ConditionBlock::append_string(const Node& node)
 {
 	if constexpr (SHOULD_APPEND_LOAD_OPCODE)
-		append_immediate<LoadOpCode::LOAD_STRING>(this->strings, node.value);
+		append_immediate<Control::Opcode::LOAD_STRING>(this->strings, node.value);
 	else
-		append_immediate<LoadOpCode::UNDEFINED>(this->strings, node.value);
+		append_immediate<Control::Opcode::MAX_VALUE>(this->strings, node.value);
 	return StatusCode::SUCCESS;
 }
 
@@ -429,14 +466,14 @@ StatusCode ConditionBlock::append_number(const Node& node)
 	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
 
 	if constexpr (SHOULD_APPEND_LOAD_OPCODE)
-		append_immediate<LoadOpCode::LOAD_NUMBER>(this->numbers, val);
+		append_immediate<Control::Opcode::LOAD_NUMBER>(this->numbers, val);
 	else
-		append_immediate<LoadOpCode::UNDEFINED>(this->numbers, val);
+		append_immediate<Control::Opcode::MAX_VALUE>(this->numbers, val);
 
 	return StatusCode::SUCCESS;
 }
 
-template <ConditionBlock::LoadOpCode LOAD_OPOCDE>
+template <ConditionBlock::Control::Opcode LOAD_OPOCDE>
 void ConditionBlock::append_immediate(auto& immediate_list, const auto& val)
 {
 	uint8_t indx;
@@ -449,7 +486,7 @@ void ConditionBlock::append_immediate(auto& immediate_list, const auto& val)
 	assert(std::numeric_limits<typename decltype(this->instructions)::value_type>::max() > indx);
 
 	immediate_list.push_back(val);
-	if constexpr(LoadOpCode::UNDEFINED == LOAD_OPOCDE)
+	if constexpr(Control::Opcode::MAX_VALUE != LOAD_OPOCDE)
 		this->instructions.push_back(static_cast<uint8_t>(LOAD_OPOCDE));
 	this->instructions.push_back(indx);
 }

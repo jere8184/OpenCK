@@ -92,7 +92,7 @@ void TokeniseText(const std::string& source, std::vector<Token>& tokens)
 
 				
 
-				while (!(std::iscntrl(source[i]) || std::ispunct(source[i])) || source[i] == '_' || source[i] ==  '.' || source[i] ==  ':')
+				while (!(std::iscntrl(source[i]) || std::ispunct(source[i]) || std::isspace(source[i])) || source[i] == '_' || source[i] ==  '.' || source[i] ==  ':')
 				{
 					length++;
 					i++;

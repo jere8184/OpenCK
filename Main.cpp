@@ -1,5 +1,7 @@
 
 #include "Parser/PrdxParser.hpp"
+#include "Scripting/Condition.hpp"
+#include "Simulator/Character.hpp"
 #include "Simulator/Trait.hpp"
 #include "Simulator/Army.hpp"
 #include "Simulator/ScriptedTrigger.hpp"
@@ -86,5 +88,15 @@ int main()
 	initalise_objects<openck::simulator::ScriptedTrigger>(scripted_trigger_nodes);
 	initalise_objects<openck::simulator::Trait>(trait_nodes);
 
+	openck::simulator::Trait& trait = openck::simulator::Trait::map.at("excommunicated");
+
+
+	openck::simulator::Character c("Jeremiah");
+
+	std::string output;
+	trait.conditionBlock->ip = trait.conditionBlock->instructions.begin(); 
+	trait.conditionBlock->Decompile<openck::scripting::ConditionBlock::AnyScope>(output);
+
+	std::print("{}", output);
 	return 0;
 }

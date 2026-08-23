@@ -2,6 +2,7 @@
 #include "Trait.hpp"
 #include "Army.hpp"
 #include "Map.hpp"
+#include "Scripting/Condition.hpp"
 
 #include <concepts>
 #include <functional>
@@ -18,14 +19,14 @@ Trait::Trait(std::string name) : Base(name)
 
 StatusCode Trait::set_potential(const Node &node)
 {
-	scripting::ConditionBlock block;
-	return block.compile<scripting::ConditionBlock::CharacterScope>(node);
+	conditionBlock = scripting::ConditionBlock(scripting::ConditionBlock::AnyScope::Opcode::CHARECTER_SCOPE);
+	return conditionBlock->Compile<scripting::ConditionBlock::CharacterScope>(node);
 }
 
 StatusCode Trait::set_is_visible(const Node &node)
 {
-	scripting::ConditionBlock block;
-	return block.compile<scripting::ConditionBlock::CharacterScope>(node);
+	scripting::ConditionBlock block(scripting::ConditionBlock::AnyScope::Opcode::CHARECTER_SCOPE);
+	return block.Compile<scripting::ConditionBlock::CharacterScope>(node);
 }
 
 StatusCode Trait::set_attribute(const Node& node)
@@ -685,7 +686,7 @@ void Trait::init_field_setters()
 		{"command_modifier.winter_supply", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.winter_supply); }},
 		{"command_modifier", std::bind(&Trait::set_command_modifier, std::placeholders::_1, std::placeholders::_2)},
 
-		{"potentia", &Trait::set_potential},
+		{"potential", &Trait::set_potential},
 		{"is_visible", &Trait::set_is_visible},
 		{"random", [](Trait* trait, const Node& node){return node.get_value(trait->flags.random);}},
 	};

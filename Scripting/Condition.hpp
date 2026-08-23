@@ -39,22 +39,34 @@ struct ConditionBlock
 {
 	using Node = openck::parser::Node;
 
-	ConditionBlock();
 
-	enum struct LoadOpCode : uint8_t
+
+	struct Control
 	{
-		UNDEFINED,
-		LOAD_TRUE,
-		LOAD_FALSE,
-		LOAD_POINTER,
-		LOAD_STRING,
-		LOAD_FROM,
-		LOAD_ROOT,
-		LOAD_NUMBER,
-		LOAD_RELIGION_ID,
+		enum struct Opcode : uint8_t
+		{
+			RETURN = 0,
+			OR,
+			AND,
+			NOR,
+			NAND,
+			NOT,
+			LOAD_TRUE,
+			LOAD_FALSE,
+			LOAD_POINTER,
+			LOAD_STRING,
+			LOAD_FROM,
+			LOAD_ROOT,
+			LOAD_NUMBER,
+			LOAD_RELIGION_ID,
+			MAX_VALUE
+		};
+
+		static std::unordered_map<std::string, Opcode> s_nameToOpcode;
+		static std::unordered_map<Opcode, std::string> s_opcodeToName;
 	};
 
-	enum struct DateOpCode
+	enum struct DateOpcode
 	{
 		LOAD_DAY,
 		LOAD_MONTH,
@@ -69,37 +81,38 @@ struct ConditionBlock
 		NAND
 	};
 
-	struct Control
-	{
-		enum struct OpCode : uint8_t
-		{
-			RETURN = 200,
-			OR,
-			AND,
-			NOR,
-			NAND,
-			NOT,
-			MAX_VALUE
-		};
-
-		static std::unordered_map<std::string, OpCode> name_to_opcode;
-	};
 	struct AnyScope
 	{
-		enum struct OpCode : uint8_t
+		enum struct Opcode : uint8_t
 		{
-			HAS_DLC,
+			HAS_DLC = static_cast<uint8_t>(Control::Opcode::MAX_VALUE),
+			CHARECTER_SCOPE,
+			BLOODLINE_SCOPE,
 			MAX_VALUE,
 		};
 
-		static std::unordered_map<std::string, OpCode> name_to_opcode;
+		template <typename T>
+		static constexpr Opcode GetScopeOpcode()
+		{
+			if constexpr (std::is_same_v<CharacterScope, T>) 
+			{
+				return  Opcode::CHARECTER_SCOPE;
+			}
+			else if (std::is_same_v<BloodlineScope, T>) 
+			{
+				return  Opcode::BLOODLINE_SCOPE;
+			}
+		}
+
+		static std::unordered_map<std::string, Opcode> s_nameToOpcode;
+		static std::unordered_map<Opcode, std::string> s_opcodeToName;
 	};
 
 	struct CharacterScope
 	{
-		enum struct OpCode : uint8_t
+		enum struct Opcode : uint8_t
 		{
-			CONTROLS_RELIGION = static_cast<uint8_t>(AnyScope::OpCode::MAX_VALUE),
+			CONTROLS_RELIGION = static_cast<uint8_t>(AnyScope::Opcode::MAX_VALUE),
 			RELIGION,
 			CULTURE,
 			RELIGION_GROUP,
@@ -119,60 +132,68 @@ struct ConditionBlock
 			HAS_FLAG,
 		};
 
-		static std::unordered_map<std::string, OpCode> name_to_opcode;
+		static std::unordered_map<std::string, Opcode> s_nameToOpcode;
+		static std::unordered_map<Opcode, std::string> s_opcodeToName;
 	};
 
 	struct BloodlineScope
 	{
-		enum struct OpCode : uint8_t
+		enum struct Opcode : uint8_t
 		{
-			BLOODLINE = static_cast<uint8_t>(AnyScope::OpCode::MAX_VALUE),
+			BLOODLINE = static_cast<uint8_t>(AnyScope::Opcode::MAX_VALUE),
 			BLOODLINE_IS_ACTIVE_FOR,
 			HAD_BLOODLINE_FLAG,
 			HAS_BLOODLINE_FLAG,
 		};
 
-		static std::unordered_map<std::string, OpCode> name_to_opcode;
+		static std::unordered_map<std::string, Opcode> s_nameToOpcode;
 	};
+
+	ConditionBlock(AnyScope::Opcode initalScope);
 
 	StatusCode execute();
 
-	StatusCode execute_character();
+	bool ExecuteCharacter(simulator::Character& charecter);
 
 	bool execute_bloodline();
 
-	StatusCode any_owned_bloodline(simulator::Character *character);
+	bool AnyOwnedBloodline(const simulator::Character& character);
 
-	bool controls_religion(simulator::Character* character);
+	bool ControlsReligion(const simulator::Character& character);
 
-	bool religion(simulator::Character* character);
+	bool Religion(const simulator::Character& character);
 
 	const void* load_pointer();
 
 	uint8_t store_pointer(const void* pointer);
 
-	bool advance();
+	bool Advance();
 
 	template <typename ScopeType>
-	StatusCode compile(const Node& node);
+	StatusCode Compile(const Node& node);
+
+	template <typename ScopeType>
+	void Decompile(std::string& output);
+
+	std::string DecompileCharecterScope();
 
 	StatusCode compile_had_flag(const Node& node);
 
 	StatusCode compile_date(const Node& node);
 
-	template <typename ScopeType, typename OpCode>
-	StatusCode handle_opcode(const Node& node, const OpCode op_code);
+	template <typename ScopeType, typename Opcode>
+	StatusCode HandleOpcode(const Node& node, const Opcode op_code);
 
-	StatusCode handle_anyscope_opcode(const Node& node, const AnyScope::OpCode op);
+	StatusCode handle_anyscope_opcode(const Node& node, const AnyScope::Opcode op);
 
-	StatusCode evaluate_result(bool result);
+	StatusCode EvaluateResult(bool result);
 
 	StatusCode append_bool_val(const Node& node);
 
-	template <typename SimulatorType, ConditionBlock::LoadOpCode LOAD_OP_CODE = ConditionBlock::LoadOpCode::UNDEFINED>
+	template <typename SimulatorType, ConditionBlock::Control::Opcode LOAD_OP_CODE = ConditionBlock::Control::Opcode::MAX_VALUE>
 	StatusCode append_pointer(const Node& node);
 
-	template <typename SimulatorType, ConditionBlock::LoadOpCode LOAD_OP_CODE = ConditionBlock::LoadOpCode::UNDEFINED>
+	template <typename SimulatorType, ConditionBlock::Control::Opcode LOAD_OP_CODE = ConditionBlock::Control::Opcode::MAX_VALUE>
 	StatusCode append_id(const Node& node);
 
 	StatusCode append_register(const Node& node);
@@ -183,7 +204,7 @@ struct ConditionBlock
 	template <bool SHOULD_APPEND_LOAD_OPCODE>
 	StatusCode append_number(const Node& node);
 
-	template <ConditionBlock::LoadOpCode LOAD_OPOCDE>
+	template <ConditionBlock::Control::Opcode LOAD_OPOCDE>
 	void append_immediate(auto& immediate_list, const auto& val);
 
 	std::vector<uint8_t> instructions; ///< List of instructions to execute when evaluating this block.
@@ -199,6 +220,7 @@ struct ConditionBlock
 	void* from_register;
 };
 
+/*
 struct Scope : ConditionBlock
 {
 
@@ -206,10 +228,10 @@ struct Scope : ConditionBlock
 
 struct characterScope : Scope
 {
-	enum struct OpCode
+	enum struct Opcode
 	{
 		RETURN,
-		CONTROLS_RELIGION,
+		ControlsReligion,
 	};
 
 	simulator::Character& character; ///< The character to be evaluated.
@@ -218,35 +240,35 @@ struct characterScope : Scope
 
 	bool execute();
 
-	bool controls_religion() const;
-};
+	bool ControlsReligion() const;
+};*/
 
 template <typename ScopeType>
-StatusCode ConditionBlock::compile(const Node& node)
+StatusCode ConditionBlock::Compile(const Node& node)
 {
 	for (const Node& child : node.children)
 	{
-		if (const auto iter = ScopeType::name_to_opcode.find(child.name); ScopeType::name_to_opcode.end() != iter)
+		if (const auto iter = ScopeType::s_nameToOpcode.find(child.name); ScopeType::s_nameToOpcode.end() != iter)
 		{
 			this->instructions.push_back(static_cast<uint8_t>(iter->second));
-			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_opcode<ScopeType>(child, iter->second), child);
+			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, HandleOpcode<ScopeType>(child, iter->second), child);
 		}
-		else if (const auto iter2 = Control::name_to_opcode.find(child.name); Control::name_to_opcode.end() != iter2)
+		else if (const auto iter2 = Control::s_nameToOpcode.find(child.name); Control::s_nameToOpcode.end() != iter2)
 		{
 			this->instructions.push_back(static_cast<uint8_t>(iter2->second));
 			if (child.children.size())
-				RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(child), child);
+				RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Compile<ScopeType>(child), child);
 			else
 				;
 		}
-		else if (const auto iter3 = AnyScope::name_to_opcode.find(child.name); AnyScope::name_to_opcode.end() != iter3)
+		else if (const auto iter3 = AnyScope::s_nameToOpcode.find(child.name); AnyScope::s_nameToOpcode.end() != iter3)
 		{
 			this->instructions.push_back(static_cast<uint8_t>(iter3->second));
 			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, handle_anyscope_opcode(child, iter3->second), child);
 		}
 		else if (const auto iter4 = simulator::ScriptedTrigger::map.find(child.name); simulator::ScriptedTrigger::map.end() != iter4)
 		{
-			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, compile<ScopeType>(*iter4->second.condition_block_source), child);
+			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Compile<ScopeType>(*iter4->second.condition_block_source), child);
 		}
 		else
 		{
@@ -254,9 +276,54 @@ StatusCode ConditionBlock::compile(const Node& node)
 		}
 	}
 
-	this->instructions.push_back(static_cast<uint8_t>(Control::OpCode::RETURN));
+	this->instructions.push_back(static_cast<uint8_t>(Control::Opcode::RETURN));
 
 	return StatusCode::SUCCESS;
+}
+
+template<typename Scope>
+void ConditionBlock::Decompile(std::string& output) 
+{
+	do  
+	{
+		if (Control::s_opcodeToName.contains(static_cast<Control::Opcode>(*(this->ip))))
+		{
+			output += Control::s_opcodeToName.at(static_cast<Control::Opcode>(*(this->ip))) += " || ";
+			if (Control::Opcode::RETURN == static_cast<Control::Opcode>(*(this->ip)))
+				return;
+		}
+		else if (Scope::s_opcodeToName.contains(static_cast<Scope::Opcode>(*(this->ip))))
+		{
+			output += Scope::s_opcodeToName.at(static_cast<Scope::Opcode>(*(this->ip))) += " || ";
+		}
+		else
+		{
+			;//output += "MISSING OPCODE || ";
+		}
+
+		if constexpr (std::is_same_v<AnyScope, Scope>)
+		{
+			switch (static_cast<AnyScope::Opcode>(*(this->ip)))
+			{
+				case AnyScope::Opcode::CHARECTER_SCOPE:
+					Decompile<CharacterScope>(output);
+					break;
+				default:
+					break;
+			}
+		}
+		else if (std::is_same_v<Scope, CharacterScope>)
+		{
+			switch (static_cast<CharacterScope::Opcode>(*(this->ip)))
+			{
+				case CharacterScope::Opcode::ANY_OWNED_BLOODLINE:
+					//Decompile<BloodlineScope>(output);
+					break;
+				default:
+					break;
+			}
+		}
+	} while (Advance());
 }
 
 }
