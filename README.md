@@ -6,10 +6,15 @@ I'm currently working on a byte code compiler which compiles AST of script into 
 Below is some of the example byte code produced when compiling Trait 'potential' blocks.
 
 excommunicated: NOT || controls_religion || LOAD_TRUE || RETURN || RETURN ||
+
 kinslayer: NOT || religion_group || muslim || RETURN || is_tribal || LOAD_FALSE || RETURN ||
+
 scholar: NOT || religion_group || muslim || RETURN || RETURN ||
+
 impaler: NOT || religion || jain || RETURN || RETURN ||
+
 hunter: NOT || religion || jain || RETURN || RETURN ||
+
 falconer: NOT || religion || jain || RETURN || RETURN ||
 
 Feel free to contribute.
