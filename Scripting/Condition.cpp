@@ -51,7 +51,7 @@ std::unordered_map<std::string, ConditionBlock::CharacterScope::Opcode> Conditio
 	{"religion", Opcode::RELIGION},
 	{"culture", Opcode::CULTURE},
 	{"religion_group", Opcode::RELIGION_GROUP},
-	{"is_triba", Opcode::IS_TRIBAL},
+	{"is_tribal", Opcode::IS_TRIBAL},
 	{"is_theocracy", Opcode::IS_THEOCRACY},
 	{"trait", Opcode::TRAIT},
 	{"is_ruler", Opcode::IS_RULER},
@@ -125,6 +125,17 @@ bool ConditionBlock::ExecuteCharacter(simulator::Character& charecter)
 			break;
 		}
 
+		switch (static_cast<Control::Opcode>(*(this->ip))) 
+		{
+			case Control::Opcode::NOT:
+			{
+				stack.push(BlockType::NOT);
+				continue;
+			}
+			default:
+				break;
+		}
+
 		// Todo: needs to be switch
 		StatusCode statusCode = EvaluateResult(result);
 		if (statusCode == StatusCode::SUCCESS)
@@ -146,21 +157,21 @@ bool ConditionBlock::execute_bloodline()
 
 bool ConditionBlock::Advance()
 {
+	this->ip++;
 	if (this->ip == this->instructions.end())
 	{
 		return false;
 	}
 	else
 	{
-		this->ip++;
 		return true;
 	}
 }
 
 bool ConditionBlock::ControlsReligion(const simulator::Character& character)
 {
-	const simulator::Religion* religion = static_cast<const simulator::Religion*>(this->load_pointer());
-	return religion->get_head() == &character; 
+	//const simulator::Religion* religion = static_cast<const simulator::Religion*>(this->load_pointer());
+	return character.ControlsReligion(); 
 }
 
 bool ConditionBlock::Religion(const simulator::Character &character)
@@ -199,6 +210,8 @@ StatusCode ConditionBlock::EvaluateResult(bool result)
 	case BlockType::NAND:
 		return result ? StatusCode::CONTINUE : StatusCode::SUCCESS;
 		break;
+	case BlockType::NOT:
+		return result ? StatusCode::FAILURE : StatusCode::SUCCESS;
 	default:
 		return StatusCode::NOT_HANDLED;
 		break;
@@ -286,7 +299,9 @@ StatusCode ConditionBlock::HandleOpcode<ConditionBlock::CharacterScope>(const No
 		}
 		case CharacterScope::Opcode::CONTROLS_RELIGION:
 		{
-			return append_bool_val(node);
+			RETURN_RESULT_IF(StatusCode::SUCCESS, ==, append_bool_val(node));
+			StatusCode result = append_id<simulator::Religion, Control::Opcode::LOAD_RELIGION_ID>(node);
+			RETURN_RESULT_IF(StatusCode::SUCCESS, ==, result);
 			break;
 		}
 		case CharacterScope::Opcode::RELIGION_GROUP:
@@ -432,10 +447,60 @@ StatusCode ConditionBlock::append_id(const Node& node)
 	const SimulatorType* ptr;
 	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, SimulatorType::get_by_name(ptr, node.value));
 	
+	//Appending id as a float?
 	append_immediate<LOAD_OP_CODE>(this->numbers, ptr->id);
 
 	return StatusCode::SUCCESS;
 }
+
+template <typename SimulatorType>
+StatusCode ConditionBlock::DecompileId(std::string& output)
+{
+	Advance();
+	SimulatorType* pObj;
+	const typename SimulatorType::Id id = numbers.at(*ip);
+
+	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, SimulatorType::GetById(id, pObj));
+	
+	output += pObj->name;
+	output += " || ";
+
+	return StatusCode::SUCCESS;
+}
+
+StatusCode ConditionBlock::DecompileBoolVal(std::string& output)
+{
+	Advance();
+	if (Control::Opcode::LOAD_TRUE == static_cast<Control::Opcode>(*ip))
+	{
+		output += "LOAD_TRUE";
+		output += " || ";
+		return StatusCode::SUCCESS;
+	}
+	else if (Control::Opcode::LOAD_FALSE == static_cast<Control::Opcode>(*ip))
+	{
+		output += "LOAD_FALSE";
+		output += " || ";
+		return StatusCode::SUCCESS;
+	}
+	else
+	{
+		return StatusCode::FAILURE;
+	}
+}
+
+template <>
+StatusCode ConditionBlock::DecompileId<simulator::ReligionFeature>(std::string& output)
+{
+	return StatusCode::NOT_IMPLIMENTED;
+}
+
+template <>
+StatusCode ConditionBlock::DecompileId<simulator::Society>(std::string& output)
+{
+	return StatusCode::NOT_IMPLIMENTED;
+}
+
 
 StatusCode ConditionBlock::append_register(const Node& node)
 {
@@ -519,6 +584,97 @@ StatusCode ConditionBlock::compile_date(const Node& node)
 	}
 
 	return found ? StatusCode::SUCCESS : StatusCode::NOT_FOUND;
+}
+
+template <>
+StatusCode ConditionBlock::DecompileOpcode<ConditionBlock::CharacterScope::Opcode>(std::string& output ,const ConditionBlock::CharacterScope::Opcode op)
+{
+	switch (op)
+	{
+		case CharacterScope::Opcode::RELIGION:
+		{
+			Advance();
+			if (static_cast<Control::Opcode>(*ip) == Control::Opcode::LOAD_RELIGION_ID)
+			{
+				return DecompileId<simulator::Religion>(output);
+			}
+			//others...
+			break;
+		}
+		case CharacterScope::Opcode::CONTROLS_RELIGION:
+		{
+			RETURN_RESULT_IF(StatusCode::SUCCESS, ==, DecompileBoolVal(output));
+			if (static_cast<Control::Opcode>(*ip) == Control::Opcode::LOAD_RELIGION_ID) ///bug if id == load_opcode
+				RETURN_RESULT_IF(StatusCode::SUCCESS, ==, DecompileId<simulator::Religion>(output));
+			break;
+		}
+		case CharacterScope::Opcode::RELIGION_GROUP:
+		{
+			return DecompileId<simulator::ReligionGroup>(output);
+			//others
+			break;
+		}
+		case CharacterScope::Opcode::HAS_RELIGION_FEATURE:
+		{
+			return DecompileId<simulator::ReligionFeature>(output);
+			break;
+		}
+		case CharacterScope::Opcode::TRAIT:
+		{
+			return DecompileId<simulator::Trait>(output);
+			break;
+		}
+		case CharacterScope::Opcode::SOCIETY_MEMBER_OF:
+		{
+			return DecompileId<simulator::Society>(output);
+			break;
+		}
+		case CharacterScope::Opcode::CULTURE:
+		{
+			return DecompileId<simulator::Culture>(output);
+			break;
+		}
+		case CharacterScope::Opcode::HAS_FLAG:
+		{
+			//return decompile_string<false>(output);
+			break;
+		}
+		case CharacterScope::Opcode::IS_FEMALE:
+		case CharacterScope::Opcode::IS_RULER:
+		case CharacterScope::Opcode::IS_TRIBAL:
+		case CharacterScope::Opcode::IS_THEOCRACY:
+		case CharacterScope::Opcode::AI:
+		case CharacterScope::Opcode::PRISONER:
+		{
+			//return decompile_bool_val(output);
+			break;
+		}
+		case CharacterScope::Opcode::CHARACTER:
+		{
+			//RETURN_RESULT_IF(StatusCode::SUCCESS, ==, decompile_register(output));
+			//return decompile_pointer<simulator::Character>(output);
+			break;
+		}
+		case CharacterScope::Opcode::AGE:
+		case CharacterScope::Opcode::RACE:
+		{
+			return StatusCode::NOT_IMPLIMENTED;
+			break;
+		}
+		default:
+		{
+			return StatusCode::NOT_HANDLED;
+			break;
+		}
+	}
+
+	return StatusCode::FAILURE;
+}
+
+template <>
+StatusCode ConditionBlock::DecompileOpcode<ConditionBlock::AnyScope::Opcode>(std::string& output ,const ConditionBlock::AnyScope::Opcode op)
+{
+	return StatusCode::SUCCESS;
 }
 
 }

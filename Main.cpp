@@ -95,7 +95,9 @@ int main()
 
 	std::string output;
 	trait.conditionBlock->ip = trait.conditionBlock->instructions.begin(); 
-	trait.conditionBlock->Decompile<openck::scripting::ConditionBlock::AnyScope>(output);
+	trait.conditionBlock->Decompile<openck::scripting::ConditionBlock::AnyScope>(output, false);
+	trait.conditionBlock->ip = trait.conditionBlock->instructions.begin(); 
+	trait.conditionBlock->ExecuteCharacter(c);
 
 	std::print("{}", output);
 	return 0;

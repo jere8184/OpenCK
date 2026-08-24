@@ -117,6 +117,21 @@ struct Base
 
 	using Id = size_t;
 
+	static StatusCode GetById(const Id id, Derived*& pObj)
+	{
+		for (auto& [name, obj] : map)
+		{
+			if (id == obj.id)
+			{
+				pObj = &obj;
+				return StatusCode::SUCCESS;
+			}
+		}
+		return StatusCode::FAILURE;
+	}
+
+
+
 	//maps node names to their functions
 	using FieldSetters = std::unordered_map<std::string, std::function<StatusCode(Derived*, const Node&)>>;
 

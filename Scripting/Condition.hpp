@@ -78,7 +78,9 @@ struct ConditionBlock
 		OR,
 		AND,
 		NOR,
-		NAND
+		NAND,
+		NOT
+		//CALC_IF_TRUE
 	};
 
 	struct AnyScope
@@ -173,7 +175,7 @@ struct ConditionBlock
 	StatusCode Compile(const Node& node);
 
 	template <typename ScopeType>
-	void Decompile(std::string& output);
+	void Decompile(std::string& output, const bool isNested);
 
 	std::string DecompileCharecterScope();
 
@@ -184,17 +186,25 @@ struct ConditionBlock
 	template <typename ScopeType, typename Opcode>
 	StatusCode HandleOpcode(const Node& node, const Opcode op_code);
 
+	template <typename Opcode>
+	StatusCode DecompileOpcode(std::string& output ,const Opcode op_code);
+
 	StatusCode handle_anyscope_opcode(const Node& node, const AnyScope::Opcode op);
 
 	StatusCode EvaluateResult(bool result);
 
 	StatusCode append_bool_val(const Node& node);
 
+	StatusCode DecompileBoolVal(std::string& output);
+
 	template <typename SimulatorType, ConditionBlock::Control::Opcode LOAD_OP_CODE = ConditionBlock::Control::Opcode::MAX_VALUE>
 	StatusCode append_pointer(const Node& node);
 
 	template <typename SimulatorType, ConditionBlock::Control::Opcode LOAD_OP_CODE = ConditionBlock::Control::Opcode::MAX_VALUE>
 	StatusCode append_id(const Node& node);
+
+	template <typename SimulatorType>
+	StatusCode DecompileId(std::string& output);
 
 	StatusCode append_register(const Node& node);
 
@@ -282,46 +292,50 @@ StatusCode ConditionBlock::Compile(const Node& node)
 }
 
 template<typename Scope>
-void ConditionBlock::Decompile(std::string& output) 
+void ConditionBlock::Decompile(std::string& output, const bool isNested) 
 {
 	do  
 	{
-		if (Control::s_opcodeToName.contains(static_cast<Control::Opcode>(*(this->ip))))
+		std::uint8_t currentInstruction = *ip;
+
+		if (Control::s_opcodeToName.contains(static_cast<Control::Opcode>(currentInstruction)))
 		{
-			output += Control::s_opcodeToName.at(static_cast<Control::Opcode>(*(this->ip))) += " || ";
-			if (Control::Opcode::RETURN == static_cast<Control::Opcode>(*(this->ip)))
+			output += Control::s_opcodeToName.at(static_cast<Control::Opcode>(currentInstruction));
+			output += " || ";
+			if (Control::Opcode::RETURN == static_cast<Control::Opcode>(currentInstruction) && isNested)
 				return;
 		}
-		else if (Scope::s_opcodeToName.contains(static_cast<Scope::Opcode>(*(this->ip))))
+		else if (Scope::s_opcodeToName.contains(static_cast<Scope::Opcode>(currentInstruction)))
 		{
-			output += Scope::s_opcodeToName.at(static_cast<Scope::Opcode>(*(this->ip))) += " || ";
+			output += Scope::s_opcodeToName.at(static_cast<Scope::Opcode>(currentInstruction));
+			output += " || ";
+			DecompileOpcode(output, static_cast<Scope::Opcode>(currentInstruction));
+		}
+		else if constexpr (std::is_same_v<AnyScope, Scope>)
+		{
+			switch (static_cast<AnyScope::Opcode>(currentInstruction))
+			{
+				case AnyScope::Opcode::CHARECTER_SCOPE:
+					Decompile<CharacterScope>(output, true);
+					break;
+				default:
+					break;
+			}
+		}
+		else if constexpr (std::is_same_v<Scope, CharacterScope>)
+		{
+			switch (static_cast<CharacterScope::Opcode>(currentInstruction))
+			{
+				case CharacterScope::Opcode::ANY_OWNED_BLOODLINE:
+					//Decompile<BloodlineScope>(output, true);
+					break;
+				default:
+					break;
+			}
 		}
 		else
 		{
-			;//output += "MISSING OPCODE || ";
-		}
-
-		if constexpr (std::is_same_v<AnyScope, Scope>)
-		{
-			switch (static_cast<AnyScope::Opcode>(*(this->ip)))
-			{
-				case AnyScope::Opcode::CHARECTER_SCOPE:
-					Decompile<CharacterScope>(output);
-					break;
-				default:
-					break;
-			}
-		}
-		else if (std::is_same_v<Scope, CharacterScope>)
-		{
-			switch (static_cast<CharacterScope::Opcode>(*(this->ip)))
-			{
-				case CharacterScope::Opcode::ANY_OWNED_BLOODLINE:
-					//Decompile<BloodlineScope>(output);
-					break;
-				default:
-					break;
-			}
+			output += "MISSING OPCODE || ";
 		}
 	} while (Advance());
 }

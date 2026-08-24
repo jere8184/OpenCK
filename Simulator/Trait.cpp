@@ -3,6 +3,7 @@
 #include "Army.hpp"
 #include "Map.hpp"
 #include "Scripting/Condition.hpp"
+#include "Utils/StatusCode.hpp"
 
 #include <concepts>
 #include <functional>
@@ -20,20 +21,30 @@ Trait::Trait(std::string name) : Base(name)
 StatusCode Trait::set_potential(const Node &node)
 {
 	conditionBlock = scripting::ConditionBlock(scripting::ConditionBlock::AnyScope::Opcode::CHARECTER_SCOPE);
-	return conditionBlock->Compile<scripting::ConditionBlock::CharacterScope>(node);
+	/*return*/ RETURN_RESULT_IF(StatusCode::SUCCESS, !=, conditionBlock->Compile<scripting::ConditionBlock::CharacterScope>(node));
+	std::string output;
+	conditionBlock->ip = conditionBlock->instructions.begin(); 
+	conditionBlock->Decompile<scripting::ConditionBlock::CharacterScope>(output, false);
+	std::println("{}", output);
+	return StatusCode::SUCCESS;
 }
 
 StatusCode Trait::set_is_visible(const Node &node)
 {
 	scripting::ConditionBlock block(scripting::ConditionBlock::AnyScope::Opcode::CHARECTER_SCOPE);
-	return block.Compile<scripting::ConditionBlock::CharacterScope>(node);
+	/*return*/ RETURN_RESULT_IF(StatusCode::SUCCESS, !=, block.Compile<scripting::ConditionBlock::CharacterScope>(node));
+	std::string output;
+	block.ip = block.instructions.begin(); 
+	block.Decompile<scripting::ConditionBlock::CharacterScope>(output, false);
+	std::println("{}", output);
+	return StatusCode::SUCCESS;
 }
 
 StatusCode Trait::set_attribute(const Node& node)
 {
 	if (node.value == "intrigue")
 		this->flags.attribute = AttributesType::INTRIGUE;
-	else if (node.value == "martia")
+	else if (node.value == "martial")
 		this->flags.attribute = AttributesType::MARTIAL;
 	else if (node.value == "learning")
 		this->flags.attribute = AttributesType::LEARNING;
@@ -46,6 +57,7 @@ StatusCode Trait::set_attribute(const Node& node)
 	return StatusCode::SUCCESS;
 }
 
+///Is this function needed
 StatusCode Trait::set_attribute_modifer(const Node& node, const AttributesType attribute_type)
 {
 	switch (attribute_type)
@@ -492,18 +504,6 @@ void Trait::init_field_setters()
 	field_setters =
 	{
 		{"attribute", &Trait::set_attribute},
-		{"martia", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::MARTIAL)},
-		{"diplomacy", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::DIPLOMACY)},
-		{"stewardship", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::STEWARDSHIP)},
-		{"intrigue", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::INTRIGUE)},
-		{"learning", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::LEARNING)},
-		{"combat_rating", std::bind(&Trait::set_attribute_modifer, std::placeholders::_1, std::placeholders::_2, AttributesType::COMBAT_RATING)},
-
-		{"martial_penalty", std::bind(&Trait::set_attribute_penalty, std::placeholders::_1, std::placeholders::_2, AttributesType::MARTIAL)},
-		{"diplomacy_penalty", std::bind(&Trait::set_attribute_penalty, std::placeholders::_1, std::placeholders::_2, AttributesType::DIPLOMACY)},
-		{"stewardship_penalty", std::bind(&Trait::set_attribute_penalty, std::placeholders::_1, std::placeholders::_2, AttributesType::STEWARDSHIP)},
-		{"intrigue_penalty", std::bind(&Trait::set_attribute_penalty, std::placeholders::_1, std::placeholders::_2, AttributesType::INTRIGUE)},
-		{"learning_penalty", std::bind(&Trait::set_attribute_penalty, std::placeholders::_1, std::placeholders::_2, AttributesType::LEARNING)},
 
 		{"male_insult_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::INSULT)},
 		{"female_insult_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::FEMALE, Trait::Greeting::Type::INSULT)},
@@ -512,7 +512,7 @@ void Trait::init_field_setters()
 		{"female_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::FEMALE, Trait::Greeting::Type::COMPLIMENT)},
 		{"child_compliment_adj", std::bind(&Trait::set_greeting_adjective, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::CHILD, Trait::Greeting::Type::COMPLIMENT)},
 
-//		{"male_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::INSULT)},
+		{"male_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::INSULT)},
 		{"female_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::FEMALE, Trait::Greeting::Type::INSULT)},
 		{"child_insult", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::CHILD, Trait::Greeting::Type::INSULT)},
 		{"male_compliment", std::bind(&Trait::set_greeting, std::placeholders::_1, std::placeholders::_2, Trait::Greeting::Target::MALE, Trait::Greeting::Type::COMPLIMENT)},
@@ -524,7 +524,7 @@ void Trait::init_field_setters()
 		{"fertility_penalty", std::bind(&Trait::set_stat_penalty, std::placeholders::_1, std::placeholders::_2, StatType::FERTILITY)},
 		{"health_penalty", std::bind(&Trait::set_stat_penalty, std::placeholders::_1, std::placeholders::_2, StatType::HEALTH)},
 
-		{"ai_zea", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::ZEAL)},
+		{"ai_zeal", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::ZEAL)},
 		{"ai_greed", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::GREED)},
 		{"ai_ambition", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::AMBITION)},
 		{"ai_rationality", std::bind(&Trait::set_stat_modifer, std::placeholders::_1, std::placeholders::_2, StatType::RATIONALITY)},
@@ -566,7 +566,7 @@ void Trait::init_field_setters()
 		{"both_parent_has_trait_inherit_chance", [](Trait* trait, const Node& node){return node.get_value(trait->flags.both_parent_has_trait_inherit_chance);}},
 		{"inbred", [](Trait* trait, const Node& node){return node.get_value(trait->flags.inbred);}},
 		{"hidden", [](Trait* trait, const Node& node){return node.get_value(trait->flags.hidden);}},
-		{"immorta", [](Trait* trait, const Node& node){return node.get_value(trait->flags.immortal);}},
+		{"immortal", [](Trait* trait, const Node& node){return node.get_value(trait->flags.immortal);}},
 		{"cannot_inherit", [](Trait* trait, const Node& node){return node.get_value(trait->flags.cannot_inherit);}},
 		{"cannot_marry", [](Trait* trait, const Node& node){return node.get_value(trait->flags.cannot_marry);}},
 		{"agnatic", [](Trait* trait, const Node& node){return node.get_value(trait->flags.agnatic);}},
@@ -595,7 +595,7 @@ void Trait::init_field_setters()
 		{"diplomacy_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.diplomacy_penalty);}},
 		{"stewardship", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.stewardship);}},
 		{"stewardship_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.stewardship_penalty);}},
-		{"martia", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.martial);}},
+		{"martial", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.martial);}},
 		{"martial_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.martial_penalty);}},
 		{"intrigue", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.intrigue);}},
 		{"intrigue_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.intrigue_penalty);}},
@@ -627,7 +627,7 @@ void Trait::init_field_setters()
 		{"monthly_character_wealth", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_character_wealth);}},
 		{"monthly_grace", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_grace);}},
 		{"ai_rationality", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_rationality);}},
-		{"ai_zea", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_zeal);}},
+		{"ai_zeal", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_zeal);}},
 		{"ai_greed", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_greed);}},
 		{"ai_honor", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_honor);}},
 		{"ai_ambition", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_ambition);}},

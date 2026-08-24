@@ -27,24 +27,24 @@ inline std::unordered_map<StatusCode, std::string> statusCodeToNameMap
 	STATUS_CODES(GET_PAIR)
 };
 
-#define RETURN_RESULT_IF_3(StatusCodeVal, op, expression)\
+#define RETURN_RESULT_IF_3(statusCodeVal, op, expression)\
 	do\
 	{\
-		StatusCode result = expression;\
-		if (StatusCodeVal op result)\
-			return result;\
+		StatusCode _result = expression;\
+		if (statusCodeVal op _result)\
+			return _result;\
 	} while(false)
 
 #define RETURN_RESULT_IF_4(StatusCode, op, expression, node)\
 	RETURN_RESULT_IF_5(StatusCode, op, expression, node, "")
 
-#define RETURN_RESULT_IF_5(StatusCodeVal, op, expression, node, action)\
+#define RETURN_RESULT_IF_5(statusCodeVal, op, expression, node, action)\
 	do\
 	{\
-		StatusCode result = expression;\
-		if (StatusCodeVal op result)\
+		StatusCode _result = expression;\
+		if (statusCodeVal op _result)\
 		{\
-			return node.debugging.store_and_forward_result(result, action);\
+			return node.debugging.store_and_forward_result(_result, action);\
 		}\
 	} while(false)
 
