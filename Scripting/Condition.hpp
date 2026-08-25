@@ -215,7 +215,7 @@ struct ConditionBlock
 	StatusCode append_number(const Node& node);
 
 	template <ConditionBlock::Control::Opcode LOAD_OPOCDE>
-	void append_immediate(auto& immediate_list, const auto& val);
+	void AppendImmediate(auto& immediate_list, const auto& val);
 
 	std::vector<uint8_t> instructions; ///< List of instructions to execute when evaluating this block.
 	std::vector<uint8_t>::iterator ip; ///< Instruction pointer.

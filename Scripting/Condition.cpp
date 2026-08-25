@@ -424,7 +424,7 @@ StatusCode ConditionBlock::handle_anyscope_opcode(const Node& node, const AnySco
 StatusCode ConditionBlock::append_bool_val(const Node& node)
 {
 	bool condition;
-	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(condition));
+	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.GetValue(condition));
 	ConditionBlock::Control::Opcode condition_op =  condition ? ConditionBlock::Control::Opcode::LOAD_TRUE : ConditionBlock::Control::Opcode::LOAD_FALSE;
 	this->instructions.push_back(static_cast<uint8_t>(condition_op));
 	return StatusCode::SUCCESS;
@@ -434,9 +434,9 @@ template <typename SimulatorType, ConditionBlock::Control::Opcode LOAD_OP_CODE>
 StatusCode ConditionBlock::append_pointer(const Node& node)
 {
 	const SimulatorType* ptr;
-	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, SimulatorType::get_by_name(ptr, node.value));
+	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, SimulatorType::GetByName(ptr, node.value));
 	
-	append_immediate<LOAD_OP_CODE>(this->pointers, ptr);
+	AppendImmediate<LOAD_OP_CODE>(this->pointers, ptr);
 
 	return StatusCode::SUCCESS;
 }
@@ -445,10 +445,10 @@ template <typename SimulatorType, ConditionBlock::Control::Opcode LOAD_OP_CODE>
 StatusCode ConditionBlock::append_id(const Node& node)
 {
 	const SimulatorType* ptr;
-	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, SimulatorType::get_by_name(ptr, node.value));
+	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, SimulatorType::GetByName(ptr, node.value));
 	
 	//Appending id as a float?
-	append_immediate<LOAD_OP_CODE>(this->numbers, ptr->id);
+	AppendImmediate<LOAD_OP_CODE>(this->numbers, ptr->id);
 
 	return StatusCode::SUCCESS;
 }
@@ -518,9 +518,9 @@ template <bool SHOULD_APPEND_LOAD_OPCODE>
 StatusCode ConditionBlock::append_string(const Node& node)
 {
 	if constexpr (SHOULD_APPEND_LOAD_OPCODE)
-		append_immediate<Control::Opcode::LOAD_STRING>(this->strings, node.value);
+		AppendImmediate<Control::Opcode::LOAD_STRING>(this->strings, node.value);
 	else
-		append_immediate<Control::Opcode::MAX_VALUE>(this->strings, node.value);
+		AppendImmediate<Control::Opcode::MAX_VALUE>(this->strings, node.value);
 	return StatusCode::SUCCESS;
 }
 
@@ -528,18 +528,18 @@ template <bool SHOULD_APPEND_LOAD_OPCODE>
 StatusCode ConditionBlock::append_number(const Node& node)
 {
 	typename decltype(this->numbers)::value_type val;
-	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
+	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.GetValue(val));
 
 	if constexpr (SHOULD_APPEND_LOAD_OPCODE)
-		append_immediate<Control::Opcode::LOAD_NUMBER>(this->numbers, val);
+		AppendImmediate<Control::Opcode::LOAD_NUMBER>(this->numbers, val);
 	else
-		append_immediate<Control::Opcode::MAX_VALUE>(this->numbers, val);
+		AppendImmediate<Control::Opcode::MAX_VALUE>(this->numbers, val);
 
 	return StatusCode::SUCCESS;
 }
 
 template <ConditionBlock::Control::Opcode LOAD_OPOCDE>
-void ConditionBlock::append_immediate(auto& immediate_list, const auto& val)
+void ConditionBlock::AppendImmediate(auto& immediate_list, const auto& val)
 {
 	uint8_t indx;
 	auto iter = std::ranges::find(immediate_list, val);
@@ -604,7 +604,7 @@ StatusCode ConditionBlock::DecompileOpcode<ConditionBlock::CharacterScope::Opcod
 		case CharacterScope::Opcode::CONTROLS_RELIGION:
 		{
 			RETURN_RESULT_IF(StatusCode::SUCCESS, ==, DecompileBoolVal(output));
-			if (static_cast<Control::Opcode>(*ip) == Control::Opcode::LOAD_RELIGION_ID) ///bug if id == load_opcode
+			if (static_cast<Control::Opcode>(*ip) == Control::Opcode::LOAD_RELIGION_ID)
 				RETURN_RESULT_IF(StatusCode::SUCCESS, ==, DecompileId<simulator::Religion>(output));
 			break;
 		}
@@ -646,7 +646,7 @@ StatusCode ConditionBlock::DecompileOpcode<ConditionBlock::CharacterScope::Opcod
 		case CharacterScope::Opcode::AI:
 		case CharacterScope::Opcode::PRISONER:
 		{
-			//return decompile_bool_val(output);
+			return DecompileBoolVal(output);
 			break;
 		}
 		case CharacterScope::Opcode::CHARACTER:

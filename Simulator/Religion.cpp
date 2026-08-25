@@ -15,11 +15,11 @@ using openck::util::Colour;
 template<>
 Base<ReligionGroup>::FieldSetters Base<ReligionGroup>::field_setters =
 {
-	{"has_coa_on_barony_only",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.has_coa_on_barony_only);}},
-	{"playable",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.playable);}},
-	{"hostile_within_group",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.hostile_within_group);}},
+	{"has_coa_on_barony_only",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.has_coa_on_barony_only);}},
+	{"playable",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.playable);}},
+	{"hostile_within_group",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.hostile_within_group);}},
 
-	{"crusade_cb",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.crusade_cb);}},
+	{"crusade_cb",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.crusade_cb);}},
 
 
 	{
@@ -27,7 +27,7 @@ Base<ReligionGroup>::FieldSetters Base<ReligionGroup>::field_setters =
 		[](ReligionGroup* religion_group, const Node& node)
 		{
 			const GraphicalCulture* grapical_culture;
-			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::get_by_name(grapical_culture, node.name));
+			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::GetByName(grapical_culture, node.name));
 			religion_group->flags.graphical_culture = grapical_culture;
 			return StatusCode::SUCCESS;
 		}
@@ -35,10 +35,10 @@ Base<ReligionGroup>::FieldSetters Base<ReligionGroup>::field_setters =
 
 	{"interface_skin", [](ReligionGroup* religion_group, const Node& node){return StatusCode::SUCCESS; /*todo*/}},
 
-	{"ai_peacefu",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_peaceful);}},
-	{"ai_convert_same_group",  [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_same_group);}},
-	{"ai_convert_other_group", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_convert_other_group);}},
-	{"ai_fabricate_claims", [](ReligionGroup* religion_group, const Node& node){return node.get_value(religion_group->flags.ai_fabricate_claims);}},
+	{"ai_peacefu",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.ai_peaceful);}},
+	{"ai_convert_same_group",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.ai_convert_same_group);}},
+	{"ai_convert_other_group", [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.ai_convert_other_group);}},
+	{"ai_fabricate_claims", [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.ai_fabricate_claims);}},
 
 
 	{"colour", [](ReligionGroup* religion_group, const Node& node){return Colour::create_from_node(node, religion_group->flags.color);}},

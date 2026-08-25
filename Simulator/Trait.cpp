@@ -25,7 +25,7 @@ StatusCode Trait::set_potential(const Node &node)
 	std::string output;
 	conditionBlock->ip = conditionBlock->instructions.begin(); 
 	conditionBlock->Decompile<scripting::ConditionBlock::CharacterScope>(output, false);
-	std::println("{}", output);
+	std::println("{}: {}", node.parent->name, output);
 	return StatusCode::SUCCESS;
 }
 
@@ -63,27 +63,27 @@ StatusCode Trait::set_attribute_modifer(const Node& node, const AttributesType a
 	switch (attribute_type)
 	{
 		case AttributesType::DIPLOMACY :
-			return node.get_value(this->attribute_modifiers.diplomacy);
+			return node.GetValue(this->attribute_modifiers.diplomacy);
 			break;
 
 		case AttributesType::STEWARDSHIP :
-			return node.get_value(this->attribute_modifiers.stewardship);
+			return node.GetValue(this->attribute_modifiers.stewardship);
 			break;
 
 		case AttributesType::INTRIGUE :
-			return node.get_value(this->attribute_modifiers.intrigue);
+			return node.GetValue(this->attribute_modifiers.intrigue);
 			break;
 
 		case AttributesType::LEARNING :
-			return node.get_value(this->attribute_modifiers.learning);
+			return node.GetValue(this->attribute_modifiers.learning);
 			break;
 
 		case AttributesType::MARTIAL :
-			return node.get_value(this->attribute_modifiers.martial);
+			return node.GetValue(this->attribute_modifiers.martial);
 			break;
 
 		case AttributesType::COMBAT_RATING :
-			return node.get_value(this->attribute_modifiers.combat);
+			return node.GetValue(this->attribute_modifiers.combat);
 			break;
 
 		default :
@@ -103,35 +103,35 @@ StatusCode Trait::set_stat_modifer(const Node &node, const StatType stat_type)
 	switch (stat_type)
 	{
 	case StatType::AMBITION :
-		return node.get_value(this->stat_modifiers.amabition);
+		return node.GetValue(this->stat_modifiers.amabition);
 		break;
 
 	case StatType::FERTILITY :
-		return node.get_value(this->stat_modifiers.fertility);
+		return node.GetValue(this->stat_modifiers.fertility);
 		break;
 
 	case StatType::HEALTH :
-		return node.get_value(this->stat_modifiers.health);
+		return node.GetValue(this->stat_modifiers.health);
 		break;
 
 	case StatType::GREED :
-		return node.get_value(this->stat_modifiers.greed);
+		return node.GetValue(this->stat_modifiers.greed);
 		break;
 
 	case StatType::RATIONALITY :
-		return node.get_value(this->stat_modifiers.rationality);
+		return node.GetValue(this->stat_modifiers.rationality);
 		break;
 
 	case StatType::ZEAL :
-		return node.get_value(this->stat_modifiers.zeal);
+		return node.GetValue(this->stat_modifiers.zeal);
 		break;
 
 	case StatType::HONOR :
-		return node.get_value(this->stat_modifiers.honor);
+		return node.GetValue(this->stat_modifiers.honor);
 		break;
 
 	case StatType::THREAT_DECAY_SPEED :
-		return node.get_value(this->stat_modifiers.threat_decay_speed);
+		return node.GetValue(this->stat_modifiers.threat_decay_speed);
 		break;
 
 	default:
@@ -145,23 +145,23 @@ StatusCode Trait::set_attribute_penalty(const Node& node, const AttributesType a
 	switch (attribute_type)
 	{
 		case AttributesType::DIPLOMACY:
-			return node.get_value(this->attribute_modifiers.diplomacy_penalty);
+			return node.GetValue(this->attribute_modifiers.diplomacy_penalty);
 			break;
 
 		case AttributesType::STEWARDSHIP:
-			return node.get_value(this->attribute_modifiers.stewardship_penalty);
+			return node.GetValue(this->attribute_modifiers.stewardship_penalty);
 			break;
 
 		case AttributesType::INTRIGUE:
-			return node.get_value(this->attribute_modifiers.intrigue_penalty);
+			return node.GetValue(this->attribute_modifiers.intrigue_penalty);
 			break;
 
 		case AttributesType::LEARNING:
-			return node.get_value(this->attribute_modifiers.learning_penalty);
+			return node.GetValue(this->attribute_modifiers.learning_penalty);
 			break;
 
 		case AttributesType::MARTIAL:
-			return node.get_value(this->attribute_modifiers.martial_penalty);
+			return node.GetValue(this->attribute_modifiers.martial_penalty);
 			break;
 
 		default:
@@ -175,11 +175,11 @@ StatusCode Trait::set_stat_penalty(const Node &node, const StatType stat_type)
 	switch (stat_type)
 	{
 	case StatType::FERTILITY :
-		return node.get_value(this->stat_modifiers.fertility_penalty);
+		return node.GetValue(this->stat_modifiers.fertility_penalty);
 		break;
 
 	case StatType::HEALTH :
-		return node.get_value(this->stat_modifiers.health_penalty);
+		return node.GetValue(this->stat_modifiers.health_penalty);
 		break;
 
 	default:
@@ -194,67 +194,67 @@ StatusCode Trait::set_opinion_modifer(const Node &node, const Opinon::From from)
 	switch (from)
 	{
 	case Opinon::From::GENERAL :
-		return node.get_value(this->opinion.general_opinion);
+		return node.GetValue(this->opinion.general_opinion);
 		break;
 
 	case Opinon::From::CHURCH :
-		return node.get_value(this->opinion.church_opinion);
+		return node.GetValue(this->opinion.church_opinion);
 		break;
 
 	case Opinon::From::CHRISTIAN_CHURCH :
-		return node.get_value(this->opinion.christian_church_opinion);
+		return node.GetValue(this->opinion.christian_church_opinion);
 		break;
 
 	case Opinon::From::SPOUSE :
-		return node.get_value(this->opinion.spouse_opinion);
+		return node.GetValue(this->opinion.spouse_opinion);
 		break;
 
 	case Opinon::From::SEX_APPEAL :
-		return node.get_value(this->opinion.sex_appeal_opinion);;
+		return node.GetValue(this->opinion.sex_appeal_opinion);;
 		break;
 
 	case Opinon::From::DYNASTY :
-		return node.get_value(this->opinion.dynasty_opinion);
+		return node.GetValue(this->opinion.dynasty_opinion);
 		break;
 
 	case Opinon::From::LIEGE :
-		return node.get_value(this->opinion.liege_opinion);
+		return node.GetValue(this->opinion.liege_opinion);
 		break;
 
 	case Opinon::From::VASSAL :
-		return node.get_value(this->opinion.vassal_opinion);
+		return node.GetValue(this->opinion.vassal_opinion);
 		break;
 
 	case Opinon::From::INFIDEL :
-		return node.get_value(this->opinion.infidel_opinion);
+		return node.GetValue(this->opinion.infidel_opinion);
 		break;
 
 	case Opinon::From::OPPOSITE :
-		return node.get_value(this->opinion.opposite_opinion);
+		return node.GetValue(this->opinion.opposite_opinion);
 		break;
 
 	case Opinon::From::SAME :
-		return node.get_value(this->opinion.same_opinion);
+		return node.GetValue(this->opinion.same_opinion);
 		break;
 
 	case Opinon::From::SAME_PLUS_SAME_RELIGION :
-		return node.get_value(this->opinion.same_plus_if_same_religion_opinion);
+		return node.GetValue(this->opinion.same_plus_if_same_religion_opinion);
 		break;
 
 	case Opinon::From::TWIN :
-		return node.get_value(this->opinion.twin_opinion);
+		return node.GetValue(this->opinion.twin_opinion);
 		break;
 
 	case Opinon::From::AMBITION :
-		return node.get_value(this->opinion.ambition_opinion);
+		return node.GetValue(this->opinion.ambition_opinion);
 		break;
 
 	case Opinon::From::SAME_RELIGION :
-		return node.get_value(this->opinion.same_religion_opinion);
+		return node.GetValue(this->opinion.same_religion_opinion);
 		break;
 
 	case Opinon::From::UNREFOMED_TRIBAL :
-		return node.get_value(this->opinion.unreformed_tribal_opinion);
+		return node.GetValue(this->opinion.unreformed_tribal_opinion);
 		break;
 
 	case Opinon::From::DYNAMIC :
@@ -272,7 +272,7 @@ StatusCode Trait::set_opposites(const Node &node)
 	for (const Node& child_node : node.children)
 	{
 		const Trait* opposite_trait;
-		RETURN_RESULT_IF(StatusCode::SUCCESS, !=, this->get_by_name(opposite_trait, child_node.name));
+		RETURN_RESULT_IF(StatusCode::SUCCESS, !=, this->GetByName(opposite_trait, child_node.name));
 		this->flags.opposites.push_back(opposite_trait);
 	}
 	return StatusCode::SUCCESS;
@@ -285,21 +285,21 @@ StatusCode Trait::set_command_modifier(const Node &node)
 		if(child.name == "terrain")
 		{
 			const Terrain* terrain;
-			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Terrain::get_by_name(terrain, child.value), child);
+			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Terrain::GetByName(terrain, child.value), child);
 			this->command_modifiers.terraine_specific_buffs.insert(terrain);
 			return StatusCode::SUCCESS;
 		}
 		else
 		{
 			float val;
-			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, child.get_value(val), child);
+			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, child.GetValue(val), child);
 			std::string setter_key = ("command_modifier.") + child.name;
 
 			if (field_setters.contains(setter_key))
 			{
 				RETURN_RESULT_IF(StatusCode::SUCCESS, !=, Trait::field_setters.at(setter_key)(this, child), child);
 			}
-			else if (const UnitType* unit_type; StatusCode::SUCCESS == UnitType::get_by_name(unit_type, child.name))
+			else if (const UnitType* unit_type; StatusCode::SUCCESS == UnitType::GetByName(unit_type, child.name))
 			{
 				this->command_modifiers.unit_specific_buffs[unit_type] = val;
 			}
@@ -315,19 +315,19 @@ StatusCode Trait::set_command_modifier(const Node &node)
 StatusCode Trait::set_opinion_modifer_dynamic(const Node& node)
 {
 	int val;
-	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.get_value(val));
+	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, node.GetValue(val));
 
 	std::string name = node.name.substr(0, node.name.size() - std::string_view("_opinion").size());
 
 	const Religion* religion;
 	const ReligionGroup* religionGroup;
-	StatusCode statusCode = Religion::get_by_name(religion, name);
+	StatusCode statusCode = Religion::GetByName(religion, name);
 	if (StatusCode::SUCCESS == statusCode)
 	{
 		this->opinion.religion_opinions[religion] = val;
 		return StatusCode::SUCCESS;
 	}
-	else if (StatusCode::SUCCESS == ReligionGroup::get_by_name(religionGroup, name))
+	else if (StatusCode::SUCCESS == ReligionGroup::GetByName(religionGroup, name))
 	{
 		this->opinion.religion_group_opinions[religionGroup] = val;
 		return StatusCode::SUCCESS;
@@ -451,7 +451,7 @@ StatusCode Trait::set_greeting(const Node& node, const Greeting::Target target, 
 StatusCode Trait::set_tolerance(const Node& node)
 {
 	const ReligionGroup* religion_group;
-	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ReligionGroup::get_by_name(religion_group, node.name.substr(std::string_view("tolerates_").size())));
+	RETURN_RESULT_IF(StatusCode::SUCCESS, !=, ReligionGroup::GetByName(religion_group, node.name.substr(std::string_view("tolerates_").size())));
 	tolerated_religion_groups.insert(religion_group);
 	return StatusCode::SUCCESS;
 
@@ -550,145 +550,145 @@ void Trait::init_field_setters()
 
 		{"opposites", &Trait::set_opposites},
 
-		{"education", [](Trait* trait, const Node& node){return node.get_value(trait->flags.education);}},
-		{"leadership_traits", [](Trait* trait, const Node& node){return node.get_value(trait->flags.leadership_traits);}},
-		{"customizer", [](Trait* trait, const Node& node){return node.get_value(trait->flags.customizer);}},
-		{"religious", [](Trait* trait, const Node& node){return node.get_value(trait->flags.religious);}},
-		{"is_health", [](Trait* trait, const Node& node){return node.get_value(trait->flags.is_health);}},
-		{"is_illness", [](Trait* trait, const Node& node){return node.get_value(trait->flags.is_illness);}},
-		{"is_symptom", [](Trait* trait, const Node& node){return node.get_value(trait->flags.is_symptom);}},
-		{"is_epidemic", [](Trait* trait, const Node& node){return node.get_value(trait->flags.is_epidemic);}},
-		{"inherit_chance", [](Trait* trait, const Node& node){return node.get_value(trait->flags.inherit_chance);}},
-		{"succession_gfx", [](Trait* trait, const Node& node){return node.get_value(trait->flags.succession_gfx);}},
-		{"incapacitating", [](Trait* trait, const Node& node){return node.get_value(trait->flags.incapacitating);}},
-		{"ruler_designer_cost", [](Trait* trait, const Node& node){return node.get_value(trait->flags.ruler_designer_cost);}},
-		{"birth", [](Trait* trait, const Node& node){return node.get_value(trait->flags.chance_on_birth);}},
-		{"both_parent_has_trait_inherit_chance", [](Trait* trait, const Node& node){return node.get_value(trait->flags.both_parent_has_trait_inherit_chance);}},
-		{"inbred", [](Trait* trait, const Node& node){return node.get_value(trait->flags.inbred);}},
-		{"hidden", [](Trait* trait, const Node& node){return node.get_value(trait->flags.hidden);}},
-		{"immortal", [](Trait* trait, const Node& node){return node.get_value(trait->flags.immortal);}},
-		{"cannot_inherit", [](Trait* trait, const Node& node){return node.get_value(trait->flags.cannot_inherit);}},
-		{"cannot_marry", [](Trait* trait, const Node& node){return node.get_value(trait->flags.cannot_marry);}},
-		{"agnatic", [](Trait* trait, const Node& node){return node.get_value(trait->flags.agnatic);}},
-		{"enatic", [](Trait* trait, const Node& node){return node.get_value(trait->flags.enatic);}},
-		{"childhood", [](Trait* trait, const Node& node){return node.get_value(trait->flags.childhood);}},
-		{"lifestyle", [](Trait* trait, const Node& node){return node.get_value(trait->flags.lifestyle);}},
-		{"personality", [](Trait* trait, const Node& node){return node.get_value(trait->flags.personality);}},
-		{"prevent_decadence", [](Trait* trait, const Node& node){return node.get_value(trait->flags.prevent_decadence);}},
-		{"priest", [](Trait* trait, const Node& node){return node.get_value(trait->flags.priest);}},
-		{"pilgrimage", [](Trait* trait, const Node& node){return node.get_value(trait->flags.pilgrimage);}},
-		{"vice", [](Trait* trait, const Node& node){return node.get_value(trait->flags.vice);}},
-		{"virtue", [](Trait* trait, const Node& node){return node.get_value(trait->flags.virtue);}},
-		{"leader", [](Trait* trait, const Node& node){return node.get_value(trait->flags.leader);}},
-		{"cached", [](Trait* trait, const Node& node){return node.get_value(trait->flags.cached);}},
-		{"blinding", [](Trait* trait, const Node& node){return node.get_value(trait->flags.blinding);}},
-		{"rebel_inherited", [](Trait* trait, const Node& node){return node.get_value(trait->flags.rebel_inherited);}},
-		{"caste_tier", [](Trait* trait, const Node& node){return node.get_value(trait->flags.caste_tier);}},
-		{"in_hiding", [](Trait* trait, const Node& node){return node.get_value(trait->flags.in_hiding);}},
-		{"can_hold_titles", [](Trait* trait, const Node& node){return node.get_value(trait->flags.can_hold_titles);}},
-		{"hidden_from_others", [](Trait* trait, const Node& node){return node.get_value(trait->flags.hidden_from_others);}},
+		{"education", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.education);}},
+		{"leadership_traits", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.leadership_traits);}},
+		{"customizer", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.customizer);}},
+		{"religious", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.religious);}},
+		{"is_health", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.is_health);}},
+		{"is_illness", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.is_illness);}},
+		{"is_symptom", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.is_symptom);}},
+		{"is_epidemic", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.is_epidemic);}},
+		{"inherit_chance", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.inherit_chance);}},
+		{"succession_gfx", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.succession_gfx);}},
+		{"incapacitating", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.incapacitating);}},
+		{"ruler_designer_cost", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.ruler_designer_cost);}},
+		{"birth", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.chance_on_birth);}},
+		{"both_parent_has_trait_inherit_chance", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.both_parent_has_trait_inherit_chance);}},
+		{"inbred", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.inbred);}},
+		{"hidden", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.hidden);}},
+		{"immortal", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.immortal);}},
+		{"cannot_inherit", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.cannot_inherit);}},
+		{"cannot_marry", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.cannot_marry);}},
+		{"agnatic", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.agnatic);}},
+		{"enatic", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.enatic);}},
+		{"childhood", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.childhood);}},
+		{"lifestyle", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.lifestyle);}},
+		{"personality", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.personality);}},
+		{"prevent_decadence", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.prevent_decadence);}},
+		{"priest", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.priest);}},
+		{"pilgrimage", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.pilgrimage);}},
+		{"vice", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.vice);}},
+		{"virtue", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.virtue);}},
+		{"leader", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.leader);}},
+		{"cached", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.cached);}},
+		{"blinding", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.blinding);}},
+		{"rebel_inherited", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.rebel_inherited);}},
+		{"caste_tier", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.caste_tier);}},
+		{"in_hiding", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.in_hiding);}},
+		{"can_hold_titles", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.can_hold_titles);}},
+		{"hidden_from_others", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.hidden_from_others);}},
 
-		{"religious_branch", [](Trait* trait, const Node& node){return simulator::Religion::get_by_name(trait->flags.religious_branch, node.value);}},
+		{"religious_branch", [](Trait* trait, const Node& node){return simulator::Religion::GetByName(trait->flags.religious_branch, node.value);}},
 
 		// modifiers
-		{"diplomacy", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.diplomacy);}},
-		{"diplomacy_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.diplomacy_penalty);}},
-		{"stewardship", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.stewardship);}},
-		{"stewardship_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.stewardship_penalty);}},
-		{"martial", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.martial);}},
-		{"martial_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.martial_penalty);}},
-		{"intrigue", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.intrigue);}},
-		{"intrigue_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.intrigue_penalty);}},
-		{"learning", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.learning);}},
-		{"learning_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.learning_penalty);}},
-		{"fertility", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.fertility);}},
-		{"fertility_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.fertility_penalty);}},
-		{"health", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.health);}},
-		{"health_penalty", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.health_penalty);}},
-		{"combat_rating", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.combat_rating);}},
-		{"threat_decay_speed", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.threat_decay_speed);}},
-		{"demesne_size", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.demesne_size);}},
-		{"global_revolt_risk", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.global_revolt_risk);}},
-		{"culture_flex", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.culture_flex);}},
-		{"religion_flex", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.religion_flex);}},
-		{"assassinate_chance_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.assassinate_chance_modifier);}},
-		{"arrest_chance_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.arrest_chance_modifier);}},
-		{"plot_power_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.plot_power_modifier);}},
-		{"tax_income", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.tax_income);}},
-		{"global_tax_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.global_tax_modifier);}},
-		{"global_levy_size", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.global_tax_modifier);}},
-		{"wonder_build_time_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.wonder_build_time_modifier);}},
-		{"wonder_build_cost_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.wonder_build_cost_modifier);}},
-		{"days_of_supply", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.days_of_supply);}},
-		{"attrition", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.attrition);}},
-		{"local_tax_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.local_tax_modifier);}},
-		{"monthly_character_prestige", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_character_prestige);}},
-		{"monthly_character_piety", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_character_piety);}},
-		{"monthly_character_wealth", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_character_wealth);}},
-		{"monthly_grace", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.monthly_grace);}},
-		{"ai_rationality", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_rationality);}},
-		{"ai_zeal", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_zeal);}},
-		{"ai_greed", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_greed);}},
-		{"ai_honor", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_honor);}},
-		{"ai_ambition", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.ai_ambition);}},
-		{"build_cost_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.build_cost_modifier);}},
-		{"build_time_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.build_time_modifier);}},
-		{"local_build_cost_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.local_build_cost_modifier);}},
-		{"local_build_time_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.local_build_time_modifier);}},
-		{"vassal_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.vassal_opinion);}},
-		{"sex_appeal_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.sex_appeal_opinion);}},
-		{"same_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.same_opinion);}},
-		{"same_opinion_if_same_religion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.same_opinion_if_same_religion);}},
-		{"opposite_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.opposite_opinion);}},
-		{"liege_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.liege_opinion);}},
-		{"general_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.general_opinion);}},
-		{"twin_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.twin_opinion);}},
-		{"dynasty_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.dynasty_opinion);}},
-		{"spouse_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.spouse_opinion);}},
-		//{"<religion>_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.<religion>_opinion);}},
-		//{"<religion_group>_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.<religion_group>_opinion);}},
-		{"same_religion_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.same_religion_opinion);}},
-		{"infidel_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.infidel_opinion);}},
-		//{"<religion_group>_church_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.<religion_group>_church_opinion);}},
-		{"church_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.church_opinion);}},
-		{"town_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.town_opinion);}},
-		{"tribal_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.tribal_opinion);}},
-		{"unreformed_tribal_opinion", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.unreformed_tribal_opinion);}},
-		{"levy_size", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.levy_size);}},
-		{"levy_reinforce_rate", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.levy_reinforce_rate);}},
-		{"land_morale", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.land_morale);}},
-		{"global_supply_limit", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.global_supply_limit);}},
-		{"supply_limit", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.supply_limit);}},
-		{"max_attrition", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.max_attrition);}},
-		{"siege_speed", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.siege_speed);}},
-		{"tradevalue", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.tradevalue);}},
-		{"max_manpower_mult", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.max_manpower_mult);}},
-		{"murder_plot_power_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.murder_plot_power_modifier);}},
-		{"defensive_plot_power_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.defensive_plot_power_modifier);}},
-		{"build_cost_temple_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.build_cost_temple_modifier);}},
-		{"local_build_cost_temple_modifier", [](Trait* trait, const Node& node){return node.get_value(trait->modifiers.local_build_cost_temple_modifier);}},
+		{"diplomacy", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.diplomacy);}},
+		{"diplomacy_penalty", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.diplomacy_penalty);}},
+		{"stewardship", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.stewardship);}},
+		{"stewardship_penalty", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.stewardship_penalty);}},
+		{"martial", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.martial);}},
+		{"martial_penalty", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.martial_penalty);}},
+		{"intrigue", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.intrigue);}},
+		{"intrigue_penalty", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.intrigue_penalty);}},
+		{"learning", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.learning);}},
+		{"learning_penalty", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.learning_penalty);}},
+		{"fertility", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.fertility);}},
+		{"fertility_penalty", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.fertility_penalty);}},
+		{"health", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.health);}},
+		{"health_penalty", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.health_penalty);}},
+		{"combat_rating", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.combat_rating);}},
+		{"threat_decay_speed", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.threat_decay_speed);}},
+		{"demesne_size", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.demesne_size);}},
+		{"global_revolt_risk", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.global_revolt_risk);}},
+		{"culture_flex", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.culture_flex);}},
+		{"religion_flex", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.religion_flex);}},
+		{"assassinate_chance_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.assassinate_chance_modifier);}},
+		{"arrest_chance_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.arrest_chance_modifier);}},
+		{"plot_power_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.plot_power_modifier);}},
+		{"tax_income", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.tax_income);}},
+		{"global_tax_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.global_tax_modifier);}},
+		{"global_levy_size", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.global_tax_modifier);}},
+		{"wonder_build_time_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.wonder_build_time_modifier);}},
+		{"wonder_build_cost_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.wonder_build_cost_modifier);}},
+		{"days_of_supply", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.days_of_supply);}},
+		{"attrition", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.attrition);}},
+		{"local_tax_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.local_tax_modifier);}},
+		{"monthly_character_prestige", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.monthly_character_prestige);}},
+		{"monthly_character_piety", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.monthly_character_piety);}},
+		{"monthly_character_wealth", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.monthly_character_wealth);}},
+		{"monthly_grace", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.monthly_grace);}},
+		{"ai_rationality", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.ai_rationality);}},
+		{"ai_zeal", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.ai_zeal);}},
+		{"ai_greed", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.ai_greed);}},
+		{"ai_honor", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.ai_honor);}},
+		{"ai_ambition", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.ai_ambition);}},
+		{"build_cost_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.build_cost_modifier);}},
+		{"build_time_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.build_time_modifier);}},
+		{"local_build_cost_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.local_build_cost_modifier);}},
+		{"local_build_time_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.local_build_time_modifier);}},
+		{"vassal_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.vassal_opinion);}},
+		{"sex_appeal_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.sex_appeal_opinion);}},
+		{"same_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.same_opinion);}},
+		{"same_opinion_if_same_religion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.same_opinion_if_same_religion);}},
+		{"opposite_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.opposite_opinion);}},
+		{"liege_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.liege_opinion);}},
+		{"general_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.general_opinion);}},
+		{"twin_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.twin_opinion);}},
+		{"dynasty_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.dynasty_opinion);}},
+		{"spouse_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.spouse_opinion);}},
+		//{"<religion>_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.<religion>_opinion);}},
+		//{"<religion_group>_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.<religion_group>_opinion);}},
+		{"same_religion_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.same_religion_opinion);}},
+		{"infidel_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.infidel_opinion);}},
+		//{"<religion_group>_church_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.<religion_group>_church_opinion);}},
+		{"church_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.church_opinion);}},
+		{"town_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.town_opinion);}},
+		{"tribal_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.tribal_opinion);}},
+		{"unreformed_tribal_opinion", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.unreformed_tribal_opinion);}},
+		{"levy_size", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.levy_size);}},
+		{"levy_reinforce_rate", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.levy_reinforce_rate);}},
+		{"land_morale", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.land_morale);}},
+		{"global_supply_limit", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.global_supply_limit);}},
+		{"supply_limit", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.supply_limit);}},
+		{"max_attrition", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.max_attrition);}},
+		{"siege_speed", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.siege_speed);}},
+		{"tradevalue", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.tradevalue);}},
+		{"max_manpower_mult", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.max_manpower_mult);}},
+		{"murder_plot_power_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.murder_plot_power_modifier);}},
+		{"defensive_plot_power_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.defensive_plot_power_modifier);}},
+		{"build_cost_temple_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.build_cost_temple_modifier);}},
+		{"local_build_cost_temple_modifier", [](Trait* trait, const Node& node){return node.GetValue(trait->modifiers.local_build_cost_temple_modifier);}},
 
-		{"command_modifier.cavalry", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.cavalry); }},
-		{"command_modifier.center", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.center); }},
-		{"command_modifier.damage", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.damage); }},
-		{"command_modifier.defence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.defence); }},
-		{"command_modifier.flank", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.flank); }},
-		{"command_modifier.morale_defence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_defence); }},
-		{"command_modifier.morale_offence", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.morale_offence); }},
-		{"command_modifier.narrow_flank", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.narrow_flank);}},
-		{"command_modifier.pursue", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.pursue); }},
-		{"command_modifier.random", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.random); }},
-		{"command_modifier.religious_enemy", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.religious_enemy);}},
-		{"command_modifier.retreat", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.retreat); }},
-		{"command_modifier.siege", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.siege); }},
-		{"command_modifier.speed", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.speed); }},
-		{"command_modifier.winter_combat", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.winter_combat); }},
-		{"command_modifier.winter_supply", [](Trait* trait, const Node& node) { return node.get_value(trait->command_modifiers.winter_supply); }},
+		{"command_modifier.cavalry", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.cavalry); }},
+		{"command_modifier.center", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.center); }},
+		{"command_modifier.damage", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.damage); }},
+		{"command_modifier.defence", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.defence); }},
+		{"command_modifier.flank", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.flank); }},
+		{"command_modifier.morale_defence", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.morale_defence); }},
+		{"command_modifier.morale_offence", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.morale_offence); }},
+		{"command_modifier.narrow_flank", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.narrow_flank);}},
+		{"command_modifier.pursue", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.pursue); }},
+		{"command_modifier.random", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.random); }},
+		{"command_modifier.religious_enemy", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.religious_enemy);}},
+		{"command_modifier.retreat", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.retreat); }},
+		{"command_modifier.siege", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.siege); }},
+		{"command_modifier.speed", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.speed); }},
+		{"command_modifier.winter_combat", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.winter_combat); }},
+		{"command_modifier.winter_supply", [](Trait* trait, const Node& node) { return node.GetValue(trait->command_modifiers.winter_supply); }},
 		{"command_modifier", std::bind(&Trait::set_command_modifier, std::placeholders::_1, std::placeholders::_2)},
 
 		{"potential", &Trait::set_potential},
 		{"is_visible", &Trait::set_is_visible},
-		{"random", [](Trait* trait, const Node& node){return node.get_value(trait->flags.random);}},
+		{"random", [](Trait* trait, const Node& node){return node.GetValue(trait->flags.random);}},
 	};
 }
 

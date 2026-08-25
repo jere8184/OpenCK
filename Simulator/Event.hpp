@@ -40,11 +40,11 @@ struct Event : Base<Event>
 
 			{"trigger", [](Event* event, const Node& node){return event->m_conditionBlock.compile<scripting::characterScope>(node);}},
 
-			{"hide_from", [](Event* event, const Node& node){return node.get_value(event->hide_from);}},
-			{"capable_only", [](Event* event, const Node& node){return node.get_value(event->only_capable);}},
-			{"only_capable", [](Event* event, const Node& node){return node.get_value(event->only_capable);}},
-			{"capable_only", [](Event* event, const Node& node){return node.get_value(event->only_capable);}},
-			{"only_capable", [](Event* event, const Node& node){return node.get_value(event->only_capable);}},
+			{"hide_from", [](Event* event, const Node& node){return node.GetValue(event->hide_from);}},
+			{"capable_only", [](Event* event, const Node& node){return node.GetValue(event->only_capable);}},
+			{"only_capable", [](Event* event, const Node& node){return node.GetValue(event->only_capable);}},
+			{"capable_only", [](Event* event, const Node& node){return node.GetValue(event->only_capable);}},
+			{"only_capable", [](Event* event, const Node& node){return node.GetValue(event->only_capable);}},
 		};
 	}
 	

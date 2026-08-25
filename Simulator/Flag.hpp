@@ -12,14 +12,14 @@ struct Flag : Base<Flag>
 	{
 	}
 
-	static StatusCode get_by_name(const Flag*& flag, const std::string& name)
+	static StatusCode GetByName(const Flag*& flag, const std::string& name)
 	{
-		if (StatusCode::SUCCESS != Base::get_by_name(flag, name))
+		if (StatusCode::SUCCESS != Base::GetByName(flag, name))
 		{
 			Base::map.emplace(name, Flag(name));
 		}
 
-		return Base::get_by_name(flag, name);
+		return Base::GetByName(flag, name);
 	}
 };
 

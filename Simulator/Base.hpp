@@ -102,7 +102,7 @@ struct Base
 
 	StatusCode set_dynamic_field(const Node& node, DynamicFieldType type) {return StatusCode::NOT_IMPLIMENTED;}
 
-	static StatusCode get_by_name(const Derived*& derived, const std::string& name)
+	static StatusCode GetByName(const Derived*& derived, const std::string& name)
 	{
 		if (map.contains(name))
 		{

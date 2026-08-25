@@ -65,10 +65,10 @@ struct Node
 		parent(std::move(other.parent)),
 		name(std::move(other.name)),
 		value(std::move(other.value)),
+		children(std::move(other.children)),
 		type(std::move(other.type)),
 		op(std::move(other.op)),
-		debugging(std::move(other.debugging)),
-		children(std::move(other.children))
+		debugging(std::move(other.debugging))
 	{
 		for (Node& child : children)
 		{
@@ -92,7 +92,7 @@ struct Node
 	}
 
 	template<Numeric Val>
-	StatusCode get_value(Val& ret) const
+	StatusCode GetValue(Val& ret) const
 	{
 		try
 		{
@@ -105,7 +105,7 @@ struct Node
 		return StatusCode::SUCCESS;
 	}
 
-	StatusCode get_value(bool& ret) const
+	StatusCode GetValue(bool& ret) const
 	{
 		if (this->value == "yes")
 			ret = true;
