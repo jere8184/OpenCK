@@ -15,36 +15,36 @@ using openck::util::Colour;
 template<>
 Base<ReligionGroup>::FieldSetters Base<ReligionGroup>::field_setters =
 {
-	{"has_coa_on_barony_only",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.has_coa_on_barony_only);}},
-	{"playable",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.playable);}},
-	{"hostile_within_group",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.hostile_within_group);}},
+	{"has_coa_on_barony_only",  [](ReligionGroup& religion_group, const Node& node){return node.GetValue(religion_group.flags.has_coa_on_barony_only);}},
+	{"playable",  [](ReligionGroup& religion_group, const Node& node){return node.GetValue(religion_group.flags.playable);}},
+	{"hostile_within_group",  [](ReligionGroup& religion_group, const Node& node){return node.GetValue(religion_group.flags.hostile_within_group);}},
 
-	{"crusade_cb",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.crusade_cb);}},
+	{"crusade_cb",  [](ReligionGroup& religion_group, const Node& node){return node.GetValue(religion_group.flags.crusade_cb);}},
 
 
 	{
 		"graphical_culture",
-		[](ReligionGroup* religion_group, const Node& node)
+		[](ReligionGroup& religion_group, const Node& node)
 		{
 			const GraphicalCulture* grapical_culture;
 			RETURN_RESULT_IF(StatusCode::SUCCESS, !=, GraphicalCulture::GetByName(grapical_culture, node.name));
-			religion_group->flags.graphical_culture = grapical_culture;
+			religion_group.flags.graphical_culture = grapical_culture;
 			return StatusCode::SUCCESS;
 		}
 	},
 
-	{"interface_skin", [](ReligionGroup* religion_group, const Node& node){return StatusCode::SUCCESS; /*todo*/}},
+	{"interface_skin", [](ReligionGroup& religion_group, const Node& node){return StatusCode::SUCCESS; /*todo*/}},
 
-	{"ai_peacefu",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.ai_peaceful);}},
-	{"ai_convert_same_group",  [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.ai_convert_same_group);}},
-	{"ai_convert_other_group", [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.ai_convert_other_group);}},
-	{"ai_fabricate_claims", [](ReligionGroup* religion_group, const Node& node){return node.GetValue(religion_group->flags.ai_fabricate_claims);}},
+	{"ai_peacefu",  [](ReligionGroup& religion_group, const Node& node){return node.GetValue(religion_group.flags.ai_peaceful);}},
+	{"ai_convert_same_group",  [](ReligionGroup& religion_group, const Node& node){return node.GetValue(religion_group.flags.ai_convert_same_group);}},
+	{"ai_convert_other_group", [](ReligionGroup& religion_group, const Node& node){return node.GetValue(religion_group.flags.ai_convert_other_group);}},
+	{"ai_fabricate_claims", [](ReligionGroup& religion_group, const Node& node){return node.GetValue(religion_group.flags.ai_fabricate_claims);}},
 
 
-	{"colour", [](ReligionGroup* religion_group, const Node& node){return Colour::create_from_node(node, religion_group->flags.color);}},
+	{"colour", [](ReligionGroup& religion_group, const Node& node){return Colour::create_from_node(node, religion_group.flags.color);}},
 
-	{"male_name", [](ReligionGroup* religion_group, const Node& node){ for(const Node& child : node.children) religion_group->male_names.push_back(child.name); return StatusCode::SUCCESS;}},
-	{"female_name", [](ReligionGroup* religion_group, const Node& node){ for(const Node& child : node.children) religion_group->female_names.push_back(child.name); return StatusCode::SUCCESS;}}
+	{"male_name", [](ReligionGroup& religion_group, const Node& node){ for(const Node& child : node.children) religion_group.male_names.push_back(child.name); return StatusCode::SUCCESS;}},
+	{"female_name", [](ReligionGroup& religion_group, const Node& node){ for(const Node& child : node.children) religion_group.female_names.push_back(child.name); return StatusCode::SUCCESS;}}
 
 };
 

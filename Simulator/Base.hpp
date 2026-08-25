@@ -34,7 +34,7 @@ struct Base
 			if (field_setters.contains(child.name))
 			{
 				// JM: we need to eventually error on StatusCode::NOT_IMPLIMENTED'
-				StatusCode statusCode = child.debugging.store_and_forward_result(field_setters.at(child.name)(static_cast<Derived*>(this), child), "set field");
+				StatusCode statusCode = child.debugging.store_and_forward_result(field_setters.at(child.name)(*(static_cast<Derived*>(this)), child), "set field");
 				if ((StatusCode::SUCCESS != statusCode) && (StatusCode::NOT_IMPLIMENTED != statusCode))
 				{
 					//std::println(stderr, "set field <{}> for <{}>, failed with <{}>", child.name, this->name, StatusCode_to_string(statusCode));
@@ -133,7 +133,7 @@ struct Base
 
 
 	//maps node names to their functions
-	using FieldSetters = std::unordered_map<std::string, std::function<StatusCode(Derived*, const Node&)>>;
+	using FieldSetters = std::unordered_map<std::string, std::function<StatusCode(Derived&, const Node&)>>;
 
 	static FieldSetters field_setters;
 	static std::unordered_map<std::string, Derived> map;

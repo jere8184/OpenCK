@@ -11,6 +11,10 @@ namespace openck::simulator
 	{
 	};
 
+	struct CultureGroup : public Base<Culture>
+	{
+	};
+
 	struct GraphicalCulture : public Base<GraphicalCulture>
 	{
 		int skin_tone;

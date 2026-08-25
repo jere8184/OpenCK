@@ -2,6 +2,7 @@
 #include "Parser/PrdxParser.hpp"
 #include "Scripting/Condition.hpp"
 #include "Simulator/Character.hpp"
+#include "Simulator/Event.hpp"
 #include "Simulator/Trait.hpp"
 #include "Simulator/Army.hpp"
 #include "Simulator/ScriptedTrigger.hpp"
@@ -22,8 +23,8 @@ using openck::parser::Node;
 std::vector<std::filesystem::path> get_text_files(const std::filesystem::path& path)
 {
 	std::vector<std::filesystem::path> result;
-	std::filesystem::directory_iterator religions_directory_iterator(path);
-	for(const std::filesystem::directory_entry& directory_entry : religions_directory_iterator)
+	std::filesystem::directory_iterator directory_iterator(path);
+	for(const std::filesystem::directory_entry& directory_entry : directory_iterator)
 	{
 		if (directory_entry.is_regular_file() && directory_entry.path().extension() == ".txt")
 			result.push_back(directory_entry.path());
@@ -79,14 +80,18 @@ int main()
 	openck::simulator::Trait::initalise_static_fields();
 	openck::simulator::Religion::initalise_static_fields();
 	openck::simulator::UnitType::initalise_static_fields();
+	openck::simulator::Event::initalise_static_fields();
 
 	const std::vector<PathNodesPair>& religion_group_nodes = allocate_objects<openck::simulator::ReligionGroup>("./ck2_dir/common/religions/");
 	const std::vector<PathNodesPair>& trait_nodes = allocate_objects<openck::simulator::Trait>("./ck2_dir/common/traits/");
 	const std::vector<PathNodesPair>& scripted_trigger_nodes = allocate_objects<openck::simulator::ScriptedTrigger>("./ck2_dir/common/scripted_triggers/");
+	const std::vector<PathNodesPair>& event_nodes = allocate_objects<openck::simulator::Event>("./ck2_dir/events/");
+
 	
 
 	initalise_objects<openck::simulator::ScriptedTrigger>(scripted_trigger_nodes);
 	initalise_objects<openck::simulator::Trait>(trait_nodes);
+	initalise_objects<openck::simulator::Event>(event_nodes);
 
 	openck::simulator::Trait& trait = openck::simulator::Trait::map.at("excommunicated");
 
